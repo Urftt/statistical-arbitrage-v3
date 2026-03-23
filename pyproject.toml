@@ -1,0 +1,47 @@
+[project]
+name = "statistical-arbitrage"
+version = "0.1.0"
+description = "Statistical arbitrage research and learning platform for cryptocurrency pairs trading"
+readme = "README.md"
+authors = [
+    { name = "Luc Kleine Schaars", email = "luckleineschaars@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=0.20.0",
+    "plotly>=5.18.0",
+    "statsmodels>=0.14.0",
+    "scipy>=1.11.0",
+    "numpy>=1.26.0",
+    "ccxt>=4.2.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "httpx>=0.27.0",
+    "aiosqlite>=0.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[build-system]
+requires = ["uv_build>=0.9.5,<0.11.0"]
+build-backend = "uv_build"
