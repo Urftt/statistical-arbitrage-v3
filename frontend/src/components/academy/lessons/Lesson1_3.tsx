@@ -105,15 +105,16 @@ export function Lesson1_3() {
     <Stack gap="xl">
       <Stack gap="md">
         <Text>
-          You&apos;ve seen how stat arb works with simulated data. Now let&apos;s look at{' '}
-          <strong>real crypto prices</strong>. We&apos;ll normalize them to percentage change
-          so we can compare assets at completely different price levels (BTC at €50,000
-          vs. LTC at €80).
+          {"You\u2019ve seen how stat arb works with simulated data. Now let\u2019s look at "}
+          <strong>{"real crypto prices"}</strong>
+          {". We\u2019ll normalize them to percentage change so we can compare assets at completely different price levels (BTC at \u20AC50,000 vs. LTC at \u20AC80)."}
         </Text>
         <Text>
-          Switch between the three pairs below. Your eye should be looking for
-          one thing: do the lines <em>track each other</em>? That co-movement is the
-          raw material for <GlossaryLink term="Pairs Trading" />.
+          {"Switch between the three pairs below. Your eye should be looking for one thing: do the lines "}
+          <em>{"track each other"}</em>
+          {"? That co-movement is the raw material for "}
+          <GlossaryLink term="Pairs Trading" />
+          {"."}
         </Text>
       </Stack>
 
@@ -151,8 +152,10 @@ export function Lesson1_3() {
             for these pairs.
           </Text>
           <Text size="sm" mt="xs" c="dimmed">
-            To fix: run <code>uv run python run_api.py</code> in a terminal. The API
-            needs cached OHLCV data in the <code>data/</code> directory.
+            {"To fix: run "}<code>{"uv run python run_api.py"}</code>
+            {" in a terminal. The API needs cached OHLCV data in the "}
+            <code>{"data/"}</code>
+            {" directory."}
           </Text>
           <Text size="sm" mt="xs" c="dimmed">
             Don&apos;t worry — you can continue to the next chapter. We&apos;ll use this
@@ -205,20 +208,25 @@ export function Lesson1_3() {
           You now have the big picture:
         </Text>
         <Text>
-          <strong>1.</strong> Stat arb profits from temporary mispricings between related assets.
+          <strong>{"1."}</strong>
+          {" Stat arb profits from temporary mispricings between related assets."}
         </Text>
         <Text>
-          <strong>2.</strong> Pairs trading is market-neutral — long one, short the other.
+          <strong>{"2."}</strong>
+          {" Pairs trading is market-neutral \u2014 long one, short the other."}
         </Text>
         <Text>
-          <strong>3.</strong> Real pairs show varying degrees of co-movement — some are tradeable, some aren&apos;t.
+          <strong>{"3."}</strong>
+          {" Real pairs show varying degrees of co-movement \u2014 some are tradeable, some aren\u2019t."}
         </Text>
         <Text c="dimmed" size="sm" mt="xs">
-          But how do we <em>measure</em> whether two assets truly belong together?
-          Eyeballing charts isn&apos;t rigorous enough. In Chapter 2, we&apos;ll learn the
-          difference between <GlossaryLink term="Correlation" /> and{' '}
-          <GlossaryLink term="Cointegration" /> — and why only one of them matters
-          for pairs trading.
+          {"But how do we "}
+          <em>{"measure"}</em>
+          {" whether two assets truly belong together? Eyeballing charts isn\u2019t rigorous enough. In Chapter 2, we\u2019ll learn the difference between "}
+          <GlossaryLink term="Correlation" />
+          {" and "}
+          <GlossaryLink term="Cointegration" />
+          {" \u2014 and why only one of them matters for pairs trading."}
         </Text>
       </Stack>
     </Stack>

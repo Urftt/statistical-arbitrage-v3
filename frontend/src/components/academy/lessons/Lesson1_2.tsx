@@ -27,8 +27,10 @@ export function Lesson1_2() {
 
   const spread: number[] = [0];
   for (let i = 1; i < n; i++) {
-    const noise = Math.sin(i * 127.1 + 311.7) * 0.6 + Math.cos(i * 73.3) * 0.4;
-    spread.push(spread[i - 1] * 0.92 + noise);
+    // More volatile noise to ensure clear ±2σ crossings
+    const noise = Math.sin(i * 127.1 + 311.7) * 1.2 + Math.cos(i * 73.3) * 0.8
+      + Math.sin(i * 0.15) * 2;
+    spread.push(spread[i - 1] * 0.88 + noise);
   }
 
   // Calculate rolling stats for z-score
@@ -61,10 +63,9 @@ export function Lesson1_2() {
     <Stack gap="xl">
       <Stack gap="md">
         <Text>
-          <GlossaryLink term="Pairs Trading" /> is the most common form of stat arb.
-          You find two assets that move together, wait for them to diverge, then bet
-          on them converging again. The key insight: you always hold <strong>two
-          opposing positions</strong> simultaneously.
+          <GlossaryLink term="Pairs Trading" />{" is the most common form of stat arb. You find two assets that move together, wait for them to diverge, then bet on them converging again. The key insight: you always hold "}
+          <strong>{"two opposing positions"}</strong>
+          {" simultaneously."}
         </Text>
       </Stack>
 
@@ -72,33 +73,37 @@ export function Lesson1_2() {
         <Title order={4}>The anatomy of a pairs trade</Title>
 
         <Text>
-          <strong>Step 1: Find a pair.</strong> You need two assets with a stable
-          long-run relationship. Not just &quot;they both go up&quot; — that&apos;s{' '}
-          <GlossaryLink term="Correlation" /> and it&apos;s not enough. You need the{' '}
-          <em>gap</em> between them to be predictable. In crypto, ETH and ETC
-          are a classic example — both Ethereum-based, influenced by similar forces.
+          <strong>{"Step 1: Find a pair."}</strong>
+          {" You need two assets with a stable long-run relationship. Not just \"they both go up\" \u2014 that\u2019s "}
+          <GlossaryLink term="Correlation" />
+          {" and it\u2019s not enough. You need the "}
+          <em>{"gap"}</em>
+          {" between them to be predictable. In crypto, ETH and ETC are a classic example \u2014 both Ethereum-based, influenced by similar forces."}
         </Text>
 
         <Text>
-          <strong>Step 2: Measure the gap.</strong> This gap is called the{' '}
-          <GlossaryLink term="Spread" />. We standardize it into a{' '}
-          <GlossaryLink term="Z-Score" /> — the number of standard deviations from
-          its average. A z-score of +2 means the gap is unusually wide. A z-score of
-          -2 means it&apos;s unusually narrow.
+          <strong>{"Step 2: Measure the gap."}</strong>
+          {" This gap is called the "}
+          <GlossaryLink term="Spread" />
+          {". We standardize it into a "}
+          <GlossaryLink term="Z-Score" />
+          {" \u2014 the number of standard deviations from its average. A z-score of +2 means the gap is unusually wide. A z-score of -2 means it\u2019s unusually narrow."}
         </Text>
 
         <Text>
-          <strong>Step 3: Trade the extremes.</strong> When the z-score hits +2σ (gap
-          too wide), you <em>short</em> the outperformer and <em>long</em> the
-          underperformer. You&apos;re betting the gap will narrow. When it does, you
-          close both sides and pocket the difference.
+          <strong>{"Step 3: Trade the extremes."}</strong>
+          {" When the z-score hits +2\u03C3 (gap too wide), you "}
+          <em>{"short"}</em>
+          {" the outperformer and "}
+          <em>{"long"}</em>
+          {" the underperformer. You\u2019re betting the gap will narrow. When it does, you close both sides and pocket the difference."}
         </Text>
 
         <Text>
-          <strong>Step 4: Stay market-neutral.</strong> Because you&apos;re long one asset
-          and short the other, a market crash affects both sides roughly equally. Your
-          profit comes from the <em>relationship</em> normalizing, not from the market
-          going up or down. That&apos;s the beauty of it.
+          <strong>{"Step 4: Stay market-neutral."}</strong>
+          {" Because you\u2019re long one asset and short the other, a market crash affects both sides roughly equally. Your profit comes from the "}
+          <em>{"relationship"}</em>
+          {" normalizing, not from the market going up or down. That\u2019s the beauty of it."}
         </Text>
       </Stack>
 
@@ -111,10 +116,11 @@ export function Lesson1_2() {
           what if the whole market crashes? ETC goes to €15 and you&apos;ve lost 40%.
         </Text>
         <Text>
-          With pairs trading, you <em>also</em> short ETH. If the market crashes, your
-          short on ETH makes money while your long on ETC loses — roughly a wash. But
-          when the spread normalizes (ETH drops relative to ETC, or ETC rises relative
-          to ETH, or both), <em>that</em> is where your profit comes from.
+          {"With pairs trading, you "}
+          <em>{"also"}</em>
+          {" short ETH. If the market crashes, your short on ETH makes money while your long on ETC loses \u2014 roughly a wash. But when the spread normalizes (ETH drops relative to ETC, or ETC rises relative to ETH, or both), "}
+          <em>{"that"}</em>
+          {" is where your profit comes from."}
         </Text>
         <Text c="dimmed" size="sm">
           This is what &quot;market-neutral&quot; means in practice. You remove the market
@@ -133,7 +139,7 @@ export function Lesson1_2() {
 
         <Box>
           <Text size="sm" mb="xs">
-            Entry threshold: <strong>±{entryThreshold.toFixed(1)}σ</strong>
+            {"Entry threshold: "}<strong>{"±"}{entryThreshold.toFixed(1)}{"σ"}</strong>
           </Text>
           <Slider
             value={entryThreshold}
@@ -223,7 +229,7 @@ export function Lesson1_2() {
         />
 
         <Text size="sm" c="dimmed">
-          <strong>{entryPoints.length} signals</strong> at ±{entryThreshold.toFixed(1)}σ.{' '}
+          <strong>{entryPoints.length}{" signals"}</strong>{" at \u00B1"}{entryThreshold.toFixed(1)}{"\u03C3. "}
           {entryThreshold < 1.5
             ? 'Very sensitive — lots of signals, but many may be false alarms.'
             : entryThreshold > 2.5
@@ -233,8 +239,8 @@ export function Lesson1_2() {
       </Stack>
 
       <Text c="dimmed" size="sm">
-        <strong>Up next:</strong> we&apos;ve been using simulated data. Let&apos;s see what
-        real crypto prices actually look like.
+        <strong>{"Up next:"}</strong>
+        {" we\u2019ve been using simulated data. Let\u2019s see what real crypto prices actually look like."}
       </Text>
     </Stack>
   );

@@ -12,8 +12,7 @@ interface GlossaryLinkProps {
 /**
  * Inline glossary term with hover tooltip showing the definition.
  *
- * No longer navigates away — definitions appear on hover so the user
- * stays in the lesson flow.
+ * Stays in the lesson flow — no page navigation.
  */
 export function GlossaryLink({ term, children }: GlossaryLinkProps) {
   const entry = GLOSSARY_TERMS.find(
@@ -29,15 +28,15 @@ export function GlossaryLink({ term, children }: GlossaryLinkProps) {
       w={320}
       withArrow
       position="top"
+      color="dark.6"
       transitionProps={{ transition: 'fade', duration: 150 }}
     >
       <Text
         component="span"
-        c="blue.3"
-        fw={600}
+        c="blue.4"
         style={{
           cursor: 'help',
-          borderBottom: '1px dotted var(--mantine-color-blue-3)',
+          borderBottom: '1px dotted var(--mantine-color-blue-5)',
         }}
       >
         {children ?? term}

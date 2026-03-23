@@ -91,6 +91,7 @@ export function AcademyWizard({ renderLesson }: AcademyWizardProps) {
               key={l.id}
               label={l.title}
               completedIcon={<IconCheck size={14} />}
+              allowStepSelect
             />
           ))}
         </Stepper>

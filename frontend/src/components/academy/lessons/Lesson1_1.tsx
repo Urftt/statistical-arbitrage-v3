@@ -34,8 +34,8 @@ export function Lesson1_1() {
     const n_i = noise(i);
     // Mean-reverting: strong pull-back toward 0
     revertingSpread.push(revertingSpread[i - 1] * 0.85 + n_i);
-    // Random walk: accumulates, no pull-back
-    randomSpread.push(randomSpread[i - 1] + n_i * 0.4);
+    // Random walk: accumulates with upward drift — clearly drifts away from zero
+    randomSpread.push(randomSpread[i - 1] + n_i * 0.3 + 0.06);
   }
 
   const spread = scenario === 'revert' ? revertingSpread : randomSpread;
@@ -44,35 +44,40 @@ export function Lesson1_1() {
     <Stack gap="xl">
       <Stack gap="md">
         <Text>
-          Imagine two coffee shops on the same street. Most days, a latte costs about
-          the same at both — say €4. Sometimes Shop A charges €4.50 while Shop B drops
-          to €3.80. The <em>gap</em> between their prices wobbles, but it always snaps
-          back to roughly zero.
+          {"Imagine two coffee shops on the same street. Most days, a latte costs about the same at both — say €4. Sometimes Shop A charges €4.50 while Shop B drops to €3.80. The "}
+          <em>gap</em>
+          {" between their prices wobbles, but it always snaps back to roughly zero."}
         </Text>
         <Text>
-          Now imagine you could <strong>sell</strong> at the expensive shop and{' '}
-          <strong>buy</strong> at the cheap one whenever that gap gets unusually wide.
-          When it snaps back, you pocket the difference. That&apos;s{' '}
-          <GlossaryLink term="Statistical Arbitrage" /> in a nutshell.
+          {"Now imagine you could "}
+          <strong>sell</strong>
+          {" at the expensive shop and "}
+          <strong>buy</strong>
+          {" at the cheap one whenever that gap gets unusually wide. When it snaps back, you pocket the difference. That's "}
+          <GlossaryLink term="Statistical Arbitrage" />
+          {" in a nutshell."}
         </Text>
       </Stack>
 
       <Stack gap="sm">
         <Title order={4}>Three things to remember</Title>
         <Text>
-          <strong>1. Mean reversion is the core bet.</strong> The price gap between
-          related assets tends to return to its average. What goes out, comes back.
-          That&apos;s <GlossaryLink term="Mean Reversion" />.
+          <strong>{"1. Mean reversion is the core bet."}</strong>
+          {" The price gap between related assets tends to return to its average. What goes out, comes back. That's "}
+          <GlossaryLink term="Mean Reversion" />
+          {"."}
         </Text>
         <Text>
-          <strong>2. It&apos;s statistical, not guaranteed.</strong> Unlike true arbitrage
-          (risk-free profit), stat arb relies on historical patterns that <em>might</em> break.
-          The word &quot;statistical&quot; means we&apos;re betting on probabilities.
+          <strong>{"2. It's statistical, not guaranteed."}</strong>
+          {" Unlike true arbitrage (risk-free profit), stat arb relies on historical patterns that "}
+          <em>might</em>
+          {" break. The word \"statistical\" means we're betting on probabilities."}
         </Text>
         <Text>
-          <strong>3. It&apos;s market-neutral.</strong> By going long one asset and short the
-          other, you&apos;re hedged against the overall market. You profit from
-          the <em>relationship</em>, not the trend.
+          <strong>{"3. It's market-neutral."}</strong>
+          {" By going long one asset and short the other, you're hedged against the overall market. You profit from the "}
+          <em>relationship</em>
+          {", not the trend."}
         </Text>
       </Stack>
 
@@ -80,9 +85,11 @@ export function Lesson1_1() {
       <Stack gap="sm">
         <Title order={4}>See it in action</Title>
         <Text size="sm" c="dimmed">
-          Toggle between the two scenarios. A <strong>mean-reverting</strong> spread
-          keeps returning to zero — that&apos;s tradeable. A <strong>random walk</strong> just
-          wanders off — not tradeable.
+          {"Toggle between the two scenarios. A "}
+          <strong>mean-reverting</strong>
+          {" spread keeps returning to zero — that's tradeable. A "}
+          <strong>random walk</strong>
+          {" just wanders off — not tradeable."}
         </Text>
 
         <SegmentedControl
@@ -131,8 +138,10 @@ export function Lesson1_1() {
       </Stack>
 
       <Text c="dimmed" size="sm">
-        <strong>Up next:</strong> how do we actually trade this? That&apos;s where{' '}
-        <GlossaryLink term="Pairs Trading" /> comes in.
+        <strong>Up next:</strong>
+        {" how do we actually trade this? That's where "}
+        <GlossaryLink term="Pairs Trading" />
+        {" comes in."}
       </Text>
     </Stack>
   );
