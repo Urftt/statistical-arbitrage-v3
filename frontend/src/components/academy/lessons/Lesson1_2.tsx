@@ -2,253 +2,240 @@
 
 import { useState } from 'react';
 import {
-  Alert,
   Box,
-  Card,
   Group,
   Slider,
   Stack,
   Text,
-  ThemeIcon,
   Title,
-  Timeline,
 } from '@mantine/core';
-import {
-  IconBulb,
-  IconArrowUp,
-  IconArrowDown,
-  IconArrowsExchange,
-  IconCash,
-} from '@tabler/icons-react';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
 
 /**
  * Lesson 1.2 — Pairs Trading Explained
  *
- * Shows how two assets form a tradeable pair, introduces the concept of
- * going long/short simultaneously, and has an interactive P&L simulator.
+ * Deeper dive into pairs trading mechanics: the full trade lifecycle,
+ * why both sides matter, and an interactive signal chart.
  */
 export function Lesson1_2() {
-  // Interactive: user adjusts spread deviation, sees position + P&L
-  const [spreadDeviation, setSpreadDeviation] = useState(2);
+  const [entryThreshold, setEntryThreshold] = useState(2.0);
 
-  // Simulate two "price" series that are cointegrated
-  const n = 120;
+  // Simulate a mean-reverting spread with clear signals
+  const n = 200;
   const timestamps = Array.from({ length: n }, (_, i) => i);
 
-  // Common trend + individual noise
-  const trend = timestamps.map((t) => 100 + t * 0.3 + Math.sin(t / 10) * 5);
-  const assetA = trend.map(
-    (v, i) => v + Math.sin(i * 0.5) * 3 + Math.sin(i * 127.1 + 311.7) * 1.5
-  );
-  const assetB = trend.map(
-    (v, i) =>
-      v * 0.95 +
-      5 +
-      Math.sin(i * 0.5 + 1) * 3 +
-      Math.sin(i * 269.5 + 183.3) * 1.5
-  );
+  const spread: number[] = [0];
+  for (let i = 1; i < n; i++) {
+    const noise = Math.sin(i * 127.1 + 311.7) * 0.6 + Math.cos(i * 73.3) * 0.4;
+    spread.push(spread[i - 1] * 0.92 + noise);
+  }
 
-  // Calculate simple spread
-  const spread = assetA.map((a, i) => a - assetB[i]);
-  const spreadMean = spread.reduce((s, v) => s + v, 0) / spread.length;
-  const spreadStd = Math.sqrt(
-    spread.reduce((s, v) => s + (v - spreadMean) ** 2, 0) / spread.length
-  );
+  // Calculate rolling stats for z-score
+  const window = 30;
+  const zscore: (number | null)[] = [];
+  for (let i = 0; i < n; i++) {
+    if (i < window) {
+      zscore.push(null);
+      continue;
+    }
+    const slice = spread.slice(i - window, i);
+    const mean = slice.reduce((a, b) => a + b, 0) / window;
+    const std = Math.sqrt(slice.reduce((a, b) => a + (b - mean) ** 2, 0) / window);
+    zscore.push(std > 0 ? (spread[i] - mean) / std : 0);
+  }
 
-  // P&L calculation for the interactive section
-  const entrySpread = spreadMean + spreadDeviation * spreadStd;
-  const exitSpread = spreadMean;
-  const profit = entrySpread - exitSpread;
+  // Find signal points for annotations
+  const entryPoints: { x: number; y: number; type: 'long' | 'short' }[] = [];
+  for (let i = window; i < n; i++) {
+    const z = zscore[i] as number;
+    const zPrev = zscore[i - 1] as number;
+    if (z <= -entryThreshold && zPrev > -entryThreshold) {
+      entryPoints.push({ x: i, y: z, type: 'long' });
+    } else if (z >= entryThreshold && zPrev < entryThreshold) {
+      entryPoints.push({ x: i, y: z, type: 'short' });
+    }
+  }
 
   return (
     <Stack gap="xl">
-      {/* How pairs trading works */}
-      <Card padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Title order={4}>How Pairs Trading Works</Title>
-          <Text>
-            <GlossaryLink term="Pairs Trading" /> is the most common form of stat arb.
-            The idea is simple: find two assets that historically move together, wait
-            for them to diverge, then bet on convergence.
-          </Text>
-
-          <Timeline active={3} bulletSize={28} lineWidth={2} mt="md">
-            <Timeline.Item
-              bullet={<Text size="xs" fw={700}>1</Text>}
-              title="Find a pair"
-            >
-              <Text size="sm" c="dimmed">
-                Identify two assets with a stable long-run relationship.
-                In crypto, this might be ETH and ETC — both Ethereum-based,
-                influenced by similar market forces.
-              </Text>
-            </Timeline.Item>
-            <Timeline.Item
-              bullet={<Text size="xs" fw={700}>2</Text>}
-              title="Wait for divergence"
-            >
-              <Text size="sm" c="dimmed">
-                Monitor the price gap (the{' '}
-                <GlossaryLink term="Spread">spread</GlossaryLink>). When it
-                becomes unusually wide — say 2 standard deviations from the mean —
-                that&apos;s your signal.
-              </Text>
-            </Timeline.Item>
-            <Timeline.Item
-              bullet={<Text size="xs" fw={700}>3</Text>}
-              title="Open both sides"
-            >
-              <Text size="sm" c="dimmed">
-                <strong>Short</strong> the outperformer (sell high) and{' '}
-                <strong>long</strong> the underperformer (buy low). You&apos;re now
-                market-neutral — if both crash, your short offsets your long.
-              </Text>
-            </Timeline.Item>
-            <Timeline.Item
-              bullet={<Text size="xs" fw={700}>4</Text>}
-              title="Close on convergence"
-            >
-              <Text size="sm" c="dimmed">
-                When the spread reverts to normal, close both positions. The
-                profit comes from the gap narrowing, regardless of market direction.
-              </Text>
-            </Timeline.Item>
-          </Timeline>
-        </Stack>
-      </Card>
-
-      {/* Visual: two assets moving together */}
-      <Card padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Title order={4}>Two Assets, One Relationship</Title>
-          <Text size="sm" c="dimmed">
-            These two simulated crypto assets share a common trend but diverge
-            temporarily. Notice how the gap between them keeps opening and
-            closing — each divergence is a potential trade.
-          </Text>
-          <PlotlyChart
-            data={[
-              {
-                x: timestamps,
-                y: assetA,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'Asset A',
-                line: { color: '#339AF0', width: 2 },
-              },
-              {
-                x: timestamps,
-                y: assetB,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'Asset B',
-                line: { color: '#51CF66', width: 2 },
-              },
-            ]}
-            layout={{
-              title: 'Two Related Assets Over Time',
-              xaxis: { title: { text: 'Time' } },
-              yaxis: { title: { text: 'Price (€)' } },
-              height: 300,
-              showlegend: true,
-              legend: { x: 0, y: 1.15, orientation: 'h' },
-            }}
-          />
-        </Stack>
-      </Card>
-
-      {/* Interactive P&L simulator */}
-      <Card padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Title order={4}>Try it: Your First Pairs Trade</Title>
-          <Text size="sm" c="dimmed">
-            Adjust how wide the spread gets before you enter a trade. A wider
-            entry means more profit per trade, but fewer opportunities.
-          </Text>
-
-          <Box>
-            <Text size="sm" fw={600} mb="xs">
-              Entry at {spreadDeviation.toFixed(1)}σ from the mean
-            </Text>
-            <Slider
-              value={spreadDeviation}
-              onChange={setSpreadDeviation}
-              min={0.5}
-              max={3.5}
-              step={0.1}
-              marks={[
-                { value: 1, label: '1σ' },
-                { value: 2, label: '2σ' },
-                { value: 3, label: '3σ' },
-              ]}
-              label={(v) => `${v.toFixed(1)}σ`}
-            />
-          </Box>
-
-          <Group grow mt="md">
-            <Card padding="md" withBorder bg="dark.6">
-              <Group gap="xs" mb={4}>
-                <ThemeIcon size="sm" variant="light" color="red">
-                  <IconArrowDown size={14} />
-                </ThemeIcon>
-                <Text size="sm" fw={600}>
-                  Short (Sell) Asset A
-                </Text>
-              </Group>
-              <Text size="xs" c="dimmed">
-                at €{(100 + spreadDeviation * spreadStd / 2).toFixed(2)} — the outperformer
-              </Text>
-            </Card>
-            <Card padding="md" withBorder bg="dark.6">
-              <Group gap="xs" mb={4}>
-                <ThemeIcon size="sm" variant="light" color="green">
-                  <IconArrowUp size={14} />
-                </ThemeIcon>
-                <Text size="sm" fw={600}>
-                  Long (Buy) Asset B
-                </Text>
-              </Group>
-              <Text size="xs" c="dimmed">
-                at €{(100 - spreadDeviation * spreadStd / 2).toFixed(2)} — the underperformer
-              </Text>
-            </Card>
-          </Group>
-
-          <Card padding="md" withBorder bg="dark.6">
-            <Group gap="xs" mb={4}>
-              <ThemeIcon size="sm" variant="light" color="yellow">
-                <IconCash size={14} />
-              </ThemeIcon>
-              <Text size="sm" fw={600}>
-                Profit when spread reverts to mean
-              </Text>
-            </Group>
-            <Text size="lg" fw={700} c={profit > 0 ? 'green' : 'red'}>
-              €{profit.toFixed(2)} per unit
-            </Text>
-            <Text size="xs" c="dimmed">
-              The wider you wait, the more you make — but the rarer the opportunity.
-            </Text>
-          </Card>
-        </Stack>
-      </Card>
-
-      {/* Key takeaway */}
-      <Alert
-        variant="light"
-        color="blue"
-        title="Key Takeaway"
-        icon={<IconBulb size={20} />}
-      >
-        <Text size="sm">
-          Pairs trading is <strong>market-neutral</strong>: you profit from the spread
-          between two assets, not from market direction. You always hold two opposing
-          positions. The challenge is finding pairs where the spread reliably reverts.
-          Next up: let&apos;s look at <em>real</em> crypto data and see this in action.
+      <Stack gap="md">
+        <Text>
+          <GlossaryLink term="Pairs Trading" /> is the most common form of stat arb.
+          You find two assets that move together, wait for them to diverge, then bet
+          on them converging again. The key insight: you always hold <strong>two
+          opposing positions</strong> simultaneously.
         </Text>
-      </Alert>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>The anatomy of a pairs trade</Title>
+
+        <Text>
+          <strong>Step 1: Find a pair.</strong> You need two assets with a stable
+          long-run relationship. Not just &quot;they both go up&quot; — that&apos;s{' '}
+          <GlossaryLink term="Correlation" /> and it&apos;s not enough. You need the{' '}
+          <em>gap</em> between them to be predictable. In crypto, ETH and ETC
+          are a classic example — both Ethereum-based, influenced by similar forces.
+        </Text>
+
+        <Text>
+          <strong>Step 2: Measure the gap.</strong> This gap is called the{' '}
+          <GlossaryLink term="Spread" />. We standardize it into a{' '}
+          <GlossaryLink term="Z-Score" /> — the number of standard deviations from
+          its average. A z-score of +2 means the gap is unusually wide. A z-score of
+          -2 means it&apos;s unusually narrow.
+        </Text>
+
+        <Text>
+          <strong>Step 3: Trade the extremes.</strong> When the z-score hits +2σ (gap
+          too wide), you <em>short</em> the outperformer and <em>long</em> the
+          underperformer. You&apos;re betting the gap will narrow. When it does, you
+          close both sides and pocket the difference.
+        </Text>
+
+        <Text>
+          <strong>Step 4: Stay market-neutral.</strong> Because you&apos;re long one asset
+          and short the other, a market crash affects both sides roughly equally. Your
+          profit comes from the <em>relationship</em> normalizing, not from the market
+          going up or down. That&apos;s the beauty of it.
+        </Text>
+      </Stack>
+
+      {/* Why both sides? */}
+      <Stack gap="sm">
+        <Title order={4}>Why you need both sides</Title>
+        <Text>
+          Say ETH is at €3,000 and ETC is at €25. Their spread is unusually wide —
+          ETH has surged ahead. You could just buy ETC and hope it catches up. But
+          what if the whole market crashes? ETC goes to €15 and you&apos;ve lost 40%.
+        </Text>
+        <Text>
+          With pairs trading, you <em>also</em> short ETH. If the market crashes, your
+          short on ETH makes money while your long on ETC loses — roughly a wash. But
+          when the spread normalizes (ETH drops relative to ETC, or ETC rises relative
+          to ETH, or both), <em>that</em> is where your profit comes from.
+        </Text>
+        <Text c="dimmed" size="sm">
+          This is what &quot;market-neutral&quot; means in practice. You remove the market
+          direction risk and isolate the relationship risk.
+        </Text>
+      </Stack>
+
+      {/* Interactive z-score chart */}
+      <Stack gap="sm">
+        <Title order={4}>Try it: spot the trade signals</Title>
+        <Text size="sm" c="dimmed">
+          This is a simulated z-score of a spread. Adjust the entry threshold to see
+          how it affects when signals fire. More extreme thresholds = fewer but
+          higher-conviction trades.
+        </Text>
+
+        <Box>
+          <Text size="sm" mb="xs">
+            Entry threshold: <strong>±{entryThreshold.toFixed(1)}σ</strong>
+          </Text>
+          <Slider
+            value={entryThreshold}
+            onChange={setEntryThreshold}
+            min={1.0}
+            max={3.0}
+            step={0.1}
+            marks={[
+              { value: 1.0, label: '1σ' },
+              { value: 1.5, label: '1.5σ' },
+              { value: 2.0, label: '2σ' },
+              { value: 2.5, label: '2.5σ' },
+              { value: 3.0, label: '3σ' },
+            ]}
+            label={(v) => `±${v.toFixed(1)}σ`}
+          />
+        </Box>
+
+        <PlotlyChart
+          data={[
+            {
+              x: timestamps,
+              y: zscore,
+              type: 'scatter',
+              mode: 'lines',
+              name: 'Z-Score',
+              line: { color: '#339AF0', width: 1.5 },
+              connectgaps: false,
+            },
+            // Upper threshold
+            {
+              x: [0, n - 1],
+              y: [entryThreshold, entryThreshold],
+              type: 'scatter',
+              mode: 'lines',
+              name: `+${entryThreshold.toFixed(1)}σ (Short entry)`,
+              line: { color: '#FF6B6B', width: 1, dash: 'dash' },
+            },
+            // Lower threshold
+            {
+              x: [0, n - 1],
+              y: [-entryThreshold, -entryThreshold],
+              type: 'scatter',
+              mode: 'lines',
+              name: `−${entryThreshold.toFixed(1)}σ (Long entry)`,
+              line: { color: '#51CF66', width: 1, dash: 'dash' },
+            },
+            // Zero line
+            {
+              x: [0, n - 1],
+              y: [0, 0],
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#909296', width: 0.5, dash: 'dot' },
+              showlegend: false,
+            },
+            // Entry markers
+            ...(entryPoints.length > 0
+              ? [
+                  {
+                    x: entryPoints.map((p) => p.x),
+                    y: entryPoints.map((p) => p.y),
+                    type: 'scatter' as const,
+                    mode: 'markers' as const,
+                    name: 'Trade signals',
+                    marker: {
+                      size: 8,
+                      color: entryPoints.map((p) =>
+                        p.type === 'long' ? '#51CF66' : '#FF6B6B'
+                      ),
+                      symbol: entryPoints.map((p) =>
+                        p.type === 'long' ? 'triangle-up' : 'triangle-down'
+                      ),
+                    },
+                  },
+                ]
+              : []),
+          ]}
+          layout={{
+            title: `Z-Score with ±${entryThreshold.toFixed(1)}σ Entry — ${entryPoints.length} signals`,
+            xaxis: { title: { text: 'Time' } },
+            yaxis: { title: { text: 'Z-Score (σ)' } },
+            height: 400,
+            showlegend: true,
+            legend: { x: 0, y: -0.2, orientation: 'h' },
+          }}
+        />
+
+        <Text size="sm" c="dimmed">
+          <strong>{entryPoints.length} signals</strong> at ±{entryThreshold.toFixed(1)}σ.{' '}
+          {entryThreshold < 1.5
+            ? 'Very sensitive — lots of signals, but many may be false alarms.'
+            : entryThreshold > 2.5
+            ? 'Very conservative — few signals, but each one is high-conviction.'
+            : 'A balanced threshold — reasonable trade frequency with decent conviction.'}
+        </Text>
+      </Stack>
+
+      <Text c="dimmed" size="sm">
+        <strong>Up next:</strong> we&apos;ve been using simulated data. Let&apos;s see what
+        real crypto prices actually look like.
+      </Text>
     </Stack>
   );
 }

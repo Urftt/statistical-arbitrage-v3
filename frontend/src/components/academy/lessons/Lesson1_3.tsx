@@ -3,46 +3,52 @@
 import { useState, useEffect } from 'react';
 import {
   Alert,
-  Card,
-  Group,
+  Box,
   Loader,
   SegmentedControl,
   Stack,
   Text,
-  ThemeIcon,
   Title,
   Center,
 } from '@mantine/core';
-import { IconBulb, IconChartLine } from '@tabler/icons-react';
+import { IconAlertCircle } from '@tabler/icons-react';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
 import { fetchOHLCV, type OHLCVResponse } from '@/lib/api';
 
-/** Pre-selected example pairs that show interesting behaviour. */
 const EXAMPLE_PAIRS = [
   {
     label: 'ETH × ETC',
     asset1: 'ETH/EUR',
     asset2: 'ETC/EUR',
-    description: 'Both Ethereum-based — share technology and community overlap',
+    description: 'Both Ethereum-based — share technology and community overlap.',
+    commentary:
+      'Notice how the lines track each other? The gap opens and closes but stays bounded. This co-movement is exactly what we need.',
+    commentaryColor: 'teal',
   },
   {
     label: 'BTC × LTC',
     asset1: 'BTC/EUR',
     asset2: 'LTC/EUR',
-    description: 'Litecoin was forked from Bitcoin — historically correlated',
+    description: 'Litecoin was forked from Bitcoin — historically correlated.',
+    commentary:
+      'These trend in the same direction, but the relationship is looser. The gap sometimes widens for extended periods.',
+    commentaryColor: 'yellow',
   },
   {
     label: 'BTC × XRP',
     asset1: 'BTC/EUR',
     asset2: 'XRP/EUR',
-    description: 'Very different assets — BTC (store of value) vs XRP (payments)',
+    description: 'Fundamentally different — BTC (store of value) vs XRP (payments).',
+    commentary:
+      'See how their paths diverge with no clear pull-back? This pair would be risky for stat arb — the gap might just keep growing.',
+    commentaryColor: 'orange',
   },
 ] as const;
 
 function normalizeToPercent(prices: number[]): number[] {
   const first = prices[0];
-  if (first === 0) return prices;
+  if (!first) return prices;
   return prices.map((p) => ((p - first) / first) * 100);
 }
 
@@ -50,13 +56,6 @@ function epochToDate(ts: number): string {
   return new Date(ts).toISOString().split('T')[0];
 }
 
-/**
- * Lesson 1.3 — Your First Look at Real Data
- *
- * Loads real OHLCV data from the API and shows normalized price series
- * for pre-selected pairs. User can toggle between pairs to see which
- * ones "move together" and which don't.
- */
 export function Lesson1_3() {
   const [pairIndex, setPairIndex] = useState(0);
   const [data1, setData1] = useState<OHLCVResponse | null>(null);
@@ -70,6 +69,8 @@ export function Lesson1_3() {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setData1(null);
+    setData2(null);
 
     Promise.all([
       fetchOHLCV(pair.asset1, '1d', 180),
@@ -85,46 +86,37 @@ export function Lesson1_3() {
         setError(
           err instanceof Error
             ? err.message
-            : 'Failed to load data. Is the API running?'
+            : 'Failed to load data'
         );
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [pair.asset1, pair.asset2]);
 
   const hasData = data1 && data2 && !error;
-
-  // Normalize both to % change from first point
-  const dates1 = data1?.timestamps.map(epochToDate) ?? [];
+  const dates = data1?.timestamps.map(epochToDate) ?? [];
   const norm1 = data1 ? normalizeToPercent(data1.close) : [];
   const norm2 = data2 ? normalizeToPercent(data2.close) : [];
 
   return (
     <Stack gap="xl">
-      {/* Context */}
-      <Card padding="lg" radius="md" withBorder>
-        <Stack gap="md">
-          <Title order={4}>From Theory to Reality</Title>
-          <Text>
-            You&apos;ve seen how stat arb works in theory. Now let&apos;s look at{' '}
-            <strong>real crypto prices</strong> and see which pairs actually move
-            together. We&apos;ll normalize prices to percentage change so we can
-            compare assets at different price levels (BTC at €50,000 vs. LTC at €80).
-          </Text>
-          <Text size="sm" c="dimmed">
-            Switch between the three pairs below. Look for pairs where the lines
-            track each other closely — that&apos;s the co-movement we need for{' '}
-            <GlossaryLink term="Pairs Trading">pairs trading</GlossaryLink>.
-          </Text>
-        </Stack>
-      </Card>
+      <Stack gap="md">
+        <Text>
+          You&apos;ve seen how stat arb works with simulated data. Now let&apos;s look at{' '}
+          <strong>real crypto prices</strong>. We&apos;ll normalize them to percentage change
+          so we can compare assets at completely different price levels (BTC at €50,000
+          vs. LTC at €80).
+        </Text>
+        <Text>
+          Switch between the three pairs below. Your eye should be looking for
+          one thing: do the lines <em>track each other</em>? That co-movement is the
+          raw material for <GlossaryLink term="Pairs Trading" />.
+        </Text>
+      </Stack>
 
-      {/* Pair selector */}
       <SegmentedControl
         value={String(pairIndex)}
         onChange={(v) => setPairIndex(Number(v))}
@@ -139,136 +131,96 @@ export function Lesson1_3() {
         {pair.description}
       </Text>
 
-      {/* Chart */}
-      <Card padding="lg" radius="md" withBorder>
-        {loading && (
-          <Center py="xl">
-            <Loader size="md" />
-            <Text ml="sm" c="dimmed">
-              Loading price data...
-            </Text>
-          </Center>
-        )}
+      {/* Data loading states */}
+      {loading && (
+        <Center py="xl">
+          <Loader size="sm" mr="sm" />
+          <Text c="dimmed" size="sm">Loading price data...</Text>
+        </Center>
+      )}
 
-        {error && (
-          <Alert color="red" variant="light" title="Could not load data">
-            <Text size="sm">{error}</Text>
-            <Text size="xs" c="dimmed" mt="xs">
-              Make sure the API server is running:{' '}
-              <code>uv run python run_api.py</code>
-            </Text>
-          </Alert>
-        )}
-
-        {hasData && !loading && (
-          <Stack gap="md">
-            <PlotlyChart
-              data={[
-                {
-                  x: dates1,
-                  y: norm1,
-                  type: 'scatter',
-                  mode: 'lines',
-                  name: pair.asset1.split('/')[0],
-                  line: { color: '#339AF0', width: 2 },
-                },
-                {
-                  x: dates1.slice(0, norm2.length),
-                  y: norm2,
-                  type: 'scatter',
-                  mode: 'lines',
-                  name: pair.asset2.split('/')[0],
-                  line: { color: '#51CF66', width: 2 },
-                },
-              ]}
-              layout={{
-                title: `${pair.label} — Normalized Price Change (Last 180 Days)`,
-                xaxis: { title: { text: 'Date' } },
-                yaxis: { title: { text: '% Change from Start' } },
-                height: 400,
-                showlegend: true,
-                legend: { x: 0, y: 1.15, orientation: 'h' },
-              }}
-            />
-
-            {pairIndex === 0 && (
-              <Alert variant="light" color="teal">
-                <Text size="sm">
-                  <strong>ETH & ETC</strong> share Ethereum DNA — notice how they
-                  tend to move together? The gap opens and closes. This
-                  co-movement is exactly what we need for pairs trading.
-                </Text>
-              </Alert>
-            )}
-            {pairIndex === 1 && (
-              <Alert variant="light" color="teal">
-                <Text size="sm">
-                  <strong>BTC & LTC</strong> are historically linked — Litecoin was
-                  forked from Bitcoin. They often trend in the same direction,
-                  though the relationship has weakened over the years.
-                </Text>
-              </Alert>
-            )}
-            {pairIndex === 2 && (
-              <Alert variant="light" color="orange">
-                <Text size="sm">
-                  <strong>BTC & XRP</strong> are fundamentally different assets.
-                  Notice how their percentage changes often diverge with no clear
-                  pull-back? This pair would be <em>risky</em> for stat arb — the
-                  gap might keep widening.
-                </Text>
-              </Alert>
-            )}
-          </Stack>
-        )}
-      </Card>
-
-      {/* What did we learn */}
-      <Alert
-        variant="light"
-        color="blue"
-        title="Key Takeaway"
-        icon={<IconBulb size={20} />}
-      >
-        <Text size="sm">
-          Not all pairs are created equal. Some assets genuinely move together (ETH & ETC),
-          while others just happen to trend in the same direction sometimes (BTC & XRP).
-          Visually comparing normalized prices gives you <strong>intuition</strong>, but
-          we need a rigorous statistical test to tell them apart. That test is called{' '}
-          <GlossaryLink term="Cointegration">cointegration</GlossaryLink> — and it&apos;s
-          the topic of Chapter 2.
-        </Text>
-      </Alert>
-
-      {/* Chapter 1 summary */}
-      <Card padding="lg" radius="md" withBorder bg="dark.6">
-        <Stack gap="sm">
-          <Group gap="sm">
-            <ThemeIcon size="lg" variant="light" color="green">
-              <IconChartLine size={20} />
-            </ThemeIcon>
-            <Title order={4}>Chapter 1 Complete!</Title>
-          </Group>
+      {error && (
+        <Alert
+          color="yellow"
+          variant="light"
+          icon={<IconAlertCircle size={18} />}
+          title="Could not load live data"
+        >
           <Text size="sm">
-            You now understand the big picture:
+            The API server doesn&apos;t seem to be running, or no cached data is available
+            for these pairs.
           </Text>
-          <Stack gap={4} ml="md">
-            <Text size="sm">
-              <strong>1.</strong> Stat arb profits from temporary mispricings between related assets
-            </Text>
-            <Text size="sm">
-              <strong>2.</strong> Pairs trading is market-neutral — long one, short the other
-            </Text>
-            <Text size="sm">
-              <strong>3.</strong> Real crypto pairs show varying degrees of co-movement
-            </Text>
-          </Stack>
-          <Text size="sm" c="dimmed" mt="xs">
-            Next chapter: we&apos;ll learn how to <em>measure</em> whether two assets
-            truly belong together — correlation vs. cointegration.
+          <Text size="sm" mt="xs" c="dimmed">
+            To fix: run <code>uv run python run_api.py</code> in a terminal. The API
+            needs cached OHLCV data in the <code>data/</code> directory.
+          </Text>
+          <Text size="sm" mt="xs" c="dimmed">
+            Don&apos;t worry — you can continue to the next chapter. We&apos;ll use this
+            data in later lessons.
+          </Text>
+        </Alert>
+      )}
+
+      {hasData && !loading && (
+        <Stack gap="md">
+          <PlotlyChart
+            data={[
+              {
+                x: dates,
+                y: norm1,
+                type: 'scatter',
+                mode: 'lines',
+                name: pair.asset1.split('/')[0],
+                line: { color: '#339AF0', width: 2 },
+              },
+              {
+                x: dates.slice(0, norm2.length),
+                y: norm2,
+                type: 'scatter',
+                mode: 'lines',
+                name: pair.asset2.split('/')[0],
+                line: { color: '#51CF66', width: 2 },
+              },
+            ]}
+            layout={{
+              title: `${pair.label} — % Change (Last 180 Days)`,
+              xaxis: { title: { text: 'Date' } },
+              yaxis: { title: { text: '% Change' } },
+              height: 400,
+              showlegend: true,
+              legend: { x: 0, y: 1.12, orientation: 'h' },
+            }}
+          />
+
+          <Text size="sm" c={pair.commentaryColor}>
+            {pair.commentary}
           </Text>
         </Stack>
-      </Card>
+      )}
+
+      {/* Chapter 1 wrap-up */}
+      <Stack gap="sm" mt="md">
+        <Title order={4}>Chapter 1 wrap-up</Title>
+        <Text>
+          You now have the big picture:
+        </Text>
+        <Text>
+          <strong>1.</strong> Stat arb profits from temporary mispricings between related assets.
+        </Text>
+        <Text>
+          <strong>2.</strong> Pairs trading is market-neutral — long one, short the other.
+        </Text>
+        <Text>
+          <strong>3.</strong> Real pairs show varying degrees of co-movement — some are tradeable, some aren&apos;t.
+        </Text>
+        <Text c="dimmed" size="sm" mt="xs">
+          But how do we <em>measure</em> whether two assets truly belong together?
+          Eyeballing charts isn&apos;t rigorous enough. In Chapter 2, we&apos;ll learn the
+          difference between <GlossaryLink term="Correlation" /> and{' '}
+          <GlossaryLink term="Cointegration" /> — and why only one of them matters
+          for pairs trading.
+        </Text>
+      </Stack>
     </Stack>
   );
 }
