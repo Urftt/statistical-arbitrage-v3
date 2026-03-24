@@ -92,12 +92,12 @@ export function Lesson4_4() {
 
   const overfitLabel =
     numParams <= 2
-      ? 'Simple model \u2014 in-sample and out-of-sample perform similarly'
+      ? 'Simple model — in-sample and out-of-sample perform similarly'
       : numParams <= 4
-        ? 'Moderate complexity \u2014 slight gap appearing between IS and OOS'
+        ? 'Moderate complexity — slight gap appearing between IS and OOS'
         : numParams <= 7
-          ? 'Overfitting risk \u2014 in-sample looks great but OOS is deteriorating'
-          : 'Severely overfit \u2014 amazing in-sample, terrible out-of-sample';
+          ? 'Overfitting risk — in-sample looks great but OOS is deteriorating'
+          : 'Severely overfit — amazing in-sample, terrible out-of-sample';
 
   // Generate the Sharpe comparison across all parameter counts
   const sharpeComparison = useMemo(() => {
@@ -135,26 +135,15 @@ export function Lesson4_4() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          <GlossaryLink term="Overfitting" />
-          {" is the most dangerous trap in quantitative trading. It happens when your strategy is tuned so precisely to historical data that it captures "}
-          <em>{"noise"}</em>
-          {" instead of genuine patterns. The result? A backtest that looks incredible \u2014 but a strategy that fails completely on new data."}
-        </Text>
-        <Text>
-          {"The more parameters you optimize (entry threshold, exit threshold, lookback window, position size, stop-loss, etc.), the easier it is to fit the noise. Drag the slider to see this in action."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to add more optimized parameters and watch "}
+        <GlossaryLink term="Overfitting" />
+        {" in action — in-sample improves while out-of-sample collapses."}
+      </Text>
 
       <Stack gap="sm">
-        <Title order={4}>{"The overfitting slider"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Increase the number of optimized parameters. Watch the in-sample equity curve get better and better while the out-of-sample curve gets worse and worse."}
-        </Text>
-
         <Text size="sm" fw={600} c={isSeverelyOverfit ? 'red.4' : isOverfit ? 'orange.4' : 'teal.4'}>
-          {numParams}{" parameter"}{numParams > 1 ? 's' : ''}{" \u2014 "}{overfitLabel}
+          {numParams}{" parameter"}{numParams > 1 ? 's' : ''}{" — "}{overfitLabel}
         </Text>
 
         <Slider
@@ -205,7 +194,7 @@ export function Lesson4_4() {
           layout={{
             title: `${numParams} Parameter${numParams > 1 ? 's' : ''}: In-Sample vs Out-of-Sample`,
             xaxis: { title: { text: 'Time' } },
-            yaxis: { title: { text: 'Portfolio Value (\u20AC)' } },
+            yaxis: { title: { text: 'Portfolio Value (€)' } },
             height: 350,
             showlegend: true,
             legend: { x: 0, y: 1.15, orientation: 'h' },
@@ -233,8 +222,8 @@ export function Lesson4_4() {
             <Text span fw={600}>{(outOfSampleDD * 100).toFixed(1)}%</Text>
           </Text>
           <Text size="sm" c={isSeverelyOverfit ? 'red.4' : isOverfit ? 'orange.4' : 'teal.4'} fw={600}>
-            {"Sharpe gap (IS \u2212 OOS): "}{sharpeGap.toFixed(2)}
-            {sharpeGap > 2 ? ' \u2014 huge red flag!' : sharpeGap > 1 ? ' \u2014 concerning' : ' \u2014 acceptable'}
+            {"Sharpe gap (IS − OOS): "}{sharpeGap.toFixed(2)}
+            {sharpeGap > 2 ? ' — huge red flag!' : sharpeGap > 1 ? ' — concerning' : ' — acceptable'}
           </Text>
         </Stack>
       </Stack>
@@ -292,7 +281,17 @@ export function Lesson4_4() {
           }}
         />
         <Text size="sm" c="dimmed">
-          {"The blue line keeps climbing \u2014 more parameters always improve the historical fit. But the purple line peaks early and then collapses. The growing gap between them is the hallmark of overfitting."}
+          {"The blue line keeps climbing — more parameters always improve the historical fit. But the purple line peaks early and then collapses. The growing gap between them is the hallmark of overfitting."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>{"Why this happens"}</Title>
+        <Text>
+          <GlossaryLink term="Overfitting" />
+          {" occurs when your strategy is tuned so precisely to historical data that it captures "}
+          <em>{"noise"}</em>
+          {" instead of genuine patterns. The more parameters you optimize (entry threshold, exit threshold, lookback window, position size, stop-loss, etc.), the easier it is to fit the noise."}
         </Text>
       </Stack>
 
@@ -301,14 +300,14 @@ export function Lesson4_4() {
         <Text>
           {"In machine learning, this is called the "}
           <strong>{"bias-variance tradeoff"}</strong>
-          {". A simple model (few parameters) has high bias \u2014 it might miss real patterns. A complex model (many parameters) has high variance \u2014 it fits noise that won't repeat."}
+          {". A simple model (few parameters) has high bias — it might miss real patterns. A complex model (many parameters) has high variance — it fits noise that won't repeat."}
         </Text>
         <Text>
           {"In trading terms: "}
           <strong>{"bias"}</strong>
           {" means your strategy is too simple to capture the real edge. "}
-          <strong>{"Variance"}</strong>
-          {" means your strategy is so complex that it's memorizing historical accidents. The sweet spot is 2\u20134 parameters for most pairs trading strategies."}
+          <strong>{"variance"}</strong>
+          {" means your strategy is so complex that it's memorizing historical accidents. The sweet spot is 2–4 parameters for most pairs trading strategies."}
         </Text>
         <Text>
           {"Practical defenses against overfitting:"}
@@ -349,7 +348,7 @@ export function Lesson4_4() {
           <strong>{"2."}</strong>
           {" "}
           <GlossaryLink term="Backtesting" />
-          {" replays your strategy on historical data. Each trade follows the state machine: flat \u2192 position \u2192 flat."}
+          {" replays your strategy on historical data. Each trade follows the state machine: flat → position → flat."}
         </Text>
         <Text>
           <strong>{"3."}</strong>
@@ -370,7 +369,7 @@ export function Lesson4_4() {
           {" is the silent killer. Always compare in-sample vs. out-of-sample performance, and keep your models simple."}
         </Text>
         <Text c="dimmed" size="sm" mt="xs">
-          {"In the next chapter, we'll put it all together with walk-forward optimization and paper trading \u2014 the final steps before going live."}
+          {"In the next chapter, we'll put it all together with walk-forward optimization and paper trading — the final steps before going live."}
         </Text>
       </Stack>
     </Stack>

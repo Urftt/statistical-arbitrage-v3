@@ -13,8 +13,7 @@ import PlotlyChart from '@/components/charts/PlotlyChart';
 /**
  * Lesson 5.1 — The Research Pipeline
  *
- * Visual flow through the 5 pipeline stages: Scan, Analyze, Research,
- * Backtest, Optimize. Each phase shows a mini interactive example.
+ * Chart-first: phase explorer immediately visible, explanation below.
  */
 
 const PHASES = [
@@ -69,18 +68,15 @@ export function Lesson5_1() {
   const n = 100;
   const timestamps = useMemo(() => Array.from({ length: n }, (_, i) => i), []);
 
-  // Deterministic noise
   const noise = (i: number, seed: number) =>
     Math.sin(i * 127.1 + seed) * 0.8 + Math.cos(i * 269.5 + seed * 0.3) * 0.4;
 
-  // Phase 0: Scan — bar chart of p-values for candidate pairs
   const scanData = useMemo(() => {
     const pairs = ['ETH/ETC', 'BTC/LTC', 'SOL/AVAX', 'ADA/DOT', 'XRP/XLM', 'LINK/UNI', 'MATIC/ARB', 'DOGE/SHIB'];
     const pValues = pairs.map((_, i) => Math.abs(Math.sin(i * 3.7 + 1.2) * 0.08 + Math.cos(i * 2.1) * 0.04));
     return { pairs, pValues };
   }, []);
 
-  // Phase 1: Analyze — spread chart
   const spreadData = useMemo(() => {
     const values: number[] = [0];
     for (let i = 1; i < n; i++) {
@@ -89,14 +85,12 @@ export function Lesson5_1() {
     return values;
   }, []);
 
-  // Phase 2: Research — z-score series
   const zScoreData = useMemo(() => {
     const mean = spreadData.reduce((s, v) => s + v, 0) / spreadData.length;
     const std = Math.sqrt(spreadData.reduce((s, v) => s + (v - mean) ** 2, 0) / spreadData.length);
     return spreadData.map((v) => (std > 0 ? (v - mean) / std : 0));
   }, [spreadData]);
 
-  // Phase 3: Backtest — equity curve
   const equityCurve = useMemo(() => {
     const equity: number[] = [1000];
     for (let i = 1; i < n; i++) {
@@ -106,7 +100,6 @@ export function Lesson5_1() {
     return equity;
   }, []);
 
-  // Phase 4: Optimize — heatmap data
   const heatmapData = useMemo(() => {
     const lookbacks = [15, 20, 25, 30, 35, 40];
     const entryThresholds = [1.5, 1.75, 2.0, 2.25, 2.5];
@@ -303,18 +296,10 @@ export function Lesson5_1() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"Statistical arbitrage isn't about gut feelings or single indicators. It's a "}
-          <strong>{"systematic pipeline"}</strong>
-          {" — each stage filters, validates, and builds on the last. If a pair fails at any stage, you move on. No exceptions."}
-        </Text>
-        <Text>
-          {"Step through the five phases below to see the full workflow you'll use in the "}
-          <GlossaryLink term="Pairs Trading">{"Research"}</GlossaryLink>
-          {" section of this platform."}
-        </Text>
-      </Stack>
+      {/* Interactive element first */}
+      <Text>
+        {"Step through the 5 phases of the research pipeline. Each phase builds on the last."}
+      </Text>
 
       <SegmentedControl
         value={String(phaseIndex)}
@@ -330,61 +315,55 @@ export function Lesson5_1() {
         <Title order={4} c={phase.color}>
           {phase.title}
         </Title>
+        {renderChart()}
         <Text>{phase.description}</Text>
         <Text size="sm" c="dimmed" fs="italic">
           {phase.modules}
         </Text>
-
-        {renderChart()}
       </Stack>
 
-      {/* Pipeline overview */}
+      {/* Detailed explanation below */}
+      <Stack gap="sm">
+        <Title order={4}>{"The systematic approach"}</Title>
+        <Text>
+          {"Statistical arbitrage isn't about gut feelings. It's a "}
+          <strong>{"systematic pipeline"}</strong>
+          {" — each stage filters, validates, and builds on the last. If a pair fails at any stage, you move on. No exceptions."}
+        </Text>
+      </Stack>
+
       <Stack gap="sm">
         <Title order={4}>{"The 8 research modules"}</Title>
         <Text>
-          {"Between scanning and backtesting, you have access to 8 research modules that each answer a specific question about your pair:"}
+          {"Between scanning and backtesting, 8 modules each answer a specific question:"}
         </Text>
         <Text>
           <strong>{"1. Cointegration"}</strong>
           {" — is the pair still cointegrated? ("}
           <GlossaryLink term="Engle-Granger Test" />
-          {")"}
-        </Text>
-        <Text>
+          {") "}
           <strong>{"2. Correlation"}</strong>
           {" — does "}
           <GlossaryLink term="Correlation" />
-          {" remain strong and consistent?"}
-        </Text>
-        <Text>
+          {" remain strong? "}
           <strong>{"3. Spread Analysis"}</strong>
           {" — is the "}
           <GlossaryLink term="Spread" />
-          {" distribution normal and symmetric?"}
-        </Text>
-        <Text>
+          {" distribution normal? "}
           <strong>{"4. Half-Life"}</strong>
-          {" — how fast does the spread revert? ("}
+          {" — how fast does it revert? ("}
           <GlossaryLink term="Half-Life" />
-          {")"}
-        </Text>
-        <Text>
+          {") "}
           <strong>{"5. Hurst Exponent"}</strong>
-          {" — is this truly mean-reverting, or a random walk?"}
-        </Text>
-        <Text>
+          {" — truly mean-reverting? "}
           <strong>{"6. Variance Ratio"}</strong>
-          {" — does variance grow linearly (random) or sub-linearly (mean-reverting)?"}
-        </Text>
-        <Text>
+          {" — sub-linear variance growth? "}
           <strong>{"7. Regime Detection"}</strong>
-          {" — has the relationship changed over time?"}
-        </Text>
-        <Text>
+          {" — has the relationship changed? "}
           <strong>{"8. Stability"}</strong>
           {" — is the "}
           <GlossaryLink term="Hedge Ratio" />
-          {" stable, or does it drift?"}
+          {" stable?"}
         </Text>
       </Stack>
 

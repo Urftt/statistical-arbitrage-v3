@@ -66,44 +66,14 @@ export function Lesson3_4() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"We know the spread reverts to its mean — but "}
-          <em>{"how fast?"}</em>
-          {" The "}
-          <GlossaryLink term="Half-Life" />
-          {" answers this question. It measures how many periods it takes for a deviation to shrink by half. A spread with a half-life of 10 bars that starts 2\u03C3 above the mean will be about 1\u03C3 above the mean after 10 bars."}
-        </Text>
-        <Text>
-          {"Shorter half-life means faster reversion, which means faster trades and less time exposed to risk. For most pairs trading strategies, you want a half-life between 5 and 40 periods — fast enough to be practical, but not so fast that transaction costs eat the profit."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to control the "}
+        <GlossaryLink term="Half-Life" />
+        {" and watch how fast the spread snaps back to zero after each shock."}
+      </Text>
 
+      {/* Interactive slider and charts — immediately visible */}
       <Stack gap="sm">
-        <Title order={4}>{"The math behind half-life"}</Title>
-        <Text>
-          {"The spread follows an AR(1) process: "}
-          <Text component="span" ff="monospace" fw={600} c="blue.4">
-            {"spread[t] = \u03C6 \u00D7 spread[t-1] + noise"}
-          </Text>
-          {" where \u03C6 (phi) is the autoregressive coefficient. Values of \u03C6 close to 1 mean slow decay; values close to 0 mean fast decay."}
-        </Text>
-        <Text>
-          {"The half-life formula: "}
-          <Text component="span" ff="monospace" fw={600} c="blue.4">
-            {"half_life = -log(2) / log(\u03C6)"}
-          </Text>
-          {" In practice, we estimate \u03C6 by regressing spread[t] on spread[t-1]."}
-        </Text>
-      </Stack>
-
-      {/* Interactive slider */}
-      <Stack gap="sm">
-        <Title order={4}>{"Control the reversion speed"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to change the half-life. Watch how the spread decays back to zero after each \"shock.\" Fast half-lives snap back quickly; slow ones drift lazily."}
-        </Text>
-
         <Text size="sm" fw={600} c={isGoodSpeed ? 'blue.4' : 'red.4'}>
           {halfLifeLabel}
         </Text>
@@ -239,10 +209,41 @@ export function Lesson3_4() {
         />
       </Stack>
 
+      {/* Detailed explanation below the charts */}
+      <Stack gap="md">
+        <Title order={4}>{"Understanding the half-life"}</Title>
+        <Text>
+          {"The "}
+          <GlossaryLink term="Half-Life" />
+          {" measures how many periods it takes for a deviation to shrink by half. A spread with a half-life of 10 bars that starts 2\u03C3 above the mean will be about 1\u03C3 above the mean after 10 bars. Shorter half-life means faster reversion, which means faster trades and less time exposed to risk."}
+        </Text>
+        <Text>
+          {"For most pairs trading strategies, you want a half-life between 5 and 40 periods \u2014 fast enough to be practical, but not so fast that transaction costs eat the profit."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>{"The math behind half-life"}</Title>
+        <Text>
+          {"The spread follows an AR(1) process: "}
+          <Text component="span" ff="monospace" fw={600} c="blue.4">
+            {"spread[t] = \u03C6 \u00D7 spread[t-1] + noise"}
+          </Text>
+          {" where \u03C6 (phi) is the autoregressive coefficient. Values of \u03C6 close to 1 mean slow decay; values close to 0 mean fast decay."}
+        </Text>
+        <Text>
+          {"The half-life formula: "}
+          <Text component="span" ff="monospace" fw={600} c="blue.4">
+            {"half_life = -log(2) / log(\u03C6)"}
+          </Text>
+          {" In practice, we estimate \u03C6 by regressing spread[t] on spread[t-1]."}
+        </Text>
+      </Stack>
+
       <Stack gap="sm">
         <Title order={4}>{"What's a good half-life?"}</Title>
         <Text>
-          {"For daily data, a half-life of 5 to 40 bars is the sweet spot. Faster than 5 and the reversion happens within the bid-ask spread — you can't profit after fees. Slower than 40 and your capital is locked up too long, dragging down returns."}
+          {"For daily data, a half-life of 5 to 40 bars is the sweet spot. Faster than 5 and the reversion happens within the bid-ask spread \u2014 you can't profit after fees. Slower than 40 and your capital is locked up too long, dragging down returns."}
         </Text>
         <Text>
           {"Half-life also helps you size your lookback window for z-scores. A common rule of thumb: set the rolling window to about 2-4 times the half-life. That gives enough history to estimate the mean and standard deviation while staying relevant to the current regime."}
@@ -278,7 +279,7 @@ export function Lesson3_4() {
           {" tells you how long you'll typically hold a position."}
         </Text>
         <Text>
-          {"These four pieces — spread construction, normalization, signal generation, and speed validation — form the analytical core of every mean-reversion pairs trading strategy."}
+          {"These four pieces \u2014 spread construction, normalization, signal generation, and speed validation \u2014 form the analytical core of every mean-reversion pairs trading strategy."}
         </Text>
       </Stack>
 

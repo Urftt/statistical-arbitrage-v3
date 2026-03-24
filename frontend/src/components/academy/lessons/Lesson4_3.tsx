@@ -137,20 +137,15 @@ export function Lesson4_3() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"A backtest produces numbers. Lots of numbers. But which ones matter? Let's look at three simulated strategies and learn to read the four metrics that tell you whether a strategy is worth pursuing \u2014 or whether it belongs in the trash."}
-        </Text>
-        <Text>
-          {"Switch between views to focus on each metric. We'll use traffic-light colors: "}
-          <Text span c="#20C997" fw={600}>{"green = good"}</Text>
-          {", "}
-          <Text span c="#FF922B" fw={600}>{"orange = caution"}</Text>
-          {", "}
-          <Text span c="#FF6B6B" fw={600}>{"red = danger"}</Text>
-          {"."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Compare three strategies using traffic-light metrics: "}
+        <Text span c="#20C997" fw={600}>{"green = good"}</Text>
+        {", "}
+        <Text span c="#FF922B" fw={600}>{"orange = caution"}</Text>
+        {", "}
+        <Text span c="#FF6B6B" fw={600}>{"red = danger"}</Text>
+        {"."}
+      </Text>
 
       <SegmentedControl
         value={view}
@@ -167,10 +162,6 @@ export function Lesson4_3() {
       {/* Overview: all three equity curves */}
       {view === 'overview' && (
         <Stack gap="sm">
-          <Title order={4}>{"Three strategies, three stories"}</Title>
-          <Text size="sm" c="dimmed">
-            {"Each line is the equity curve of a different strategy. Before looking at any numbers, which one would you want to trade?"}
-          </Text>
           <PlotlyChart
             data={(['good', 'mediocre', 'bad'] as StrategyKey[]).map((key) => ({
               x: strategies.timestamps,
@@ -183,14 +174,14 @@ export function Lesson4_3() {
             layout={{
               title: 'Equity Curves: Three Strategies Compared',
               xaxis: { title: { text: 'Time (days)' } },
-              yaxis: { title: { text: 'Portfolio Value (\u20AC)' } },
+              yaxis: { title: { text: 'Portfolio Value (€)' } },
               height: 380,
               showlegend: true,
               legend: { x: 0, y: 1.15, orientation: 'h' },
             }}
           />
           <Text size="sm">
-            {"Strategy A climbs steadily. Strategy B chops around with tiny gains. Strategy C has a devastating drawdown mid-way. Now let's put numbers on these impressions."}
+            {"Strategy A climbs steadily. Strategy B chops around with tiny gains. Strategy C has a devastating drawdown mid-way. Now let's put numbers on these impressions — switch between the views above."}
           </Text>
         </Stack>
       )}
@@ -198,16 +189,6 @@ export function Lesson4_3() {
       {/* Sharpe Ratio */}
       {view === 'sharpe' && (
         <Stack gap="sm">
-          <Title order={4}>
-            <GlossaryLink term="Sharpe Ratio" />
-            {" \u2014 Return per unit of risk"}
-          </Title>
-          <Text>
-            {"The Sharpe ratio measures how much return you earn for each unit of volatility. Formula: (mean return \u2212 risk-free rate) / standard deviation of returns. Higher is better."}
-          </Text>
-          <Text size="sm" c="dimmed">
-            {"Below 0.5 \u2014 not worth the risk. 0.5\u20131.0 \u2014 decent. 1.0\u20132.0 \u2014 strong. Above 2.0 \u2014 excellent (or suspicious)."}
-          </Text>
           <PlotlyChart
             data={[
               {
@@ -236,8 +217,18 @@ export function Lesson4_3() {
               showlegend: false,
             }}
           />
+          <Title order={4}>
+            <GlossaryLink term="Sharpe Ratio" />
+            {" — Return per unit of risk"}
+          </Title>
+          <Text>
+            {"The Sharpe ratio measures how much return you earn for each unit of volatility. Formula: (mean return − risk-free rate) / standard deviation of returns. Higher is better."}
+          </Text>
+          <Text size="sm" c="dimmed">
+            {"Below 0.5 — not worth the risk. 0.5–1.0 — decent. 1.0–2.0 — strong. Above 2.0 — excellent (or suspicious)."}
+          </Text>
           <Text size="sm">
-            {"Strategy A has a healthy Sharpe \u2014 its gains are consistent relative to its volatility. Strategy C's negative Sharpe tells you it loses money on a risk-adjusted basis. You'd be better off holding cash."}
+            {"Strategy A has a healthy Sharpe — its gains are consistent relative to its volatility. Strategy C's negative Sharpe tells you it loses money on a risk-adjusted basis. You'd be better off holding cash."}
           </Text>
         </Stack>
       )}
@@ -245,13 +236,6 @@ export function Lesson4_3() {
       {/* Max Drawdown */}
       {view === 'drawdown' && (
         <Stack gap="sm">
-          <Title order={4}>
-            <GlossaryLink term="Maximum Drawdown" />
-            {" \u2014 The worst drop"}
-          </Title>
-          <Text>
-            {"Max drawdown is the largest peak-to-trough decline in your equity curve. It answers: \"what's the worst loss I would have experienced?\" Even profitable strategies have drawdowns \u2014 the question is whether they're survivable."}
-          </Text>
           <PlotlyChart
             data={[
               {
@@ -284,8 +268,15 @@ export function Lesson4_3() {
               showlegend: false,
             }}
           />
+          <Title order={4}>
+            <GlossaryLink term="Maximum Drawdown" />
+            {" — The worst drop"}
+          </Title>
+          <Text>
+            {"Max drawdown is the largest peak-to-trough decline in your equity curve. It answers: \"what's the worst loss I would have experienced?\" Even profitable strategies have drawdowns — the question is whether they're survivable."}
+          </Text>
           <Text size="sm">
-            {"A 10% drawdown is uncomfortable. A 30%+ drawdown is devastating \u2014 you need a 43% gain just to break even after a 30% loss. Strategy C's deep drawdown would shake most traders out of the position before it could recover."}
+            {"A 10% drawdown is uncomfortable. A 30%+ drawdown is devastating — you need a 43% gain just to break even after a 30% loss. Strategy C's deep drawdown would shake most traders out of the position before it could recover."}
           </Text>
         </Stack>
       )}
@@ -293,14 +284,6 @@ export function Lesson4_3() {
       {/* Win Rate & Profit Factor */}
       {view === 'winrate' && (
         <Stack gap="sm">
-          <Title order={4}>
-            <GlossaryLink term="Win Rate" />
-            {" & "}
-            <GlossaryLink term="Profit Factor" />
-          </Title>
-          <Text>
-            {"Win rate alone can be misleading. A 90% win rate with tiny wins and enormous losses is a losing strategy. That's why we pair it with profit factor (gross profits / gross losses). Together, they tell the full story."}
-          </Text>
           <PlotlyChart
             data={[
               {
@@ -371,10 +354,18 @@ export function Lesson4_3() {
               showlegend: false,
             }}
           />
+          <Title order={4}>
+            <GlossaryLink term="Win Rate" />
+            {" & "}
+            <GlossaryLink term="Profit Factor" />
+          </Title>
+          <Text>
+            {"Win rate alone can be misleading. A 90% win rate with tiny wins and enormous losses is a losing strategy. That's why we pair it with profit factor (gross profits / gross losses). Together, they tell the full story."}
+          </Text>
           <Text size="sm">
             {"Strategy A wins 62% of trades "}
             <em>{"and"}</em>
-            {" has a profit factor of 1.85 \u2014 its wins are nearly twice its losses. Strategy C wins only 38% of trades with a profit factor below 1.0 \u2014 it literally loses more than it makes. A profit factor below 1.0 means the strategy is a net loser, regardless of how many trades it takes."}
+            {" has a profit factor of 1.85 — its wins are nearly twice its losses. Strategy C wins only 38% of trades with a profit factor below 1.0 — it literally loses more than it makes. A profit factor below 1.0 means the strategy is a net loser, regardless of how many trades it takes."}
           </Text>
         </Stack>
       )}
@@ -383,13 +374,13 @@ export function Lesson4_3() {
         <Title order={4}>{"The metric cheat sheet"}</Title>
         <Text>
           <Text span c={sharpeColor(1.2)} fw={600}>{"Sharpe > 1.0"}</Text>
-          {" \u2014 Good risk-adjusted returns. "}
+          {" — Good risk-adjusted returns. "}
           <Text span c={drawdownColor(0.15)} fw={600}>{"Max DD < 20%"}</Text>
-          {" \u2014 Manageable worst case. "}
+          {" — Manageable worst case. "}
           <Text span c={winRateColor(55)} fw={600}>{"Win Rate > 50%"}</Text>
-          {" \u2014 More winners than losers. "}
+          {" — More winners than losers. "}
           <Text span c={profitFactorColor(1.5)} fw={600}>{"PF > 1.5"}</Text>
-          {" \u2014 Wins substantially outweigh losses."}
+          {" — Wins substantially outweigh losses."}
         </Text>
         <Text size="sm" c="dimmed">
           {"No single metric tells the whole story. Always look at all four together. A high Sharpe with extreme drawdown might indicate a strategy that works until it doesn't."}
@@ -398,7 +389,7 @@ export function Lesson4_3() {
 
       <Text c="dimmed" size="sm">
         <strong>{"Up next:"}</strong>
-        {" the most dangerous trap in backtesting \u2014 "}
+        {" the most dangerous trap in backtesting — "}
         <GlossaryLink term="Overfitting" />
         {". A strategy that looks amazing on historical data but fails completely on new data."}
       </Text>

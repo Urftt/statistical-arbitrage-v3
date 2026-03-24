@@ -104,44 +104,16 @@ export function Lesson3_3() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"Now we turn z-scores into actionable signals. The logic is simple: when the spread deviates far enough from its mean, we bet it will come back. This is the core of "}
-          <GlossaryLink term="Pairs Trading" />
-          {" — buy low, sell high, but for spreads."}
-        </Text>
-        <Text>
-          {"We need two thresholds: an "}
-          <GlossaryLink term="Entry Signal">{"entry threshold"}</GlossaryLink>
-          {" that says \"the spread is extreme enough to trade,\" and an "}
-          <GlossaryLink term="Exit Signal">{"exit threshold"}</GlossaryLink>
-          {" that says \"the spread has reverted enough to close the position.\""}
-        </Text>
-      </Stack>
+      <Text>
+        {"Set "}
+        <GlossaryLink term="Entry Signal">{"entry"}</GlossaryLink>
+        {" and "}
+        <GlossaryLink term="Exit Signal">{"exit"}</GlossaryLink>
+        {" thresholds to turn z-scores into trading signals \u2014 watch the markers update as you drag."}
+      </Text>
 
+      {/* Interactive sliders and chart — immediately visible */}
       <Stack gap="sm">
-        <Title order={4}>{"Signal logic"}</Title>
-        <Text>
-          <strong>{"Short the spread"}</strong>
-          {" (red triangles) when z > entry threshold. The spread is unusually high — sell A, buy B, and wait for the spread to shrink."}
-        </Text>
-        <Text>
-          <strong>{"Long the spread"}</strong>
-          {" (green triangles) when z < -entry threshold. The spread is unusually low — buy A, sell B, and wait for the spread to grow."}
-        </Text>
-        <Text>
-          <strong>{"Close position"}</strong>
-          {" (gray dots) when |z| < exit threshold. The spread has reverted close enough to the mean — take your profit and step aside."}
-        </Text>
-      </Stack>
-
-      {/* Interactive sliders */}
-      <Stack gap="sm">
-        <Title order={4}>{"Set your thresholds"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Adjust both sliders and watch the signals update. Tighter entry means more trades; wider entry means fewer but more selective. The exit threshold controls when you take profit."}
-        </Text>
-
         <Text size="sm" fw={600} c="blue.4">
           {entryLabel}
         </Text>
@@ -291,16 +263,38 @@ export function Lesson3_3() {
         />
       </Stack>
 
+      {/* Detailed explanation below the chart */}
+      <Stack gap="sm">
+        <Title order={4}>{"How the signals work"}</Title>
+        <Text>
+          {"The logic is the core of "}
+          <GlossaryLink term="Pairs Trading" />
+          {" \u2014 when the spread deviates far enough from its mean, we bet it will come back."}
+        </Text>
+        <Text>
+          <strong>{"Short the spread"}</strong>
+          {" (red triangles) when z > entry threshold. The spread is unusually high \u2014 sell A, buy B, and wait for the spread to shrink."}
+        </Text>
+        <Text>
+          <strong>{"Long the spread"}</strong>
+          {" (green triangles) when z < -entry threshold. The spread is unusually low \u2014 buy A, sell B, and wait for the spread to grow."}
+        </Text>
+        <Text>
+          <strong>{"Close position"}</strong>
+          {" (gray dots) when |z| < exit threshold. The spread has reverted close enough to the mean \u2014 take your profit and step aside."}
+        </Text>
+      </Stack>
+
       <Stack gap="sm">
         <Title order={4}>{"The trade-off"}</Title>
         <Text>
-          {"Tight entry thresholds (1.0\u03C3) give you lots of trades, but many will be false positives — the spread wasn't really extreme enough to revert. Wide entry thresholds (3.0\u03C3) are highly selective, but you might wait forever for a signal."}
+          {"Tight entry thresholds (1.0\u03C3) give you lots of trades, but many will be false positives \u2014 the spread wasn't really extreme enough to revert. Wide entry thresholds (3.0\u03C3) are highly selective, but you might wait forever for a signal."}
         </Text>
         <Text>
-          {"The exit threshold matters too. Exiting at 0.0\u03C3 (the mean) captures the full reversion, but the spread might bounce before getting there. Exiting at 0.5\u03C3 is more conservative — you leave some profit on the table but close more reliably."}
+          {"The exit threshold matters too. Exiting at 0.0\u03C3 (the mean) captures the full reversion, but the spread might bounce before getting there. Exiting at 0.5\u03C3 is more conservative \u2014 you leave some profit on the table but close more reliably."}
         </Text>
         <Text>
-          {"There's no single \"right\" answer — the optimal thresholds depend on the pair, the time frame, and how much risk you can tolerate. That's why we "}
+          {"There's no single \"right\" answer \u2014 the optimal thresholds depend on the pair, the time frame, and how much risk you can tolerate. That's why we "}
           <em>{"backtest"}</em>
           {" different parameter combinations later."}
         </Text>
@@ -310,7 +304,7 @@ export function Lesson3_3() {
         <strong>{"Up next:"}</strong>
         {" how fast does the spread actually revert? That's the "}
         <GlossaryLink term="Half-Life" />
-        {" — and it tells you whether a pair reverts fast enough to be worth trading."}
+        {" \u2014 and it tells you whether a pair reverts fast enough to be worth trading."}
       </Text>
     </Stack>
   );

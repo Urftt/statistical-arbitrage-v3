@@ -125,27 +125,17 @@ export function Lesson4_2() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"Time to run your first "}
-          <GlossaryLink term="Backtesting">{"backtest"}</GlossaryLink>
-          {"! We'll take a simulated z-score series, apply the entry/exit rules from the previous lesson, and watch each trade unfold. Use the selector below to step through trades one at a time."}
-        </Text>
-        <Text>
-          {"For each trade, you'll see: where we entered (z-score crossed the threshold), where we exited (z-score returned near zero), and the profit or loss. The "}
-          <GlossaryLink term="Equity Curve" />
-          {" builds up trade by trade."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Step through each trade in this simulated "}
+        <GlossaryLink term="Backtesting">{"backtest"}</GlossaryLink>
+        {" and watch the "}
+        <GlossaryLink term="Equity Curve" />
+        {" build up trade by trade."}
+      </Text>
 
       {displayTrades.length > 0 && (
         <>
           <Stack gap="sm">
-            <Title order={4}>{"Step through trades"}</Title>
-            <Text size="sm" c="dimmed">
-              {"Select a trade to highlight it on the chart. Watch the equity curve grow (or shrink) as each trade is added."}
-            </Text>
-
             <SegmentedControl
               value={selectedTrade}
               onChange={setSelectedTrade}
@@ -165,8 +155,8 @@ export function Lesson4_2() {
                 {"Trade "}{tradeIdx + 1}{": "}
                 {currentTrade.type === 'long_spread' ? 'Long spread' : 'Short spread'}
                 {" | Entry z = "}{currentTrade.entryZ.toFixed(2)}
-                {" \u2192 Exit z = "}{currentTrade.exitZ.toFixed(2)}
-                {" | PnL: \u20AC"}{currentTrade.pnl.toFixed(2)}
+                {" → Exit z = "}{currentTrade.exitZ.toFixed(2)}
+                {" | PnL: €"}{currentTrade.pnl.toFixed(2)}
               </Text>
             )}
 
@@ -251,7 +241,7 @@ export function Lesson4_2() {
               layout={{
                 title: `Z-Score with Trade ${tradeIdx + 1} Highlighted`,
                 xaxis: { title: { text: 'Time' } },
-                yaxis: { title: { text: 'Z-Score (\u03C3)' } },
+                yaxis: { title: { text: 'Z-Score (σ)' } },
                 height: 350,
                 showlegend: true,
                 legend: { x: 0, y: 1.15, orientation: 'h' },
@@ -282,7 +272,7 @@ export function Lesson4_2() {
               layout={{
                 title: `Equity Curve (After ${tradeIdx + 1} Trade${tradeIdx > 0 ? 's' : ''})`,
                 xaxis: { title: { text: 'Time' } },
-                yaxis: { title: { text: 'Portfolio Value (\u20AC)' } },
+                yaxis: { title: { text: 'Portfolio Value (€)' } },
                 height: 280,
                 showlegend: false,
               }}
@@ -310,7 +300,7 @@ export function Lesson4_2() {
             <Text>
               <strong>{"Total PnL: "}</strong>
               <Text span c={totalPnL > 0 ? 'green.4' : 'red.4'} fw={600}>
-                {"\u20AC"}{totalPnL.toFixed(2)}
+                {"€"}{totalPnL.toFixed(2)}
               </Text>
             </Text>
           </Stack>
@@ -320,10 +310,10 @@ export function Lesson4_2() {
       <Stack gap="sm">
         <Title order={4}>{"What just happened?"}</Title>
         <Text>
-          {"You just ran a full backtest. Each trade followed the same cycle: detect an extreme z-score, enter a position, wait for reversion, exit near zero. Some trades won, some lost \u2014 that's normal. What matters is the overall pattern."}
+          {"You just ran a full backtest. Each trade followed the same cycle: detect an extreme z-score, enter a position, wait for reversion, exit near zero. Some trades won, some lost — that's normal. What matters is the overall pattern."}
         </Text>
         <Text>
-          {"Notice how winning trades tend to be the ones where the z-score made a clean round trip back to zero. Losing trades often happen when the z-score kept going further against us before reverting \u2014 or when fees ate up a small gain."}
+          {"For each trade, you saw where we entered (z-score crossed the threshold), where we exited (z-score returned near zero), and the profit or loss. Notice how winning trades tend to be the ones where the z-score made a clean round trip back to zero. Losing trades often happen when the z-score kept going further against us before reverting — or when fees ate up a small gain."}
         </Text>
       </Stack>
 

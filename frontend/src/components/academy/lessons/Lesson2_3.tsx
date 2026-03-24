@@ -67,25 +67,14 @@ export function Lesson2_3() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"The "}
-          <GlossaryLink term="Engle-Granger Test" />
-          {" is the most common way to test for cointegration. It has exactly two steps. Let's walk through each one — and you'll do Step 1 yourself."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to find the "}
+        <GlossaryLink term="Hedge Ratio" />
+        {" (β) that makes the residuals as flat as possible."}
+      </Text>
 
-      {/* Step 1: Interactive Regression */}
+      {/* Interactive slider and charts first */}
       <Stack gap="sm">
-        <Title order={4}>{"Step 1: Find the right hedge ratio"}</Title>
-        <Text>
-          {"We need to find the "}
-          <GlossaryLink term="Hedge Ratio" />
-          {" (β) that makes the spread as flat as possible. In practice, "}
-          <GlossaryLink term="OLS Regression" />
-          {" computes this automatically. But first, try finding it by hand — drag the slider until the residuals below look as flat as you can get them."}
-        </Text>
-
         <Text size="sm" fw={600} c={isFlat ? 'teal.4' : 'yellow.4'}>
           {"β = "}{userBeta.toFixed(2)}{" — "}{betaLabel}
         </Text>
@@ -164,11 +153,23 @@ export function Lesson2_3() {
             showlegend: false,
           }}
         />
+      </Stack>
 
-        <Text size="sm" c="dimmed">
-          {"When β is wrong, the residuals trend up or down — that's a non-stationary spread. When β is right (~"}
+      {/* Explanation BELOW the charts */}
+      <Stack gap="md">
+        <Text>
+          {"The "}
+          <GlossaryLink term="Engle-Granger Test" />
+          {" is the most common way to test for cointegration. It has exactly two steps."}
+        </Text>
+        <Text>
+          {"In Step 1, we find the "}
+          <GlossaryLink term="Hedge Ratio" />
+          {" (β) that makes the spread as flat as possible. In practice, "}
+          <GlossaryLink term="OLS Regression" />
+          {" computes this automatically. When β is wrong, the residuals trend up or down — that's a non-stationary spread. When β is right (~"}
           {trueHedgeRatio}
-          {"), the residuals oscillate around zero — stationary and tradeable. OLS finds this optimal β automatically."}
+          {"), the residuals oscillate around zero — stationary and tradeable."}
         </Text>
       </Stack>
 

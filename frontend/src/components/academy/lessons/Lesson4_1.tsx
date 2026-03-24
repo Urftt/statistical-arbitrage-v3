@@ -119,37 +119,15 @@ export function Lesson4_1() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"You know how to find pairs, test for cointegration, and generate "}
-          <GlossaryLink term="Z-Score" />
-          {" signals. But a signal alone isn't a strategy. To turn signals into actual trades, you need three more ingredients: "}
-          <GlossaryLink term="Position Sizing" />
-          {", capital allocation, and fees."}
-        </Text>
-        <Text>
-          {"Every trade follows a simple state machine: "}
-          <strong>{"flat \u2192 long_spread \u2192 flat"}</strong>
-          {" or "}
-          <strong>{"flat \u2192 short_spread \u2192 flat"}</strong>
-          {". When the z-score crosses the "}
-          <GlossaryLink term="Entry Signal" />
-          {" threshold (\u00B11.5\u03C3), you open a position. When it returns near zero (the "}
-          <GlossaryLink term="Exit Signal" />
-          {"), you close it."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to change your "}
+        <GlossaryLink term="Position Sizing" />
+        {" and watch how it amplifies both gains and losses on the equity curve."}
+      </Text>
 
       <Stack gap="sm">
-        <Title order={4}>{"The position size lever"}</Title>
-        <Text>
-          {"How much of your capital do you put into each trade? This single decision has a massive impact on both returns "}
-          <em>{"and"}</em>
-          {" risk. Drag the slider to see it for yourself."}
-        </Text>
-
         <Text size="sm" fw={600} c={positionSize < 0.6 ? 'blue.4' : 'orange.4'}>
-          {"Position size: "}{Math.round(positionSize * 100)}{"% of capital \u2014 "}{riskLevel}
+          {"Position size: "}{Math.round(positionSize * 100)}{"% of capital — "}{riskLevel}
         </Text>
 
         <Slider
@@ -182,7 +160,7 @@ export function Lesson4_1() {
               y: [1.5, 1.5],
               type: 'scatter',
               mode: 'lines',
-              name: 'Short entry (+1.5\u03C3)',
+              name: 'Short entry (+1.5σ)',
               line: { color: '#FF6B6B', width: 1, dash: 'dash' },
             },
             {
@@ -190,7 +168,7 @@ export function Lesson4_1() {
               y: [-1.5, -1.5],
               type: 'scatter',
               mode: 'lines',
-              name: 'Long entry (-1.5\u03C3)',
+              name: 'Long entry (-1.5σ)',
               line: { color: '#51CF66', width: 1, dash: 'dash' },
             },
             {
@@ -205,7 +183,7 @@ export function Lesson4_1() {
           layout={{
             title: 'Z-Score with Entry/Exit Thresholds',
             xaxis: { title: { text: 'Time' } },
-            yaxis: { title: { text: 'Z-Score (\u03C3)' } },
+            yaxis: { title: { text: 'Z-Score (σ)' } },
             height: 300,
             showlegend: true,
             legend: { x: 0, y: 1.15, orientation: 'h' },
@@ -239,9 +217,9 @@ export function Lesson4_1() {
             },
           ]}
           layout={{
-            title: `Equity Curve \u2014 PnL: \u20AC${totalPnL.toFixed(2)} | Max Drawdown: ${(peakDrawdown * 100).toFixed(1)}%`,
+            title: `Equity Curve — PnL: €${totalPnL.toFixed(2)} | Max Drawdown: ${(peakDrawdown * 100).toFixed(1)}%`,
             xaxis: { title: { text: 'Time' } },
-            yaxis: { title: { text: 'Portfolio Value (\u20AC)' } },
+            yaxis: { title: { text: 'Portfolio Value (€)' } },
             height: 300,
             showlegend: false,
           }}
@@ -249,10 +227,32 @@ export function Lesson4_1() {
       </Stack>
 
       <Stack gap="sm">
+        <Title order={4}>{"What you're seeing"}</Title>
+        <Text>
+          {"You know how to find pairs, test for cointegration, and generate "}
+          <GlossaryLink term="Z-Score" />
+          {" signals. But a signal alone isn't a strategy. To turn signals into actual trades, you need three more ingredients: "}
+          <GlossaryLink term="Position Sizing" />
+          {", capital allocation, and fees."}
+        </Text>
+        <Text>
+          {"Every trade follows a simple state machine: "}
+          <strong>{"flat → long_spread → flat"}</strong>
+          {" or "}
+          <strong>{"flat → short_spread → flat"}</strong>
+          {". When the z-score crosses the "}
+          <GlossaryLink term="Entry Signal" />
+          {" threshold (±1.5σ), you open a position. When it returns near zero (the "}
+          <GlossaryLink term="Exit Signal" />
+          {"), you close it."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
         <Title order={4}>{"The key takeaway"}</Title>
         <Text>
           <strong>{"Bigger positions = bigger wins AND bigger losses."}</strong>
-          {" There's no free lunch. A 100% position size doubles your returns compared to 50%, but it also doubles your drawdowns. Professional traders typically risk 10\u201330% per trade."}
+          {" There's no free lunch. A 100% position size doubles your returns compared to 50%, but it also doubles your drawdowns. Professional traders typically risk 10–30% per trade."}
         </Text>
         <Text>
           {"Don't forget fees. Each trade costs ~0.1% (Bitvavo), which eats into small gains. With large position sizes, fees are a bigger absolute cost. Over hundreds of trades, fees compound significantly."}
@@ -266,14 +266,14 @@ export function Lesson4_1() {
           <strong>{"flat"}</strong>
           {" (no position). When the z-score crosses our entry threshold, we open a position: "}
           <strong>{"long_spread"}</strong>
-          {" if z < -1.5\u03C3 (spread is unusually low, expect it to rise) or "}
+          {" if z < -1.5σ (spread is unusually low, expect it to rise) or "}
           <strong>{"short_spread"}</strong>
-          {" if z > +1.5\u03C3 (spread is unusually high, expect it to fall)."}
+          {" if z > +1.5σ (spread is unusually high, expect it to fall)."}
         </Text>
         <Text>
           {"When the z-score returns near zero, we close the position and go back to "}
           <strong>{"flat"}</strong>
-          {". Then we wait for the next signal. This cycle repeats: flat \u2192 position \u2192 flat \u2192 position \u2192 flat."}
+          {". Then we wait for the next signal. This cycle repeats: flat → position → flat → position → flat."}
         </Text>
       </Stack>
 
@@ -281,7 +281,7 @@ export function Lesson4_1() {
         <strong>{"Up next:"}</strong>
         {" let's put it all together and run a full "}
         <GlossaryLink term="Backtesting">{"backtest"}</GlossaryLink>
-        {" \u2014 watching each trade unfold step by step."}
+        {" — watching each trade unfold step by step."}
       </Text>
     </Stack>
   );

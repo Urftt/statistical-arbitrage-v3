@@ -121,19 +121,12 @@ export function Lesson5_3() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Title order={3} c="teal.4">
-          {"Congratulations \u2014 you've completed the Academy"}
-        </Title>
-        <Text>
-          {"You now understand the complete statistical arbitrage workflow, from the underlying theory to practical validation. Here's what you've learned across 5 chapters."}
-        </Text>
-      </Stack>
+      {/* Interactive concept review first */}
+      <Text>
+        {"You've completed the Academy. Click through each chapter to review what you learned."}
+      </Text>
 
-      {/* Concept navigator */}
       <Stack gap="sm">
-        <Title order={4}>{"What you now know"}</Title>
-
         <SegmentedControl
           value={String(conceptIndex)}
           onChange={(v) => setConceptIndex(Number(v))}

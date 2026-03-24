@@ -17,6 +17,7 @@ import PlotlyChart from '@/components/charts/PlotlyChart';
  *
  * Deeper dive into pairs trading mechanics: the full trade lifecycle,
  * why both sides matter, and an interactive signal chart.
+ * Chart-first layout: interactive element up top, explanation below.
  */
 export function Lesson1_2() {
   const [entryThreshold, setEntryThreshold] = useState(2.0);
@@ -61,82 +62,16 @@ export function Lesson1_2() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          <GlossaryLink term="Pairs Trading" />{" is the most common form of stat arb. You find two assets that move together, wait for them to diverge, then bet on them converging again. The key insight: you always hold "}
-          <strong>{"two opposing positions"}</strong>
-          {" simultaneously."}
-        </Text>
-      </Stack>
+      {/* 1-2 sentence intro + interactive element immediately */}
+      <Text>
+        {"Adjust the entry threshold to see how a "}
+        <GlossaryLink term="Pairs Trading" />
+        {" strategy decides when to trade based on the "}
+        <GlossaryLink term="Z-Score" />
+        {"."}
+      </Text>
 
       <Stack gap="sm">
-        <Title order={4}>The anatomy of a pairs trade</Title>
-
-        <Text>
-          <strong>{"Step 1: Find a pair."}</strong>
-          {" You need two assets with a stable long-run relationship. Not just \"they both go up\" \u2014 that\u2019s "}
-          <GlossaryLink term="Correlation" />
-          {" and it\u2019s not enough. You need the "}
-          <em>{"gap"}</em>
-          {" between them to be predictable. In crypto, ETH and ETC are a classic example \u2014 both Ethereum-based, influenced by similar forces."}
-        </Text>
-
-        <Text>
-          <strong>{"Step 2: Measure the gap."}</strong>
-          {" This gap is called the "}
-          <GlossaryLink term="Spread" />
-          {". We standardize it into a "}
-          <GlossaryLink term="Z-Score" />
-          {" \u2014 the number of standard deviations from its average. A z-score of +2 means the gap is unusually wide. A z-score of -2 means it\u2019s unusually narrow."}
-        </Text>
-
-        <Text>
-          <strong>{"Step 3: Trade the extremes."}</strong>
-          {" When the z-score hits +2\u03C3 (gap too wide), you "}
-          <em>{"short"}</em>
-          {" the outperformer and "}
-          <em>{"long"}</em>
-          {" the underperformer. You\u2019re betting the gap will narrow. When it does, you close both sides and pocket the difference."}
-        </Text>
-
-        <Text>
-          <strong>{"Step 4: Stay market-neutral."}</strong>
-          {" Because you\u2019re long one asset and short the other, a market crash affects both sides roughly equally. Your profit comes from the "}
-          <em>{"relationship"}</em>
-          {" normalizing, not from the market going up or down. That\u2019s the beauty of it."}
-        </Text>
-      </Stack>
-
-      {/* Why both sides? */}
-      <Stack gap="sm">
-        <Title order={4}>Why you need both sides</Title>
-        <Text>
-          Say ETH is at €3,000 and ETC is at €25. Their spread is unusually wide —
-          ETH has surged ahead. You could just buy ETC and hope it catches up. But
-          what if the whole market crashes? ETC goes to €15 and you&apos;ve lost 40%.
-        </Text>
-        <Text>
-          {"With pairs trading, you "}
-          <em>{"also"}</em>
-          {" short ETH. If the market crashes, your short on ETH makes money while your long on ETC loses \u2014 roughly a wash. But when the spread normalizes (ETH drops relative to ETC, or ETC rises relative to ETH, or both), "}
-          <em>{"that"}</em>
-          {" is where your profit comes from."}
-        </Text>
-        <Text c="dimmed" size="sm">
-          This is what &quot;market-neutral&quot; means in practice. You remove the market
-          direction risk and isolate the relationship risk.
-        </Text>
-      </Stack>
-
-      {/* Interactive z-score chart */}
-      <Stack gap="sm">
-        <Title order={4}>Try it: spot the trade signals</Title>
-        <Text size="sm" c="dimmed">
-          This is a simulated z-score of a spread. Adjust the entry threshold to see
-          how it affects when signals fire. More extreme thresholds = fewer but
-          higher-conviction trades.
-        </Text>
-
         <Box>
           <Text size="sm" mb="xs">
             {"Entry threshold: "}<strong>{"±"}{entryThreshold.toFixed(1)}{"σ"}</strong>
@@ -229,7 +164,7 @@ export function Lesson1_2() {
         />
 
         <Text size="sm" c="dimmed">
-          <strong>{entryPoints.length}{" signals"}</strong>{" at \u00B1"}{entryThreshold.toFixed(1)}{"\u03C3. "}
+          <strong>{entryPoints.length}{" signals"}</strong>{" at ±"}{entryThreshold.toFixed(1)}{"σ. "}
           {entryThreshold < 1.5
             ? 'Very sensitive — lots of signals, but many may be false alarms.'
             : entryThreshold > 2.5
@@ -238,9 +173,77 @@ export function Lesson1_2() {
         </Text>
       </Stack>
 
+      {/* Detailed explanation BELOW the chart */}
+      <Stack gap="sm">
+        <Title order={4}>The anatomy of a pairs trade</Title>
+
+        <Text>
+          {"What the chart above shows: the blue line is the "}
+          <GlossaryLink term="Z-Score" />
+          {" of the "}
+          <GlossaryLink term="Spread" />
+          {" between two assets. When it crosses the dashed lines, a trade signal fires. Green triangles mean \"go long\" (spread is unusually narrow), red triangles mean \"go short\" (spread is unusually wide)."}
+        </Text>
+
+        <Text>
+          <strong>{"Step 1: Find a pair."}</strong>
+          {" You need two assets with a stable long-run relationship. Not just \"they both go up\" — that's "}
+          <GlossaryLink term="Correlation" />
+          {" and it's not enough. You need the "}
+          <em>{"gap"}</em>
+          {" between them to be predictable. In crypto, ETH and ETC are a classic example — both Ethereum-based, influenced by similar forces."}
+        </Text>
+
+        <Text>
+          <strong>{"Step 2: Measure the gap."}</strong>
+          {" This gap is called the "}
+          <GlossaryLink term="Spread" />
+          {". We standardize it into a "}
+          <GlossaryLink term="Z-Score" />
+          {" — the number of standard deviations from its average. A z-score of +2 means the gap is unusually wide. A z-score of -2 means it's unusually narrow."}
+        </Text>
+
+        <Text>
+          <strong>{"Step 3: Trade the extremes."}</strong>
+          {" When the z-score hits +2σ (gap too wide), you "}
+          <em>{"short"}</em>
+          {" the outperformer and "}
+          <em>{"long"}</em>
+          {" the underperformer. You're betting the gap will narrow. When it does, you close both sides and pocket the difference."}
+        </Text>
+
+        <Text>
+          <strong>{"Step 4: Stay market-neutral."}</strong>
+          {" Because you're long one asset and short the other, a market crash affects both sides roughly equally. Your profit comes from the "}
+          <em>{"relationship"}</em>
+          {" normalizing, not from the market going up or down. That's the beauty of it."}
+        </Text>
+      </Stack>
+
+      {/* Why both sides? */}
+      <Stack gap="sm">
+        <Title order={4}>Why you need both sides</Title>
+        <Text>
+          Say ETH is at €3,000 and ETC is at €25. Their spread is unusually wide —
+          ETH has surged ahead. You could just buy ETC and hope it catches up. But
+          what if the whole market crashes? ETC goes to €15 and you&apos;ve lost 40%.
+        </Text>
+        <Text>
+          {"With pairs trading, you "}
+          <em>{"also"}</em>
+          {" short ETH. If the market crashes, your short on ETH makes money while your long on ETC loses — roughly a wash. But when the spread normalizes (ETH drops relative to ETC, or ETC rises relative to ETH, or both), "}
+          <em>{"that"}</em>
+          {" is where your profit comes from."}
+        </Text>
+        <Text c="dimmed" size="sm">
+          This is what &quot;market-neutral&quot; means in practice. You remove the market
+          direction risk and isolate the relationship risk.
+        </Text>
+      </Stack>
+
       <Text c="dimmed" size="sm">
         <strong>{"Up next:"}</strong>
-        {" we\u2019ve been using simulated data. Let\u2019s see what real crypto prices actually look like."}
+        {" we've been using simulated data. Let's see what real crypto prices actually look like."}
       </Text>
     </Stack>
   );

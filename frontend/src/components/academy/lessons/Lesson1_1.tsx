@@ -15,6 +15,7 @@ import PlotlyChart from '@/components/charts/PlotlyChart';
  *
  * Teaches the core concept through a real-world analogy and an interactive
  * slider that lets users feel the pull-back strength of mean reversion.
+ * Chart-first layout: interactive element up top, explanation below.
  */
 export function Lesson1_1() {
   // 0 = pure random walk, 1 = strong mean reversion
@@ -51,52 +52,16 @@ export function Lesson1_1() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"Imagine two coffee shops on the same street. Most days, a latte costs about the same at both — say €4. Sometimes Shop A charges €4.50 while Shop B drops to €3.80. The "}
-          <em>gap</em>
-          {" between their prices wobbles, but it always snaps back to roughly zero."}
-        </Text>
-        <Text>
-          {"Now imagine you could "}
-          <strong>sell</strong>
-          {" at the expensive shop and "}
-          <strong>buy</strong>
-          {" at the cheap one whenever that gap gets unusually wide. When it snaps back, you pocket the difference. That's "}
-          <GlossaryLink term="Statistical Arbitrage" />
-          {" in a nutshell."}
-        </Text>
-      </Stack>
+      {/* 1-2 sentence intro + interactive element immediately */}
+      <Text>
+        {"Drag the slider to feel how "}
+        <GlossaryLink term="Mean Reversion" />
+        {" works — the core idea behind "}
+        <GlossaryLink term="Statistical Arbitrage" />
+        {"."}
+      </Text>
 
       <Stack gap="sm">
-        <Title order={4}>Three things to remember</Title>
-        <Text>
-          <strong>{"1. Mean reversion is the core bet."}</strong>
-          {" The price gap between related assets tends to return to its average. What goes out, comes back. That's "}
-          <GlossaryLink term="Mean Reversion" />
-          {"."}
-        </Text>
-        <Text>
-          <strong>{"2. It's statistical, not guaranteed."}</strong>
-          {" Unlike true arbitrage (risk-free profit), stat arb relies on historical patterns that "}
-          <em>might</em>
-          {" break. The word \"statistical\" means we're betting on probabilities."}
-        </Text>
-        <Text>
-          <strong>{"3. It's market-neutral."}</strong>
-          {" By going long one asset and short the other, you're hedged against the overall market. You profit from the "}
-          <em>relationship</em>
-          {", not the trend."}
-        </Text>
-      </Stack>
-
-      {/* Interactive chart */}
-      <Stack gap="sm">
-        <Title order={4}>Feel the pull-back</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to control how strongly the spread is pulled back toward zero. At zero pull-back, it's a random walk — untradeable. Crank it up and watch mean reversion kick in."}
-        </Text>
-
         <Text size="sm" fw={600} c={isReverting ? 'blue.4' : 'red.4'}>
           {label}
         </Text>
@@ -149,6 +114,49 @@ export function Lesson1_1() {
             showlegend: false,
           }}
         />
+      </Stack>
+
+      {/* Detailed explanation BELOW the chart */}
+      <Stack gap="md">
+        <Text>
+          {"What you just saw: at high pull-back strength, the line keeps snapping back to zero. That's mean reversion — the price gap between two related assets tends to return to its average."}
+        </Text>
+        <Text>
+          {"Imagine two coffee shops on the same street. Most days, a latte costs about the same at both — say €4. Sometimes Shop A charges €4.50 while Shop B drops to €3.80. The "}
+          <em>gap</em>
+          {" between their prices wobbles, but it always snaps back to roughly zero."}
+        </Text>
+        <Text>
+          {"Now imagine you could "}
+          <strong>sell</strong>
+          {" at the expensive shop and "}
+          <strong>buy</strong>
+          {" at the cheap one whenever that gap gets unusually wide. When it snaps back, you pocket the difference. That's "}
+          <GlossaryLink term="Statistical Arbitrage" />
+          {" in a nutshell."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>Three things to remember</Title>
+        <Text>
+          <strong>{"1. Mean reversion is the core bet."}</strong>
+          {" The price gap between related assets tends to return to its average. What goes out, comes back. That's "}
+          <GlossaryLink term="Mean Reversion" />
+          {"."}
+        </Text>
+        <Text>
+          <strong>{"2. It's statistical, not guaranteed."}</strong>
+          {" Unlike true arbitrage (risk-free profit), stat arb relies on historical patterns that "}
+          <em>might</em>
+          {" break. The word \"statistical\" means we're betting on probabilities."}
+        </Text>
+        <Text>
+          <strong>{"3. It's market-neutral."}</strong>
+          {" By going long one asset and short the other, you're hedged against the overall market. You profit from the "}
+          <em>relationship</em>
+          {", not the trend."}
+        </Text>
       </Stack>
 
       <Text c="dimmed" size="sm">

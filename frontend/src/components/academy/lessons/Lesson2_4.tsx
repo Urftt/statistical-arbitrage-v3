@@ -64,27 +64,12 @@ export function Lesson2_4() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          <GlossaryLink term="Stationarity" />
-          {" is the foundation of everything we've learned so far. A stationary series has a constant mean and variance over time — it doesn't trend or drift. The spread between cointegrated assets "}
-          <em>{"should"}</em>
-          {" be stationary."}
-        </Text>
-        <Text>
-          {"An intuitive way to think about it: if you pick any window of time and calculate the average and standard deviation, you should get roughly the same numbers regardless of "}
-          <em>{"when"}</em>
-          {" you pick. That's stationarity."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Toggle between stationary and non-stationary series — watch how the rolling mean and bands behave."}
+      </Text>
 
-      {/* Visual comparison */}
+      {/* Interactive toggle and chart first */}
       <Stack gap="sm">
-        <Title order={4}>{"See the difference"}</Title>
-        <Text size="sm" c="dimmed">
-          {"The rolling mean (orange line) and ±2σ bands show whether the statistical properties stay constant over time."}
-        </Text>
-
         <SegmentedControl
           value={series}
           onChange={setSeries}
@@ -149,6 +134,21 @@ export function Lesson2_4() {
           {series === 'stationary'
             ? "The orange rolling mean stays roughly flat. The bands stay roughly the same width. This series is stationary — its statistical properties are constant."
             : "The rolling mean drifts around. The bands shift. At time 50 the mean is different from time 150. This series is non-stationary — you can't predict a \"normal\" level to revert to."}
+        </Text>
+      </Stack>
+
+      {/* Explanation BELOW the chart */}
+      <Stack gap="md">
+        <Text>
+          <GlossaryLink term="Stationarity" />
+          {" is the foundation of everything we've learned so far. A stationary series has a constant mean and variance over time — it doesn't trend or drift. The spread between cointegrated assets "}
+          <em>{"should"}</em>
+          {" be stationary."}
+        </Text>
+        <Text>
+          {"An intuitive way to think about it: if you pick any window of time and calculate the average and standard deviation, you should get roughly the same numbers regardless of "}
+          <em>{"when"}</em>
+          {" you pick. That's stationarity."}
         </Text>
       </Stack>
 

@@ -129,37 +129,14 @@ export function Lesson5_2() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"You've found a cointegrated pair. You've studied the spread. Now you need to find the "}
-          <strong>{"best parameters"}</strong>
-          {" — lookback window, entry/exit thresholds, stop-loss levels. "}
-          <GlossaryLink term="Statistical Arbitrage">{"Grid search"}</GlossaryLink>
-          {" tries many combinations. But how do you know the result isn't just curve-fitting?"}
-        </Text>
-      </Stack>
+      {/* Interactive element first */}
+      <Text>
+        {"Drag the slider to split data into training and testing. Watch the Sharpe ratio gap — that's the cost of "}
+        <GlossaryLink term="Overfitting" />
+        {"."}
+      </Text>
 
-      {/* Grid search explanation */}
       <Stack gap="sm">
-        <Title order={4}>{"Grid search: try everything"}</Title>
-        <Text>
-          {"Grid search is simple: define a range for each parameter, then test every combination on historical data. For example: lookback = [15, 20, 25, 30], entry threshold = [1.5, 2.0, 2.5]. That's 4 \u00D7 3 = 12 combinations. The one with the best Sharpe ratio wins."}
-        </Text>
-        <Text>
-          {"The problem? The winning parameters are "}
-          <em>{"perfectly tailored"}</em>
-          {" to the data you tested on. It's like studying with the answer key — you'll ace the practice test, but bomb the real exam. This is "}
-          <strong>{"overfitting"}</strong>
-          {"."}
-        </Text>
-      </Stack>
-
-      {/* Interactive train/test split */}
-      <Stack gap="sm">
-        <Title order={4}>{"Train/test split: the honest exam"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to change how much data is used for training (optimization) vs. testing (validation). Watch how the Sharpe ratio differs between the two periods."}
-        </Text>
 
         <Text size="sm" fw={600} c={sharpeGap < 3 ? 'blue.4' : 'red.4'}>
           {"Train: "}{Math.round(trainFraction * 100)}{"% | Test: "}{Math.round((1 - trainFraction) * 100)}{"% \u2014 "}{splitLabel}
@@ -224,6 +201,16 @@ export function Lesson5_2() {
           {"Notice how the blue (train) section almost always looks great — that's where the parameters were optimized. The orange (test) section shows what would "}
           <em>{"actually"}</em>
           {" happen with new data. The gap between them is the cost of overfitting."}
+        </Text>
+      </Stack>
+
+      {/* Explanation below the chart */}
+      <Stack gap="sm">
+        <Title order={4}>{"What you're seeing"}</Title>
+        <Text>
+          {"Grid search tries every parameter combination on historical data. The winning parameters are "}
+          <em>{"perfectly tailored"}</em>
+          {" to the data you tested on — like studying with the answer key. The train/test split reveals the truth: how do those parameters perform on unseen data?"}
         </Text>
       </Stack>
 

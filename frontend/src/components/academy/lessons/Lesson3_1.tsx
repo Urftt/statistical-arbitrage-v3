@@ -83,43 +83,16 @@ export function Lesson3_1() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"The "}
-          <GlossaryLink term="Spread" />
-          {" is the core signal in pairs trading. It measures the pricing gap between two assets after accounting for their relationship. When the spread deviates from its average, we have a potential trade."}
-        </Text>
-        <Text>
-          {"The formula is simple: "}
-          <Text component="span" ff="monospace" fw={600} c="blue.4">
-            {"spread = price_A - \u03B2 \u00D7 price_B"}
-          </Text>
-          {" where \u03B2 (beta) is the "}
-          <GlossaryLink term="Hedge Ratio" />
-          {". Getting \u03B2 right is everything. Too high or too low and the spread trends instead of mean-reverting."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to adjust the "}
+        <GlossaryLink term="Hedge Ratio" />
+        {" (\u03B2) and watch how it changes the "}
+        <GlossaryLink term="Spread" />
+        {" between two assets."}
+      </Text>
 
+      {/* Interactive chart — immediately visible */}
       <Stack gap="sm">
-        <Title order={4}>{"How OLS finds the optimal \u03B2"}</Title>
-        <Text>
-          <GlossaryLink term="OLS Regression" />
-          {" fits a line through the scatter of price_A vs. price_B. The slope of that line is \u03B2 — the number of units of B that \"explains\" one unit of A. When we subtract \u03B2 \u00D7 B from A, the leftover (the residual) is our spread."}
-        </Text>
-        <Text>
-          {"If \u03B2 is correct, the residual is "}
-          <GlossaryLink term="Stationarity">{"stationary"}</GlossaryLink>
-          {" — it wobbles around a constant mean. If \u03B2 is wrong, the residual inherits a trend from the prices themselves."}
-        </Text>
-      </Stack>
-
-      {/* Interactive chart */}
-      <Stack gap="sm">
-        <Title order={4}>{"Tune the hedge ratio"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to adjust \u03B2. The optimal value is around 0.80 — at that point the spread is flat and mean-reverting. Move it away and watch the spread start to trend."}
-        </Text>
-
         <Text size="sm" fw={600} c={isOptimal ? 'blue.4' : 'red.4'}>
           {label}
         </Text>
@@ -207,12 +180,44 @@ export function Lesson3_1() {
         </Text>
       </Stack>
 
+      {/* Detailed explanation below the chart */}
+      <Stack gap="md">
+        <Title order={4}>{"What you're seeing"}</Title>
+        <Text>
+          {"The "}
+          <GlossaryLink term="Spread" />
+          {" is the core signal in pairs trading. It measures the pricing gap between two assets after accounting for their relationship. When the spread deviates from its average, we have a potential trade."}
+        </Text>
+        <Text>
+          {"The formula is simple: "}
+          <Text component="span" ff="monospace" fw={600} c="blue.4">
+            {"spread = price_A - \u03B2 \u00D7 price_B"}
+          </Text>
+          {" where \u03B2 (beta) is the "}
+          <GlossaryLink term="Hedge Ratio" />
+          {". Getting \u03B2 right is everything. Too high or too low and the spread trends instead of mean-reverting."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>{"How OLS finds the optimal \u03B2"}</Title>
+        <Text>
+          <GlossaryLink term="OLS Regression" />
+          {" fits a line through the scatter of price_A vs. price_B. The slope of that line is \u03B2 \u2014 the number of units of B that \"explains\" one unit of A. When we subtract \u03B2 \u00D7 B from A, the leftover (the residual) is our spread."}
+        </Text>
+        <Text>
+          {"If \u03B2 is correct, the residual is "}
+          <GlossaryLink term="Stationarity">{"stationary"}</GlossaryLink>
+          {" \u2014 it wobbles around a constant mean. If \u03B2 is wrong, the residual inherits a trend from the prices themselves."}
+        </Text>
+      </Stack>
+
       <Stack gap="sm">
         <Title order={4}>{"Why the hedge ratio matters"}</Title>
         <Text>
           {"The hedge ratio tells you how many units of B to trade per unit of A. If \u03B2 = 0.8, you'd go long 1 unit of A and short 0.8 units of B (or vice versa). This makes the combined position "}
           <GlossaryLink term="Pairs Trading">{"market-neutral"}</GlossaryLink>
-          {" — profit comes from the spread reverting, not from the market going up or down."}
+          {" \u2014 profit comes from the spread reverting, not from the market going up or down."}
         </Text>
       </Stack>
 

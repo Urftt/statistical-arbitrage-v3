@@ -78,48 +78,14 @@ export function Lesson3_2() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"A raw spread value like \"3.2\" tells you nothing on its own. Is that a big deviation? Small? It depends on how much the spread normally moves. The "}
-          <GlossaryLink term="Z-Score" />
-          {" solves this by measuring deviations in units of "}
-          <GlossaryLink term="Standard Deviation" />
-          {"."}
-        </Text>
-        <Text>
-          {"The transformation has three steps:"}
-        </Text>
-      </Stack>
+      <Text>
+        {"Adjust the rolling window size and see how it affects the "}
+        <GlossaryLink term="Z-Score" />
+        {" — short windows react fast but are noisy, long windows are smooth but slow."}
+      </Text>
 
+      {/* Interactive slider and charts — immediately visible */}
       <Stack gap="sm">
-        <Title order={4}>{"Step-by-step transformation"}</Title>
-        <Text>
-          <strong>{"1. Start with the raw spread."}</strong>
-          {" This is price_A - \u03B2 \u00D7 price_B from the previous lesson. It oscillates around some mean, but the scale varies over time."}
-        </Text>
-        <Text>
-          <strong>{"2. Subtract the rolling mean."}</strong>
-          {" This centers the spread around zero. We use a rolling window (not the global mean) because the spread's equilibrium can shift over time."}
-        </Text>
-        <Text>
-          <strong>{"3. Divide by the rolling standard deviation."}</strong>
-          {" This normalizes the scale. Now a value of +2.0 always means \"two standard deviations above the rolling mean\" — regardless of whether the spread normally moves \u00B10.5 or \u00B15.0."}
-        </Text>
-        <Text>
-          {"The formula: "}
-          <Text component="span" ff="monospace" fw={600} c="blue.4">
-            {"z = (spread - rolling_mean) / rolling_std"}
-          </Text>
-        </Text>
-      </Stack>
-
-      {/* Interactive slider */}
-      <Stack gap="sm">
-        <Title order={4}>{"Choose the lookback window"}</Title>
-        <Text size="sm" c="dimmed">
-          {"The rolling window determines how many past bars to use for the mean and standard deviation. A short window reacts fast but is noisy. A long window is smoother but adapts slowly."}
-        </Text>
-
         <Text size="sm" fw={600} c="blue.4">
           {windowLabel}
         </Text>
@@ -241,6 +207,40 @@ export function Lesson3_2() {
             legend: { x: 0, y: 1.15, orientation: 'h' },
           }}
         />
+      </Stack>
+
+      {/* Detailed explanation below the charts */}
+      <Stack gap="sm">
+        <Title order={4}>{"How z-scores work"}</Title>
+        <Text>
+          {"A raw spread value like \"3.2\" tells you nothing on its own. Is that a big deviation? Small? It depends on how much the spread normally moves. The "}
+          <GlossaryLink term="Z-Score" />
+          {" solves this by measuring deviations in units of "}
+          <GlossaryLink term="Standard Deviation" />
+          {"."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>{"Step-by-step transformation"}</Title>
+        <Text>
+          <strong>{"1. Start with the raw spread."}</strong>
+          {" This is price_A - \u03B2 \u00D7 price_B from the previous lesson. It oscillates around some mean, but the scale varies over time."}
+        </Text>
+        <Text>
+          <strong>{"2. Subtract the rolling mean."}</strong>
+          {" This centers the spread around zero. We use a rolling window (not the global mean) because the spread's equilibrium can shift over time."}
+        </Text>
+        <Text>
+          <strong>{"3. Divide by the rolling standard deviation."}</strong>
+          {" This normalizes the scale. Now a value of +2.0 always means \"two standard deviations above the rolling mean\" \u2014 regardless of whether the spread normally moves \u00B10.5 or \u00B15.0."}
+        </Text>
+        <Text>
+          {"The formula: "}
+          <Text component="span" ff="monospace" fw={600} c="blue.4">
+            {"z = (spread - rolling_mean) / rolling_std"}
+          </Text>
+        </Text>
       </Stack>
 
       <Stack gap="sm">

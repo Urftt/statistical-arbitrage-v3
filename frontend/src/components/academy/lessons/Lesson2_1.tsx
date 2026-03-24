@@ -58,28 +58,14 @@ export function Lesson2_1() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          {"When people think about assets \"moving together,\" they usually think of "}
-          <GlossaryLink term="Correlation" />
-          {". It's the first tool most people reach for — and it's not wrong, it's just not enough."}
-        </Text>
-        <Text>
-          {"Correlation measures whether two series tend to go up and down "}
-          <em>{"at the same time"}</em>
-          {". A correlation of +1 means they move in perfect lockstep. Zero means no relationship. The "}
-          <GlossaryLink term="p-value" />
-          {" tells you if the relationship is statistically significant."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to see how two assets look at different "}
+        <GlossaryLink term="Correlation" />
+        {" levels."}
+      </Text>
 
-      {/* Interactive correlation */}
+      {/* Interactive correlation — chart first */}
       <Stack gap="sm">
-        <Title order={4}>{"Try it: adjusting correlation"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to see how two series look at different correlation levels. Watch how the lines track each other more tightly as correlation increases."}
-        </Text>
-
         <Box>
           <Text size="sm" mb="xs">
             {"Correlation blend: "}
@@ -132,14 +118,25 @@ export function Lesson2_1() {
         />
       </Stack>
 
+      {/* Explanation BELOW the chart */}
+      <Stack gap="md">
+        <Text>
+          {"When people think about assets \"moving together,\" they usually think of "}
+          <GlossaryLink term="Correlation" />
+          {". It's the first tool most people reach for — and it's not wrong, it's just not enough."}
+        </Text>
+        <Text>
+          {"Correlation measures whether two series tend to go up and down "}
+          <em>{"at the same time"}</em>
+          {". A correlation of +1 means they move in perfect lockstep. Zero means no relationship. The "}
+          <GlossaryLink term="p-value" />
+          {" tells you if the relationship is statistically significant."}
+        </Text>
+      </Stack>
+
       {/* The trap */}
       <Stack gap="sm">
         <Title order={4}>{"The correlation trap"}</Title>
-        <Text>
-          {"Here's the problem. These two assets are highly correlated (they both trend upward). But look at their spread — it keeps "}
-          <em>{"growing"}</em>
-          {". There's no mean reversion. A pairs trade on these would lose money as the gap widens forever."}
-        </Text>
 
         <PlotlyChart
           data={[
@@ -190,6 +187,11 @@ export function Lesson2_1() {
           }}
         />
 
+        <Text>
+          {"These two assets are highly correlated (they both trend upward). But look at their spread — it keeps "}
+          <em>{"growing"}</em>
+          {". There's no mean reversion. A pairs trade on these would lose money as the gap widens forever."}
+        </Text>
         <Text>
           {"Both assets go up, so correlation is high. But Asset B trends "}
           <em>{"faster"}</em>

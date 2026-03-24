@@ -66,39 +66,12 @@ export function Lesson2_2() {
 
   return (
     <Stack gap="xl">
-      <Stack gap="md">
-        <Text>
-          <GlossaryLink term="Cointegration" />
-          {" answers a different question than correlation. Instead of asking \"do these assets move in the same direction?\" it asks: "}
-          <strong>{"\"does the gap between them stay bounded?\""}</strong>
-        </Text>
-        <Text>
-          {"Two series are cointegrated when some linear combination of them produces a "}
-          <GlossaryLink term="Stationarity">{"stationary"}</GlossaryLink>
-          {" series — one that oscillates around a constant mean. That stationary series is the "}
-          <GlossaryLink term="Spread" />
-          {", and it's what we trade."}
-        </Text>
-      </Stack>
+      <Text>
+        {"Drag the slider to control the \"leash\" between two assets — watch the spread chart change from mean-reverting to drifting."}
+      </Text>
 
+      {/* Interactive slider and charts first */}
       <Stack gap="sm">
-        <Title order={4}>{"The key intuition"}</Title>
-        <Text>
-          {"Think of it like two dogs on a leash. Each dog wanders randomly (non-stationary), but the leash constrains the distance between them. The "}
-          <em>{"dogs"}</em>
-          {" are the asset prices. The "}
-          <em>{"leash length"}</em>
-          {" is the spread. If the leash exists (cointegration), the spread is bounded and mean-reverting. If there's no leash, the dogs can wander apart forever."}
-        </Text>
-      </Stack>
-
-      {/* Interactive slider */}
-      <Stack gap="sm">
-        <Title order={4}>{"Tighten the leash"}</Title>
-        <Text size="sm" c="dimmed">
-          {"Drag the slider to control how tightly the two assets are bound together. Watch the spread chart below — does it stay flat, or drift away?"}
-        </Text>
-
         <Text size="sm" fw={600} c={isCointegrated ? 'blue.4' : 'red.4'}>
           {label}
         </Text>
@@ -186,6 +159,33 @@ export function Lesson2_2() {
           {isCointegrated
             ? "The spread oscillates around a level — it's stationary. Every time it deviates, the leash pulls it back. This is tradeable."
             : "The spread trends with no pull-back. Despite the assets moving in similar directions, the gap keeps growing. This is NOT tradeable."}
+        </Text>
+      </Stack>
+
+      {/* Explanation BELOW the charts */}
+      <Stack gap="md">
+        <Text>
+          <GlossaryLink term="Cointegration" />
+          {" answers a different question than correlation. Instead of asking \"do these assets move in the same direction?\" it asks: "}
+          <strong>{"\"does the gap between them stay bounded?\""}</strong>
+        </Text>
+        <Text>
+          {"Two series are cointegrated when some linear combination of them produces a "}
+          <GlossaryLink term="Stationarity">{"stationary"}</GlossaryLink>
+          {" series — one that oscillates around a constant mean. That stationary series is the "}
+          <GlossaryLink term="Spread" />
+          {", and it's what we trade."}
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Title order={4}>{"The key intuition"}</Title>
+        <Text>
+          {"Think of it like two dogs on a leash. Each dog wanders randomly (non-stationary), but the leash constrains the distance between them. The "}
+          <em>{"dogs"}</em>
+          {" are the asset prices. The "}
+          <em>{"leash length"}</em>
+          {" is the spread. If the leash exists (cointegration), the spread is bounded and mean-reverting. If there's no leash, the dogs can wander apart forever."}
         </Text>
       </Stack>
 
