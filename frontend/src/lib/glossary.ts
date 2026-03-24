@@ -107,6 +107,66 @@ export const GLOSSARY_TERMS: readonly GlossaryEntry[] = [
     definition:
       'A two-step cointegration test: (1) regress one asset on the other to get the hedge ratio and residuals (spread), (2) test the residuals for stationarity using the ADF test. If the residuals are stationary, the assets are cointegrated. Note: the test is order-sensitive — switching which asset is dependent can change results.',
   },
+  {
+    term: 'Position Sizing',
+    aka: 'position size',
+    definition:
+      'The fraction of your total capital allocated to a single trade. Larger positions amplify both gains and losses. Proper position sizing is a key risk management tool — risking too much on one trade can wipe out your account even with a winning strategy.',
+  },
+  {
+    term: 'Equity Curve',
+    aka: 'cumulative PnL',
+    definition:
+      'A chart showing how your portfolio value changes over time as trades are opened and closed. A healthy equity curve trends upward with manageable drawdowns. Steep drops indicate periods of heavy losses.',
+  },
+  {
+    term: 'Backtesting',
+    aka: 'backtest',
+    definition:
+      'Simulating a trading strategy on historical data to evaluate how it would have performed. A backtest replays past prices, generates signals, executes virtual trades, and computes performance metrics. Essential for validating a strategy before risking real money.',
+  },
+  {
+    term: 'Sharpe Ratio',
+    aka: 'risk-adjusted return',
+    definition:
+      'A measure of risk-adjusted performance: (mean return − risk-free rate) / standard deviation of returns. A Sharpe above 1.0 is decent, above 2.0 is strong. It tells you how much return you earn per unit of risk taken.',
+  },
+  {
+    term: 'Maximum Drawdown',
+    aka: 'max drawdown, MDD',
+    definition:
+      'The largest peak-to-trough decline in your equity curve, expressed as a percentage. A max drawdown of 20% means at some point you lost 20% from your highest equity. Lower is better — large drawdowns are psychologically and financially devastating.',
+  },
+  {
+    term: 'Win Rate',
+    aka: 'hit rate',
+    definition:
+      'The percentage of trades that are profitable. A win rate of 60% means 6 out of 10 trades made money. Win rate alone doesn\u2019t determine profitability — you also need to consider the average win size vs. average loss size (profit factor).',
+  },
+  {
+    term: 'Profit Factor',
+    aka: '',
+    definition:
+      'The ratio of gross profits to gross losses. A profit factor above 1.0 means the strategy is profitable overall. Above 1.5 is good, above 2.0 is excellent. Unlike win rate, profit factor accounts for both frequency and magnitude of wins vs. losses.',
+  },
+  {
+    term: 'Overfitting',
+    aka: 'curve fitting',
+    definition:
+      'When a model or strategy is tuned so precisely to historical data that it captures noise rather than genuine patterns. An overfit strategy looks amazing on past data but fails on new data. More parameters generally means higher overfitting risk.',
+  },
+  {
+    term: 'In-Sample',
+    aka: 'training data',
+    definition:
+      'The historical data period used to develop and optimize a strategy. Performance on in-sample data is biased upward because the strategy was designed to fit this data. Always validate with out-of-sample data.',
+  },
+  {
+    term: 'Out-of-Sample',
+    aka: 'test data, OOS',
+    definition:
+      'Historical data that was NOT used during strategy development or optimization. Out-of-sample performance is a more honest estimate of how a strategy will perform in the future. A large gap between in-sample and out-of-sample results is a red flag for overfitting.',
+  },
 ] as const;
 
 type GlossaryTermInput = string | Pick<GlossaryEntry, 'term'>;
