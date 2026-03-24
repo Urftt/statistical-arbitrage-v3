@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  Box,
-  SegmentedControl,
+  Slider,
   Stack,
   Text,
   Title,
@@ -15,30 +14,40 @@ import PlotlyChart from '@/components/charts/PlotlyChart';
  * Lesson 1.1 — What is Statistical Arbitrage?
  *
  * Teaches the core concept through a real-world analogy and an interactive
- * chart comparing mean reversion vs random walk.
+ * slider that lets users feel the pull-back strength of mean reversion.
  */
 export function Lesson1_1() {
-  const [scenario, setScenario] = useState<string>('revert');
+  // 0 = pure random walk, 1 = strong mean reversion
+  const [strength, setStrength] = useState(0.7);
 
-  // Generate spread simulations
   const n = 150;
-  const timestamps = Array.from({ length: n }, (_, i) => i);
-
-  const revertingSpread: number[] = [0];
-  const randomSpread: number[] = [0];
+  const timestamps = useMemo(() => Array.from({ length: n }, (_, i) => i), []);
 
   // Deterministic pseudo-random for reproducibility
-  const noise = (i: number) => Math.sin(i * 127.1 + 311.7) * 0.8 + Math.cos(i * 269.5) * 0.4;
+  const noise = (i: number) =>
+    Math.sin(i * 127.1 + 311.7) * 0.8 + Math.cos(i * 269.5) * 0.4;
 
-  for (let i = 1; i < n; i++) {
-    const n_i = noise(i);
-    // Mean-reverting: strong pull-back toward 0
-    revertingSpread.push(revertingSpread[i - 1] * 0.85 + n_i);
-    // Random walk: accumulates with upward drift — clearly drifts away from zero
-    randomSpread.push(randomSpread[i - 1] + n_i * 0.3 + 0.06);
-  }
+  const spread = useMemo(() => {
+    const values: number[] = [0];
+    for (let i = 1; i < n; i++) {
+      const n_i = noise(i);
+      // decay controls pull-back: 1.0 = no pull-back (random walk), 0.0 = instant snap-back
+      const decay = 1 - strength * 0.25; // maps [0,1] → [1.0, 0.75]
+      const drift = (1 - strength) * 0.04; // random walk gets upward drift
+      values.push(values[i - 1] * decay + n_i + drift);
+    }
+    return values;
+  }, [strength]);
 
-  const spread = scenario === 'revert' ? revertingSpread : randomSpread;
+  const isReverting = strength > 0.4;
+  const label =
+    strength < 0.2
+      ? 'Random walk — no pull-back, wanders freely'
+      : strength < 0.5
+        ? 'Weak pull-back — drifts but occasionally returns'
+        : strength < 0.8
+          ? 'Mean-reverting — consistently pulled back to zero'
+          : 'Strong mean reversion — snaps back quickly';
 
   return (
     <Stack gap="xl">
@@ -83,23 +92,28 @@ export function Lesson1_1() {
 
       {/* Interactive chart */}
       <Stack gap="sm">
-        <Title order={4}>See it in action</Title>
+        <Title order={4}>Feel the pull-back</Title>
         <Text size="sm" c="dimmed">
-          {"Toggle between the two scenarios. A "}
-          <strong>mean-reverting</strong>
-          {" spread keeps returning to zero — that's tradeable. A "}
-          <strong>random walk</strong>
-          {" just wanders off — not tradeable."}
+          {"Drag the slider to control how strongly the spread is pulled back toward zero. At zero pull-back, it's a random walk — untradeable. Crank it up and watch mean reversion kick in."}
         </Text>
 
-        <SegmentedControl
-          value={scenario}
-          onChange={setScenario}
-          data={[
-            { label: 'Mean-Reverting', value: 'revert' },
-            { label: 'Random Walk', value: 'random' },
+        <Text size="sm" fw={600} c={isReverting ? 'blue.4' : 'red.4'}>
+          {label}
+        </Text>
+
+        <Slider
+          value={strength}
+          onChange={setStrength}
+          min={0}
+          max={1}
+          step={0.05}
+          marks={[
+            { value: 0, label: 'Random walk' },
+            { value: 0.5, label: '' },
+            { value: 1, label: 'Strong reversion' },
           ]}
-          size="sm"
+          label={(v) => `${Math.round(v * 100)}%`}
+          color={isReverting ? 'blue' : 'red'}
         />
 
         <PlotlyChart
@@ -109,9 +123,9 @@ export function Lesson1_1() {
               y: spread,
               type: 'scatter',
               mode: 'lines',
-              name: scenario === 'revert' ? 'Mean-reverting spread' : 'Random walk',
+              name: 'Spread',
               line: {
-                color: scenario === 'revert' ? '#339AF0' : '#FF6B6B',
+                color: isReverting ? '#339AF0' : '#FF6B6B',
                 width: 2,
               },
             },
@@ -126,9 +140,9 @@ export function Lesson1_1() {
             },
           ]}
           layout={{
-            title: scenario === 'revert'
-              ? 'Mean-Reverting: Always Pulled Back to Zero'
-              : 'Random Walk: Wanders Freely, No Pull-Back',
+            title: isReverting
+              ? 'Mean-Reverting: Pulled Back to Zero'
+              : 'Random Walk: Wandering Away',
             xaxis: { title: { text: 'Time' } },
             yaxis: { title: { text: 'Spread Value' } },
             height: 350,

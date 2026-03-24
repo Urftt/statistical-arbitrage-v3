@@ -100,6 +100,8 @@ export function Lesson1_3() {
   const dates = data1?.timestamps.map(epochToDate) ?? [];
   const norm1 = data1 ? normalizeToPercent(data1.close) : [];
   const norm2 = data2 ? normalizeToPercent(data2.close) : [];
+  // Spread = difference in normalized % returns — shows gap opening/closing
+  const spreadData = norm1.map((v, i) => v - (norm2[i] ?? 0));
 
   return (
     <Stack gap="xl">
@@ -192,6 +194,36 @@ export function Lesson1_3() {
               height: 400,
               showlegend: true,
               legend: { x: 0, y: 1.12, orientation: 'h' },
+            }}
+          />
+
+          <PlotlyChart
+            data={[
+              {
+                x: dates.slice(0, spreadData.length),
+                y: spreadData,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'Spread (% gap)',
+                line: { color: '#CC5DE8', width: 2 },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(204, 93, 232, 0.1)',
+              },
+              {
+                x: [dates[0], dates[dates.length - 1]],
+                y: [0, 0],
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#909296', width: 1, dash: 'dash' },
+                showlegend: false,
+              },
+            ]}
+            layout={{
+              title: `Spread: ${pair.asset1.split('/')[0]} − ${pair.asset2.split('/')[0]} (% Gap)`,
+              xaxis: { title: { text: 'Date' } },
+              yaxis: { title: { text: '% Spread' } },
+              height: 280,
+              showlegend: false,
             }}
           />
 

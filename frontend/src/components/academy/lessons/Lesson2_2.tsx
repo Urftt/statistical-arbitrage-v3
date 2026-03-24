@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  Box,
-  SegmentedControl,
+  Slider,
   Stack,
   Text,
   Title,
@@ -14,45 +13,56 @@ import PlotlyChart from '@/components/charts/PlotlyChart';
 /**
  * Lesson 2.2 — Cointegration: The Real Test
  *
- * Explains what cointegration actually means and why it's different from
- * correlation. Interactive: compare correlated-not-cointegrated vs
- * cointegrated pairs.
+ * Interactive slider controls the "leash tightness" — how strongly the spread
+ * is pulled back. Users can feel the spectrum from cointegrated to merely correlated.
  */
 export function Lesson2_2() {
-  const [example, setExample] = useState<string>('cointegrated');
+  // 0 = no leash (drifting, only correlated), 1 = tight leash (strongly cointegrated)
+  const [tightness, setTightness] = useState(0.8);
 
   const n = 150;
-  const timestamps = Array.from({ length: n }, (_, i) => i);
+  const timestamps = useMemo(() => Array.from({ length: n }, (_, i) => i), []);
 
-  // Cointegrated pair: shared random walk + stationary spread
-  const randomWalk: number[] = [100];
-  for (let i = 1; i < n; i++) {
-    randomWalk.push(
-      randomWalk[i - 1] + Math.sin(i * 127.1 + 311.7) * 1.5
-    );
-  }
+  // Deterministic pseudo-random
+  const noise = (i: number, seed: number) =>
+    Math.sin(i * 127.1 + seed) * 1.5;
 
-  const cointA = randomWalk.map(
-    (v, i) => v + Math.sin(i * 0.2) * 3
-  );
-  const cointB = randomWalk.map(
-    (v, i) => v * 0.8 + 20 + Math.sin(i * 0.25 + 1) * 2.5
-  );
-  const cointSpread = cointA.map((a, i) => a - 1.25 * cointB[i]);
+  const { pricesA, pricesB, spread } = useMemo(() => {
+    // Common random walk (shared trend)
+    const walk: number[] = [100];
+    for (let i = 1; i < n; i++) {
+      walk.push(walk[i - 1] + noise(i, 311.7));
+    }
 
-  // Correlated but NOT cointegrated: two independent random walks with similar trend
-  const walkA: number[] = [100];
-  const walkB: number[] = [80];
-  for (let i = 1; i < n; i++) {
-    const commonShock = Math.sin(i * 73.3) * 0.8;
-    walkA.push(walkA[i - 1] + commonShock + Math.sin(i * 127.1) * 0.6 + 0.1);
-    walkB.push(walkB[i - 1] + commonShock + Math.cos(i * 269.5) * 0.6 + 0.15);
-  }
-  const notCointSpread = walkA.map((a, i) => a - walkB[i]);
+    // Asset A follows the walk with some wobble
+    const a = walk.map((v, i) => v + Math.sin(i * 0.2) * 3);
 
-  const pricesA = example === 'cointegrated' ? cointA : walkA;
-  const pricesB = example === 'cointegrated' ? cointB : walkB;
-  const spread = example === 'cointegrated' ? cointSpread : notCointSpread;
+    // Asset B: tightness controls how much it's pulled toward A's level
+    // At tightness=1: B = 0.8*A + 20 + small noise (tight cointegration)
+    // At tightness=0: B follows its own random walk with similar trend (just correlated)
+    const b: number[] = [0.8 * a[0] + 20];
+    for (let i = 1; i < n; i++) {
+      const targetB = 0.8 * a[i] + 20; // where B "should" be if cointegrated
+      const independentStep = b[i - 1] + noise(i, 73.3) * 0.6 + 0.05; // independent drift
+      // Blend between cointegrated target and independent random walk
+      const pullBack = tightness * 0.15; // how fast it snaps back
+      const blended = b[i - 1] + pullBack * (targetB - b[i - 1]) + noise(i, 73.3) * (1.2 - tightness * 0.5);
+      b.push(tightness > 0.1 ? blended : independentStep);
+    }
+
+    const s = a.map((aVal, i) => aVal - 1.25 * b[i]);
+    return { pricesA: a, pricesB: b, spread: s };
+  }, [tightness]);
+
+  const isCointegrated = tightness > 0.4;
+  const label =
+    tightness < 0.15
+      ? 'No leash — assets drift apart freely (only correlated)'
+      : tightness < 0.4
+        ? 'Loose leash — some pull-back, but spread still drifts'
+        : tightness < 0.7
+          ? 'Moderate leash — spread is mostly bounded'
+          : 'Tight leash — spread snaps back reliably (cointegrated)';
 
   return (
     <Stack gap="xl">
@@ -82,21 +92,30 @@ export function Lesson2_2() {
         </Text>
       </Stack>
 
-      {/* Interactive comparison */}
+      {/* Interactive slider */}
       <Stack gap="sm">
-        <Title order={4}>{"See the difference"}</Title>
+        <Title order={4}>{"Tighten the leash"}</Title>
         <Text size="sm" c="dimmed">
-          {"Toggle between a cointegrated pair (spread is bounded) and a merely correlated pair (spread drifts). The prices might look similar, but the spread tells the truth."}
+          {"Drag the slider to control how tightly the two assets are bound together. Watch the spread chart below — does it stay flat, or drift away?"}
         </Text>
 
-        <SegmentedControl
-          value={example}
-          onChange={setExample}
-          data={[
-            { label: 'Cointegrated', value: 'cointegrated' },
-            { label: 'Only Correlated', value: 'correlated' },
+        <Text size="sm" fw={600} c={isCointegrated ? 'blue.4' : 'red.4'}>
+          {label}
+        </Text>
+
+        <Slider
+          value={tightness}
+          onChange={setTightness}
+          min={0}
+          max={1}
+          step={0.05}
+          marks={[
+            { value: 0, label: 'No leash' },
+            { value: 0.5, label: '' },
+            { value: 1, label: 'Tight leash' },
           ]}
-          fullWidth
+          label={(v) => `${Math.round(v * 100)}%`}
+          color={isCointegrated ? 'blue' : 'red'}
         />
 
         <PlotlyChart
@@ -119,9 +138,9 @@ export function Lesson2_2() {
             },
           ]}
           layout={{
-            title: example === 'cointegrated'
-              ? 'Cointegrated: Prices Wander, But Together'
-              : 'Only Correlated: Prices Trend Similarly, But Drift Apart',
+            title: isCointegrated
+              ? 'Prices: Wandering Together (Leash Holds)'
+              : 'Prices: Drifting Apart (No Leash)',
             xaxis: { title: { text: 'Time' } },
             yaxis: { title: { text: 'Price' } },
             height: 300,
@@ -139,27 +158,23 @@ export function Lesson2_2() {
               mode: 'lines',
               name: 'Spread',
               line: {
-                color: example === 'cointegrated' ? '#339AF0' : '#FF6B6B',
+                color: isCointegrated ? '#339AF0' : '#FF6B6B',
                 width: 2,
               },
             },
-            ...(example === 'cointegrated'
-              ? [
-                  {
-                    x: [0, n - 1],
-                    y: [0, 0] as number[],
-                    type: 'scatter' as const,
-                    mode: 'lines' as const,
-                    line: { color: '#909296', width: 1, dash: 'dash' as const },
-                    showlegend: false,
-                  },
-                ]
-              : []),
+            {
+              x: [0, n - 1],
+              y: [0, 0],
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#909296', width: 1, dash: 'dash' },
+              showlegend: false,
+            },
           ]}
           layout={{
-            title: example === 'cointegrated'
-              ? 'Spread: Bounded and Mean-Reverting ✓'
-              : 'Spread: Drifting — NOT Mean-Reverting ✗',
+            title: isCointegrated
+              ? 'Spread: Bounded and Mean-Reverting'
+              : 'Spread: Drifting — NOT Mean-Reverting',
             xaxis: { title: { text: 'Time' } },
             yaxis: { title: { text: 'Spread Value' } },
             height: 250,
@@ -168,9 +183,9 @@ export function Lesson2_2() {
         />
 
         <Text size="sm">
-          {example === 'cointegrated'
-            ? "The spread oscillates around zero — it's stationary. Every time it deviates, it reverts. This is tradeable."
-            : "The spread trends upward with no pull-back. Despite the assets being correlated, the gap keeps growing. This is NOT tradeable."}
+          {isCointegrated
+            ? "The spread oscillates around a level — it's stationary. Every time it deviates, the leash pulls it back. This is tradeable."
+            : "The spread trends with no pull-back. Despite the assets moving in similar directions, the gap keeps growing. This is NOT tradeable."}
         </Text>
       </Stack>
 
@@ -189,7 +204,7 @@ export function Lesson2_2() {
           {". It tells you whether the spread between two assets is bounded and mean-reverting — which is exactly what pairs trading needs."}
         </Text>
         <Text>
-          {"A pair can be highly correlated but not cointegrated (our trap example). A pair can even be uncorrelated in the short term but cointegrated in the long run. "}
+          {"A pair can be highly correlated but not cointegrated (slide the leash to zero to see it). A pair can even be uncorrelated in the short term but cointegrated in the long run. "}
           <strong>{"For pairs trading, cointegration is what matters."}</strong>
         </Text>
       </Stack>
