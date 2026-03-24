@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
   Group,
+  Menu,
   Paper,
   Progress,
   Stack,
@@ -12,8 +14,18 @@ import {
   Title,
   Stepper,
 } from '@mantine/core';
-import { IconArrowLeft, IconArrowRight, IconCheck } from '@tabler/icons-react';
-import { CHAPTERS, TOTAL_LESSONS, getLessonByFlatIndex, getLessonFlatIndex } from '@/lib/academy';
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconCheck,
+  IconChevronDown,
+  IconRocket,
+} from '@tabler/icons-react';
+import {
+  CHAPTERS,
+  TOTAL_LESSONS,
+  getLessonByFlatIndex,
+} from '@/lib/academy';
 
 interface AcademyWizardProps {
   renderLesson: (lessonId: string) => ReactNode;
@@ -22,6 +34,7 @@ interface AcademyWizardProps {
 export function AcademyWizard({ renderLesson }: AcademyWizardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const topRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const info = getLessonByFlatIndex(currentIndex);
   if (!info) return null;
@@ -37,7 +50,7 @@ export function AcademyWizard({ renderLesson }: AcademyWizardProps) {
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [currentIndex]);
 
-  // Calculate the flat index of the first lesson in the current chapter
+  // Flat index of the first lesson in the current chapter
   const chapterStartIndex = (() => {
     let idx = 0;
     for (const ch of CHAPTERS) {
@@ -62,14 +75,66 @@ export function AcademyWizard({ renderLesson }: AcademyWizardProps) {
     [chapterStartIndex]
   );
 
+  const goToChapter = useCallback((chapterNumber: number) => {
+    let idx = 0;
+    for (const ch of CHAPTERS) {
+      if (ch.number === chapterNumber) {
+        setCurrentIndex(idx);
+        return;
+      }
+      idx += ch.lessons.length;
+    }
+  }, []);
+
+  const handleComplete = useCallback(() => {
+    router.push('/scanner');
+  }, [router]);
+
   return (
     <Stack gap="lg" ref={topRef}>
       {/* Progress header */}
       <Paper p="md" radius="sm" withBorder>
         <Group justify="space-between" mb="xs">
-          <Text size="sm" fw={600} c="dimmed">
-            Chapter {chapter.number}: {chapter.title}
-          </Text>
+          {/* Chapter selector dropdown */}
+          <Menu shadow="md" width={320} position="bottom-start">
+            <Menu.Target>
+              <Button
+                variant="subtle"
+                size="compact-sm"
+                rightSection={<IconChevronDown size={14} />}
+                styles={{
+                  root: { fontWeight: 600, paddingLeft: 0 },
+                }}
+                c="dimmed"
+              >
+                Chapter {chapter.number}: {chapter.title}
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Label>Jump to chapter</Menu.Label>
+              {CHAPTERS.map((ch) => (
+                <Menu.Item
+                  key={ch.number}
+                  onClick={() => goToChapter(ch.number)}
+                  fw={ch.number === chapter.number ? 700 : 400}
+                  c={ch.number === chapter.number ? 'blue.4' : undefined}
+                  leftSection={
+                    <Text size="xs" fw={700} c="dimmed" w={20}>
+                      {ch.number}
+                    </Text>
+                  }
+                >
+                  <div>
+                    <Text size="sm">{ch.title}</Text>
+                    <Text size="xs" c="dimmed">
+                      {ch.description} ({ch.lessons.length} lessons)
+                    </Text>
+                  </div>
+                </Menu.Item>
+              ))}
+            </Menu.Dropdown>
+          </Menu>
+
           <Text size="sm" c="dimmed">
             {currentIndex + 1} / {TOTAL_LESSONS}
           </Text>
@@ -118,15 +183,23 @@ export function AcademyWizard({ renderLesson }: AcademyWizardProps) {
         >
           Back
         </Button>
-        <Button
-          rightSection={
-            isLast ? <IconCheck size={16} /> : <IconArrowRight size={16} />
-          }
-          onClick={goNext}
-          disabled={isLast}
-        >
-          {isLast ? 'Complete' : 'Next'}
-        </Button>
+        {isLast ? (
+          <Button
+            rightSection={<IconRocket size={16} />}
+            onClick={handleComplete}
+            variant="gradient"
+            gradient={{ from: 'blue', to: 'cyan' }}
+          >
+            Start Research
+          </Button>
+        ) : (
+          <Button
+            rightSection={<IconArrowRight size={16} />}
+            onClick={goNext}
+          >
+            Next
+          </Button>
+        )}
       </Group>
     </Stack>
   );
