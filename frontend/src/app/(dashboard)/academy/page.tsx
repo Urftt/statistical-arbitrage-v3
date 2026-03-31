@@ -1,6 +1,7 @@
 'use client';
 
 import { Container, Text } from '@mantine/core';
+import { AcademyDataProvider } from '@/contexts/AcademyDataContext';
 import { AcademyWizard } from '@/components/academy/AcademyWizard';
 import {
   Lesson1_1,
@@ -73,8 +74,10 @@ function renderLesson(lessonId: string) {
 
 export default function AcademyPage() {
   return (
-    <Container size="lg" py="md">
-      <AcademyWizard renderLesson={renderLesson} />
-    </Container>
+    <AcademyDataProvider>
+      <Container size="lg" py="md">
+        <AcademyWizard renderLesson={renderLesson} />
+      </Container>
+    </AcademyDataProvider>
   );
 }
