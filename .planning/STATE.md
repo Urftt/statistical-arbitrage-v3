@@ -71,7 +71,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- [ ] Add synced vertical crosshair line across spread and z-score charts (Plotly v3 spikes not rendering — needs custom SVG overlay or Plotly subplots approach)
 
 ### Blockers/Concerns
 

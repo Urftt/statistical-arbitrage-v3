@@ -187,9 +187,9 @@ class PairAnalysis:
         coeffs = np.polyfit(spread_lag, spread_delta, 1)
         lambda_param = -coeffs[0]
 
-        # Half-life = -ln(2) / lambda
+        # Half-life = ln(2) / lambda
         if lambda_param > 0:
-            half_life = -np.log(2) / lambda_param
+            half_life = np.log(2) / lambda_param
         else:
             half_life = np.inf  # No mean reversion
 

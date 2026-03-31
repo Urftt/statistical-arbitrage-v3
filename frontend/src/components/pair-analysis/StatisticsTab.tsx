@@ -59,8 +59,9 @@ function correlationBadge(v: number): { color: string; label: string } {
 }
 
 function cointScoreBadge(v: number): { color: string; label: string } {
-  if (v > 70) return { color: 'green', label: 'Strong' };
-  if (v >= 40) return { color: 'yellow', label: 'Moderate' };
+  // cointegration_score is a t-statistic: more negative = stronger cointegration
+  if (v < -2.9) return { color: 'green', label: 'Strong' };
+  if (v < -1.9) return { color: 'yellow', label: 'Moderate' };
   return { color: 'red', label: 'Weak' };
 }
 
@@ -99,7 +100,7 @@ export default function StatisticsTab() {
     setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setError(null);
 
-    postCointegration({ asset1, asset2, timeframe, days_back: Number(daysBack) })
+    postCointegration({ asset1: `${asset1}/EUR`, asset2: `${asset2}/EUR`, timeframe, days_back: Number(daysBack) })
       .then((res) => {
         if (!cancelled) setData(res);
       })
@@ -162,14 +163,18 @@ export default function StatisticsTab() {
         },
         {
           label: 'Coint. Score',
-          value: Math.round(data.cointegration_score) + '/100',
+          value: data.cointegration_score.toFixed(2),
           badge: cointScoreBadge(data.cointegration_score),
         },
       ]
     : null;
 
+  const crosshairLayout = {
+    hovermode: 'x unified' as const,
+  };
+
   return (
-    <Stack gap="lg">
+    <Stack gap="md">
       {/* Lookback row */}
       <Group justify="space-between" align="center">
         <Text size="sm" c="dimmed">
@@ -186,16 +191,16 @@ export default function StatisticsTab() {
 
       {/* Stat cards */}
       {loading ? (
-        <SimpleGrid cols={{ base: 2, sm: 3, lg: 5 }} spacing="md">
+        <SimpleGrid cols={{ base: 2, sm: 3, lg: 5 }} spacing="sm">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} height={80} />
           ))}
         </SimpleGrid>
       ) : cards ? (
-        <SimpleGrid cols={{ base: 2, sm: 3, lg: 5 }} spacing="md">
+        <SimpleGrid cols={{ base: 2, sm: 3, lg: 5 }} spacing="sm">
           {cards.map((card) => (
-            <Paper key={card.label} p="md" radius="sm">
-              <Stack gap="xs">
+            <Paper key={card.label} p="sm" radius="sm" withBorder>
+              <Stack gap={4}>
                 <Text size="xs" c="dimmed" tt="uppercase">
                   {card.label}
                 </Text>
@@ -213,9 +218,9 @@ export default function StatisticsTab() {
 
       {/* Spread chart */}
       {loading ? (
-        <Skeleton height={260} />
+        <Skeleton height={200} />
       ) : data ? (
-        <Paper p="md">
+        <Paper p="sm" withBorder>
           <PlotlyChart
             data={[
               {
@@ -226,17 +231,17 @@ export default function StatisticsTab() {
                 name: 'Spread',
               },
             ]}
-            layout={{ title: 'Spread', height: 260 }}
+            layout={{ title: 'Spread', height: 200, margin: { t: 30, b: 30, l: 50, r: 20 }, ...crosshairLayout }}
             config={{ displayModeBar: false, scrollZoom: true }}
           />
         </Paper>
       ) : null}
 
-      {/* Z-score chart */}
+      {/* Z-score chart with sliders */}
       {loading ? (
         <Skeleton height={240} />
       ) : data ? (
-        <Paper p="md">
+        <Paper p="sm" withBorder>
           <PlotlyChart
             data={[
               {
@@ -249,46 +254,43 @@ export default function StatisticsTab() {
             ]}
             layout={{
               title: 'Z-Score',
-              height: 240,
+              height: 200,
+              margin: { t: 30, b: 30, l: 50, r: 20 },
               shapes: buildZScoreShapes(entryThreshold, exitThreshold),
+              ...crosshairLayout,
             }}
             config={{ displayModeBar: false, scrollZoom: true }}
           />
+          <Stack gap="xs" mt="sm" px="md">
+            <Group justify="space-between">
+              <Text size="xs" c="dimmed">Entry Threshold</Text>
+              <Text size="xs" fw={700}>&plusmn; {entryThreshold.toFixed(1)}</Text>
+            </Group>
+            <Slider
+              min={0.5}
+              max={4.0}
+              step={0.1}
+              value={entryThreshold}
+              onChange={setEntryThreshold}
+              color="red"
+              size="sm"
+            />
+            <Group justify="space-between" mt={4}>
+              <Text size="xs" c="dimmed">Exit Threshold</Text>
+              <Text size="xs" fw={700}>&plusmn; {exitThreshold.toFixed(1)}</Text>
+            </Group>
+            <Slider
+              min={0.0}
+              max={2.0}
+              step={0.1}
+              value={exitThreshold}
+              onChange={setExitThreshold}
+              color="yellow"
+              size="sm"
+            />
+          </Stack>
         </Paper>
       ) : null}
-
-      {/* Threshold sliders */}
-      <Stack gap="sm">
-        <Group justify="space-between">
-          <Text size="sm">Entry Threshold</Text>
-          <Text size="sm" fw={700}>
-            &plusmn; {entryThreshold.toFixed(1)}
-          </Text>
-        </Group>
-        <Slider
-          min={0.5}
-          max={4.0}
-          step={0.1}
-          value={entryThreshold}
-          onChange={setEntryThreshold}
-          color="red"
-        />
-
-        <Group justify="space-between">
-          <Text size="sm">Exit Threshold</Text>
-          <Text size="sm" fw={700}>
-            &plusmn; {exitThreshold.toFixed(1)}
-          </Text>
-        </Group>
-        <Slider
-          min={0.0}
-          max={2.0}
-          step={0.1}
-          value={exitThreshold}
-          onChange={setExitThreshold}
-          color="yellow"
-        />
-      </Stack>
     </Stack>
   );
 }
