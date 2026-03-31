@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabRawPrices, TabNormalizedPrices, TabSpread } from '@/components/academy/real-data';
 
 /**
  * Lesson 2.2 — Cointegration: The Real Test
@@ -161,6 +162,16 @@ export function Lesson2_2() {
             : "The spread trends with no pull-back. Despite the assets moving in similar directions, the gap keeps growing. This is NOT tradeable."}
         </Text>
       </Stack>
+
+      <RealDataSection intro="Compare a real cointegrated pair vs a non-cointegrated one.">
+        {(data) => (
+          <Stack gap="md">
+            <TabRawPrices data={data} />
+            <TabNormalizedPrices data={data} />
+            <TabSpread data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Explanation BELOW the charts */}
       <Stack gap="md">

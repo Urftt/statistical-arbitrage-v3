@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import {
-  Box,
   SegmentedControl,
   Stack,
   Text,
@@ -10,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSpread, TabADFTest } from '@/components/academy/real-data';
 
 /**
  * Lesson 2.4 — Stationarity & The ADF Test
@@ -136,6 +136,15 @@ export function Lesson2_4() {
             : "The rolling mean drifts around. The bands shift. At time 50 the mean is different from time 150. This series is non-stationary — you can't predict a \"normal\" level to revert to."}
         </Text>
       </Stack>
+
+      <RealDataSection intro="Run the ADF stationarity test on real crypto spreads.">
+        {(data) => (
+          <Stack gap="md">
+            <TabSpread data={data} />
+            <TabADFTest data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Explanation BELOW the chart */}
       <Stack gap="md">

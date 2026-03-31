@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabRawPrices, TabNormalizedPrices } from '@/components/academy/real-data';
 
 /**
  * Lesson 1.2 — Pairs Trading Explained
@@ -172,6 +173,15 @@ export function Lesson1_2() {
             : 'A balanced threshold — reasonable trade frequency with decent conviction.'}
         </Text>
       </Stack>
+
+      <RealDataSection intro="See real prices and how they compare when normalized.">
+        {(data) => (
+          <Stack gap="md">
+            <TabRawPrices data={data} />
+            <TabNormalizedPrices data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation BELOW the chart */}
       <Stack gap="sm">

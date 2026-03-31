@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSpread, TabSignals } from '@/components/academy/real-data';
 
 /**
  * Lesson 3.3 — Entry & Exit Signals
@@ -262,6 +263,15 @@ export function Lesson3_3() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="See real entry and exit signals on live z-score data.">
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabSpread data={data} />
+            <TabSignals data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation below the chart */}
       <Stack gap="sm">

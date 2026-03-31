@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabScatterOLS, TabSpread, TabADFTest } from '@/components/academy/real-data';
 
 /**
  * Lesson 2.3 — The Engle-Granger Test
@@ -154,6 +155,16 @@ export function Lesson2_3() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="Run the Engle-Granger test on real crypto pairs.">
+        {(data) => (
+          <Stack gap="md">
+            <TabScatterOLS data={data} />
+            <TabSpread data={data} />
+            <TabADFTest data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Explanation BELOW the charts */}
       <Stack gap="md">

@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabRawPrices } from '@/components/academy/real-data';
 
 /**
  * Lesson 1.1 — What is Statistical Arbitrage?
@@ -115,6 +116,12 @@ export function Lesson1_1() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="See real crypto prices — do they move together?">
+        {(data) => (
+          <TabRawPrices data={data} />
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation BELOW the chart */}
       <Stack gap="md">

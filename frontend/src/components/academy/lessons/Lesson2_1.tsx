@@ -10,6 +10,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabRawPrices, TabNormalizedPrices } from '@/components/academy/real-data';
 
 /**
  * Lesson 2.1 — Correlation: The Familiar Friend
@@ -50,9 +51,10 @@ export function Lesson2_1() {
   const correlation = stdA > 0 && stdB > 0 ? covAB / (stdA * stdB) : 0;
 
   // The trap: two trending series that are correlated but NOT cointegrated
-  const trendA = timestamps.map((i) => 100 + i * 0.8 + Math.sin(i * 0.05) * 5);
+  // A trends faster than B — both go up (correlated), but the gap widens
+  const trendA = timestamps.map((i) => 100 + i * 1.2 + Math.sin(i * 0.05) * 5);
   const trendB = timestamps.map(
-    (i) => 50 + i * 1.2 + Math.cos(i * 0.07) * 4
+    (i) => 90 + i * 0.7 + Math.cos(i * 0.07) * 4
   );
   const trendSpread = trendA.map((a, i) => a - trendB[i]);
 
@@ -117,6 +119,15 @@ export function Lesson2_1() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="See real correlation between crypto pairs.">
+        {(data) => (
+          <Stack gap="md">
+            <TabRawPrices data={data} />
+            <TabNormalizedPrices data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Explanation BELOW the chart */}
       <Stack gap="md">

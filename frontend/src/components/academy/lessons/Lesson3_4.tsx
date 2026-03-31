@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSpread, TabHalfLife } from '@/components/academy/real-data';
 
 /**
  * Lesson 3.4 — Half-Life: How Fast Does It Revert?
@@ -208,6 +209,15 @@ export function Lesson3_4() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="See how fast real spreads revert.">
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabSpread data={data} />
+            <TabHalfLife data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation below the charts */}
       <Stack gap="md">

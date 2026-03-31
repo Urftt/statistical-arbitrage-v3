@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSignals } from '@/components/academy/real-data';
 
 /**
  * Lesson 5.2 — Optimization & Walk-Forward
@@ -203,6 +204,14 @@ export function Lesson5_2() {
           {" happen with new data. The gap between them is the cost of overfitting."}
         </Text>
       </Stack>
+
+      <RealDataSection intro="See real z-score signals on actual crypto data." showComparison={false}>
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabSignals data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Explanation below the chart */}
       <Stack gap="sm">

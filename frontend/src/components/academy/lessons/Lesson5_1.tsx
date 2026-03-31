@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSpread, TabZScore, TabSignals } from '@/components/academy/real-data';
 
 /**
  * Lesson 5.1 — The Research Pipeline
@@ -321,6 +322,16 @@ export function Lesson5_1() {
           {phase.modules}
         </Text>
       </Stack>
+
+      <RealDataSection intro="See the full pipeline on real data — from spread to signals.">
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabSpread data={data} />
+            <TabZScore data={data} />
+            <TabSignals data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation below */}
       <Stack gap="sm">

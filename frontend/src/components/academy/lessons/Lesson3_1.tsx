@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabScatterOLS, TabSpread } from '@/components/academy/real-data';
 
 /**
  * Lesson 3.1 — Building the Spread
@@ -179,6 +180,15 @@ export function Lesson3_1() {
           {`Spread mean: ${spreadMean.toFixed(2)} | Spread std: ${spreadStd.toFixed(2)}`}
         </Text>
       </Stack>
+
+      <RealDataSection intro="See a real spread built from live crypto data.">
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabScatterOLS data={data} />
+            <TabSpread data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation below the chart */}
       <Stack gap="md">

@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { GlossaryLink } from '@/components/glossary/GlossaryLink';
 import PlotlyChart from '@/components/charts/PlotlyChart';
+import { RealDataSection, TabSpread, TabZScoreSlider } from '@/components/academy/real-data';
 
 /**
  * Lesson 3.2 — Z-Scores: Standardizing the Spread
@@ -42,15 +43,13 @@ export function Lesson3_2() {
   }, []);
 
   // Compute rolling mean, rolling std, and z-score
-  const { rollingMean, rollingStd, zScore } = useMemo(() => {
+  const { rollingMean, zScore } = useMemo(() => {
     const mean: (number | null)[] = [];
-    const std: (number | null)[] = [];
     const z: (number | null)[] = [];
 
     for (let i = 0; i < n; i++) {
       if (i < window - 1) {
         mean.push(null);
-        std.push(null);
         z.push(null);
         continue;
       }
@@ -60,11 +59,10 @@ export function Lesson3_2() {
         slice.reduce((a, b) => a + (b - m) ** 2, 0) / slice.length
       );
       mean.push(m);
-      std.push(s);
       z.push(s > 0.001 ? (rawSpread[i] - m) / s : 0);
     }
 
-    return { rollingMean: mean, rollingStd: std, zScore: z };
+    return { rollingMean: mean, zScore: z };
   }, [rawSpread, window]);
 
   const windowLabel =
@@ -208,6 +206,15 @@ export function Lesson3_2() {
           }}
         />
       </Stack>
+
+      <RealDataSection intro="Explore real z-scores with an adjustable rolling window.">
+        {(data, isGoodPair) => (
+          <Stack gap="md">
+            <TabSpread data={data} />
+            <TabZScoreSlider data={data} />
+          </Stack>
+        )}
+      </RealDataSection>
 
       {/* Detailed explanation below the charts */}
       <Stack gap="sm">
