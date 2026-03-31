@@ -1,36 +1,46 @@
-import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { Anchor, type AnchorProps } from '@mantine/core';
-import { getGlossaryHref } from '@/lib/glossary';
+'use client';
 
-interface GlossaryLinkProps extends Omit<AnchorProps, 'href' | 'component' | 'children'> {
+import type { ReactNode } from 'react';
+import { Text, Tooltip } from '@mantine/core';
+import { GLOSSARY_TERMS } from '@/lib/glossary';
+
+interface GlossaryLinkProps {
   term: string;
   children?: ReactNode;
 }
 
 /**
- * Inline glossary link that navigates to `/glossary#glossary-{slug}`.
- * Use throughout Academy and Research for clickable term references.
+ * Inline glossary term with hover tooltip showing the definition.
+ *
+ * Stays in the lesson flow — no page navigation.
  */
-export function GlossaryLink({
-  term,
-  children,
-  fw = 600,
-  c = 'blue.3',
-  underline = 'always',
-  ...anchorProps
-}: GlossaryLinkProps) {
+export function GlossaryLink({ term, children }: GlossaryLinkProps) {
+  const entry = GLOSSARY_TERMS.find(
+    (e) => e.term.toLowerCase() === term.toLowerCase()
+  );
+
+  const definition = entry?.definition ?? 'Definition not found.';
+
   return (
-    <Anchor
-      component={Link}
-      href={getGlossaryHref(term)}
-      fw={fw}
-      c={c}
-      underline={underline}
-      style={{ textUnderlineOffset: '3px' }}
-      {...anchorProps}
+    <Tooltip
+      label={definition}
+      multiline
+      w={320}
+      withArrow
+      position="top"
+      color="dark.6"
+      transitionProps={{ transition: 'fade', duration: 150 }}
     >
-      {children ?? term}
-    </Anchor>
+      <Text
+        component="span"
+        c="blue.4"
+        style={{
+          cursor: 'help',
+          borderBottom: '1px dotted var(--mantine-color-blue-5)',
+        }}
+      >
+        {children ?? term}
+      </Text>
+    </Tooltip>
   );
 }
