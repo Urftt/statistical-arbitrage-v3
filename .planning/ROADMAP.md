@@ -33,8 +33,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Switching to a new pair clears any previously loaded tab results so stale data is never displayed
 **Plans:** 2 plans
 Plans:
-- [ ] 01-01-PLAN.md — Sidebar restructure, old stub deletion, and Pair Analysis tabbed page
-- [ ] 01-02-PLAN.md — Scanner row click-to-navigate and full flow verification
+- [x] 01-01-PLAN.md — Sidebar restructure, old stub deletion, and Pair Analysis tabbed page
+- [x] 01-02-PLAN.md — Scanner row click-to-navigate and full flow verification
 **UI hint**: yes
 
 ### Phase 2: Statistics Tab
