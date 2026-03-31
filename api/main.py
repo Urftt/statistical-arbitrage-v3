@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import analysis, backtest, health, optimization, pairs, research, trading
+from api.routers import academy_scan, analysis, backtest, health, optimization, pairs, research, trading
 
 logger = logging.getLogger(__name__)
 
@@ -97,10 +97,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # CORS — allow the React frontend at localhost:3000 and worktree at :3001
+    # CORS — allow the React frontend from localhost and any Tailscale/LAN address
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://localhost:3001"],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -114,6 +114,7 @@ def create_app() -> FastAPI:
     application.include_router(backtest.router)
     application.include_router(optimization.router)
     application.include_router(trading.router)
+    application.include_router(academy_scan.router)
 
     return application
 
