@@ -107,13 +107,48 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | — |
+| NAV-01 | Phase 1 | Pending |
+| NAV-02 | Phase 1 | Pending |
+| NAV-03 | Phase 1 | Pending |
+| NAV-04 | Phase 1 | Pending |
+| NAV-05 | Phase 1 | Pending |
+| SCAN-01 | Phase 6 | Pending |
+| SCAN-02 | Phase 6 | Pending |
+| SCAN-03 | Phase 6 | Pending |
+| SCAN-04 | Phase 6 | Pending |
+| STAT-01 | Phase 2 | Pending |
+| STAT-02 | Phase 2 | Pending |
+| STAT-03 | Phase 2 | Pending |
+| RSRCH-01 | Phase 4 | Pending |
+| RSRCH-02 | Phase 4 | Pending |
+| RSRCH-03 | Phase 4 | Pending |
+| RSRCH-04 | Phase 4 | Pending |
+| RSRCH-05 | Phase 4 | Pending |
+| BT-01 | Phase 3 | Pending |
+| BT-02 | Phase 3 | Pending |
+| BT-03 | Phase 3 | Pending |
+| BT-04 | Phase 3 | Pending |
+| BT-05 | Phase 3 | Pending |
+| BT-06 | Phase 3 | Pending |
+| BT-07 | Phase 3 | Pending |
+| BT-08 | Phase 3 | Pending |
+| BT-09 | Phase 3 | Pending |
+| BT-10 | Phase 3 | Pending |
+| OPT-01 | Phase 5 | Pending |
+| OPT-02 | Phase 5 | Pending |
+| OPT-03 | Phase 5 | Pending |
+| OPT-04 | Phase 5 | Pending |
+| OPT-05 | Phase 5 | Pending |
+| UX-01 | Phase 2 | Pending |
+| UX-02 | Phase 3 | Pending |
+| UX-03 | Phase 2 | Pending |
+| UX-04 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 0
-- Unmapped: 33 ⚠️ (pending roadmap creation)
+- v1 requirements: 36 total
+- Mapped to phases: 36
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-31*
-*Last updated: 2026-03-31 after initial definition*
+*Last updated: 2026-03-31 after roadmap creation — all 36 requirements mapped*
