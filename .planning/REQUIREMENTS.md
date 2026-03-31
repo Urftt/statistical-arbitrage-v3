@@ -9,11 +9,11 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Navigation & Layout
 
-- [ ] **NAV-01**: User can navigate between Scanner and Pair Analysis pages from the sidebar
+- [x] **NAV-01**: User can navigate between Scanner and Pair Analysis pages from the sidebar
 - [ ] **NAV-02**: User can click a pair in the Scanner to open Pair Analysis with that pair pre-selected
-- [ ] **NAV-03**: User can change the selected pair from the Pair Analysis page header without returning to Scanner
-- [ ] **NAV-04**: Pair Analysis page uses tabbed interface (Statistics, Research, Backtest, Optimize)
-- [ ] **NAV-05**: Tab state clears when the user changes the selected pair (prevents stale results)
+- [x] **NAV-03**: User can change the selected pair from the Pair Analysis page header without returning to Scanner
+- [x] **NAV-04**: Pair Analysis page uses tabbed interface (Statistics, Research, Backtest, Optimize)
+- [x] **NAV-05**: Tab state clears when the user changes the selected pair (prevents stale results)
 
 ### Scanner
 
@@ -107,11 +107,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 1 | Pending |
+| NAV-01 | Phase 1 | Complete |
 | NAV-02 | Phase 1 | Pending |
-| NAV-03 | Phase 1 | Pending |
-| NAV-04 | Phase 1 | Pending |
-| NAV-05 | Phase 1 | Pending |
+| NAV-03 | Phase 1 | Complete |
+| NAV-04 | Phase 1 | Complete |
+| NAV-05 | Phase 1 | Complete |
 | SCAN-01 | Phase 6 | Pending |
 | SCAN-02 | Phase 6 | Pending |
 | SCAN-03 | Phase 6 | Pending |

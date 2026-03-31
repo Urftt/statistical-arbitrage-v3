@@ -4,14 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Box, Divider, NavLink, Stack, Text } from '@mantine/core';
 import {
-  IconAdjustments,
-  IconChartHistogram,
-  IconChartLine,
   IconMicroscope,
   IconSchool,
   IconSearch,
   IconVocabulary,
-  IconReportAnalytics,
 } from '@tabler/icons-react';
 
 const ACADEMY_ITEMS = [
@@ -31,34 +27,10 @@ const RESEARCH_ITEMS = [
     description: 'Batch cointegration scan',
   },
   {
-    label: 'Pair Deep Dive',
-    href: '/deep-dive',
+    label: 'Pair Analysis',
+    href: '/pair-analysis',
     icon: IconMicroscope,
-    description: 'Single pair analysis',
-  },
-  {
-    label: 'Research',
-    href: '/research',
-    icon: IconChartHistogram,
-    description: '8 research modules',
-  },
-  {
-    label: 'Backtest',
-    href: '/backtest',
-    icon: IconChartLine,
-    description: 'Run strategy backtests',
-  },
-  {
-    label: 'Optimize',
-    href: '/optimize',
-    icon: IconAdjustments,
-    description: 'Grid search & walk-forward',
-  },
-  {
-    label: 'Summary',
-    href: '/summary',
-    icon: IconReportAnalytics,
-    description: 'Research findings overview',
+    description: 'Statistics, research, backtest, optimize',
   },
 ] as const;
 
@@ -105,7 +77,7 @@ export function Sidebar() {
           label={item.label}
           description={item.description}
           leftSection={<item.icon size={18} stroke={1.5} />}
-          active={pathname === item.href}
+          active={pathname.startsWith(item.href)}
           variant="light"
         />
       ))}
