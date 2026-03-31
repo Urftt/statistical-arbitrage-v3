@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Alert,
   Badge,
@@ -28,6 +29,8 @@ import {
 } from '@/lib/api';
 
 export default function ScannerPage() {
+  const router = useRouter();
+
   // Fetch live data state
   const [fetching, setFetching] = useState(false);
   const [fetchResult, setFetchResult] = useState<FetchLiveDataResponse | null>(null);
@@ -316,7 +319,13 @@ export default function ScannerPage() {
                   return (
                     <Table.Tr
                       key={`${pair.asset1}-${pair.asset2}`}
+                      onClick={() => {
+                        router.push(
+                          `/pair-analysis?asset1=${base1}&asset2=${base2}&timeframe=${timeframe}`
+                        );
+                      }}
                       style={{
+                        cursor: 'pointer',
                         backgroundColor: pair.is_cointegrated
                           ? 'rgba(32, 201, 151, 0.06)'
                           : undefined,
