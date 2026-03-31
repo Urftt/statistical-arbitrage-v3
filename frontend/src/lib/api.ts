@@ -835,3 +835,77 @@ export async function postWalkForward(
     }
   );
 }
+
+// ---------------------------------------------------------------------------
+// Academy scan
+// ---------------------------------------------------------------------------
+
+export interface AcademyScanPair {
+  asset1: string;
+  asset2: string;
+  p_value: number;
+  is_cointegrated: boolean;
+  hedge_ratio: number;
+  half_life: number | null;
+  correlation: number;
+  cointegration_score: number;
+  observations: number;
+}
+
+export interface AcademyScanResponse {
+  cointegrated: AcademyScanPair[];
+  not_cointegrated: AcademyScanPair[];
+  scanned: number;
+  timeframe: string;
+}
+
+/**
+ * Scan pairs for cointegration with auto-refresh from Bitvavo.
+ *
+ * When fresh=true (default), the backend fetches latest data from Bitvavo
+ * before scanning. This ensures the Academy always shows live data.
+ */
+export async function fetchAcademyScan(
+  timeframe = '1h',
+  daysBack = 90,
+  fresh = true
+): Promise<AcademyScanResponse> {
+  const params = new URLSearchParams({
+    timeframe,
+    days_back: String(daysBack),
+    fresh: String(fresh),
+  });
+  return apiFetch<AcademyScanResponse>(
+    `${API_BASE_URL}/api/academy/scan?${params.toString()}`
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Live data fetch
+// ---------------------------------------------------------------------------
+
+export interface FetchLiveDataResponse {
+  fetched: number;
+  failed: number;
+  total: number;
+  symbols: { symbol: string; candles: number; timeframe: string; error?: string }[];
+  timeframe: string;
+  days_back: number;
+}
+
+/** Fetch fresh OHLCV data from Bitvavo for top EUR pairs. */
+export async function fetchLiveData(
+  timeframe = '1h',
+  daysBack = 90,
+  maxCoins = 20
+): Promise<FetchLiveDataResponse> {
+  const params = new URLSearchParams({
+    timeframe,
+    days_back: String(daysBack),
+    max_coins: String(maxCoins),
+  });
+  return apiFetch<FetchLiveDataResponse>(
+    `${API_BASE_URL}/api/academy/fetch?${params.toString()}`,
+    { method: 'POST' }
+  );
+}
