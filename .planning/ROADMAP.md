@@ -31,7 +31,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can change the selected pair from the Pair Analysis header without leaving the page
   4. Pair Analysis shows four tab labels (Statistics, Research, Backtest, Optimize) and switching tabs does not re-fetch completed results
   5. Switching to a new pair clears any previously loaded tab results so stale data is never displayed
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Sidebar restructure, old stub deletion, and Pair Analysis tabbed page
+- [ ] 01-02-PLAN.md — Scanner row click-to-navigate and full flow verification
 **UI hint**: yes
 
 ### Phase 2: Statistics Tab
@@ -102,7 +105,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Routing & Navigation Scaffold | 0/? | Not started | - |
+| 1. Routing & Navigation Scaffold | 0/2 | Planning complete | - |
 | 2. Statistics Tab | 0/? | Not started | - |
 | 3. Backtest Tab | 0/? | Not started | - |
 | 4. Research Tab | 0/? | Not started | - |
