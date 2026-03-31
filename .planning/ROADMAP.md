@@ -48,7 +48,7 @@ Plans:
   4. When the API returns an error, an inline message with an actionable description appears instead of a blank chart
 **Plans:** 1 plan
 Plans:
-- [ ] 02-01-PLAN.md — StatisticsTab component with stat cards, spread/z-score charts, threshold sliders, and lookback dropdown
+- [x] 02-01-PLAN.md — StatisticsTab component with stat cards, spread/z-score charts, threshold sliders, and lookback dropdown
 **UI hint**: yes
 
 ### Phase 3: Backtest Tab

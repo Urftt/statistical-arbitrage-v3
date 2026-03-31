@@ -24,9 +24,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Statistics Tab
 
-- [ ] **STAT-01**: User can view cointegration stat cards (p-value, half-life, hedge ratio, correlation) for the selected pair
-- [ ] **STAT-02**: User can view a spread chart showing the price relationship between the two coins
-- [ ] **STAT-03**: User can view a z-score chart with entry/exit threshold lines drawn at configurable levels
+- [x] **STAT-01**: User can view cointegration stat cards (p-value, half-life, hedge ratio, correlation) for the selected pair
+- [x] **STAT-02**: User can view a spread chart showing the price relationship between the two coins
+- [x] **STAT-03**: User can view a z-score chart with entry/exit threshold lines drawn at configurable levels
 
 ### Research Tab
 
@@ -59,9 +59,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### UX Quality
 
-- [ ] **UX-01**: All charts use the existing dark Plotly template consistent with the Academy
+- [x] **UX-01**: All charts use the existing dark Plotly template consistent with the Academy
 - [ ] **UX-02**: All heavy computations (backtest, grid search, walk-forward) show loading states with appropriate feedback
-- [ ] **UX-03**: API errors display inline with actionable messages (not silent failures)
+- [x] **UX-03**: API errors display inline with actionable messages (not silent failures)
 - [ ] **UX-04**: Results display includes a "generated for [pair]" context label to prevent misattribution
 
 ## v2 Requirements
@@ -116,9 +116,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SCAN-02 | Phase 6 | Pending |
 | SCAN-03 | Phase 6 | Pending |
 | SCAN-04 | Phase 6 | Pending |
-| STAT-01 | Phase 2 | Pending |
-| STAT-02 | Phase 2 | Pending |
-| STAT-03 | Phase 2 | Pending |
+| STAT-01 | Phase 2 | Complete |
+| STAT-02 | Phase 2 | Complete |
+| STAT-03 | Phase 2 | Complete |
 | RSRCH-01 | Phase 4 | Pending |
 | RSRCH-02 | Phase 4 | Pending |
 | RSRCH-03 | Phase 4 | Pending |
@@ -139,9 +139,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPT-03 | Phase 5 | Pending |
 | OPT-04 | Phase 5 | Pending |
 | OPT-05 | Phase 5 | Pending |
-| UX-01 | Phase 2 | Pending |
+| UX-01 | Phase 2 | Complete |
 | UX-02 | Phase 3 | Pending |
-| UX-03 | Phase 2 | Pending |
+| UX-03 | Phase 2 | Complete |
 | UX-04 | Phase 3 | Pending |
 
 **Coverage:**
