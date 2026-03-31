@@ -96,7 +96,7 @@ export default function StatisticsTab() {
 
     if (!asset1 || !asset2) return;
 
-    setLoading(true);
+    setLoading(true); // eslint-disable-line react-hooks/set-state-in-effect
     setError(null);
 
     postCointegration({ asset1, asset2, timeframe, days_back: Number(daysBack) })

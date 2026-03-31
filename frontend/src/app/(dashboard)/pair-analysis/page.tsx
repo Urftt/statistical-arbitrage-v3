@@ -10,6 +10,7 @@ import {
   IconAdjustments,
 } from '@tabler/icons-react';
 import { usePairContext } from '@/contexts/PairContext';
+import StatisticsTab from '@/components/pair-analysis/StatisticsTab';
 
 // ---------------------------------------------------------------------------
 
@@ -94,7 +95,7 @@ function PairAnalysisContent() {
         </Tabs.List>
 
         <Tabs.Panel value="statistics" pt="md">
-          <Text c="dimmed">Statistics — coming in Phase 2</Text>
+          <StatisticsTab />
         </Tabs.Panel>
         <Tabs.Panel value="research" pt="md">
           <Text c="dimmed">Research — coming in Phase 4</Text>
