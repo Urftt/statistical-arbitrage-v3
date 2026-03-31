@@ -46,7 +46,9 @@ Plans:
   2. User can view a spread chart rendered in the dark Plotly theme consistent with the Academy
   3. User can view a z-score chart with horizontal entry and exit threshold lines drawn at configurable levels
   4. When the API returns an error, an inline message with an actionable description appears instead of a blank chart
-**Plans**: TBD
+**Plans:** 1 plan
+Plans:
+- [ ] 02-01-PLAN.md — StatisticsTab component with stat cards, spread/z-score charts, threshold sliders, and lookback dropdown
 **UI hint**: yes
 
 ### Phase 3: Backtest Tab
@@ -105,8 +107,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Routing & Navigation Scaffold | 0/2 | Planning complete | - |
-| 2. Statistics Tab | 0/? | Not started | - |
+| 1. Routing & Navigation Scaffold | 2/2 | Complete | - |
+| 2. Statistics Tab | 0/1 | Planning complete | - |
 | 3. Backtest Tab | 0/? | Not started | - |
 | 4. Research Tab | 0/? | Not started | - |
 | 5. Optimize Tab | 0/? | Not started | - |
