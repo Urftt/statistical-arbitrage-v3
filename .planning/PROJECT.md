@@ -24,7 +24,7 @@ Users can visually explore pair relationships, tune strategy parameters, and see
 ### Active
 
 - [ ] Pair Scanner page — screen all available pairs, surface promising cointegrated candidates with scores
-- [ ] Pair Analysis page with tabbed interface (Statistics, Research, Backtest, Optimize)
+- [x] Pair Analysis page with tabbed interface (Statistics, Research, Backtest, Optimize) — Validated in Phase 1: Routing & Navigation Scaffold
 - [ ] Statistics tab — cointegration strength, spread charts, half-life, correlation, z-score dynamics
 - [ ] Research tab — all 8 research modules with visual results per selected pair
 - [ ] Backtest tab — run strategy with tunable parameters (z-score thresholds, lookback windows, stop-losses, position sizing), see equity curve, trade markers on spread, drawdown chart, P&L metrics (Sharpe, max drawdown, win rate)
@@ -46,7 +46,7 @@ Users can visually explore pair relationships, tune strategy parameters, and see
 
 This is a brownfield project with a working Academy (Phase 1 complete) and a fully implemented Python backend for analysis, backtesting, and optimization. The backend APIs exist and return data — the main work is building the frontend pages that consume them and present results visually.
 
-The frontend has 5 stub pages (scanner, deep-dive, research, backtest, optimize) from initial scaffolding. These will be restructured into 2 main pages: Scanner and Pair Analysis (merged deep-dive + research + backtest + optimize).
+The frontend had 5 stub pages (scanner, deep-dive, research, backtest, optimize) from initial scaffolding. Phase 1 restructured these into 2 main pages: Scanner and Pair Analysis (merged deep-dive + research + backtest + optimize). Old stubs are deleted.
 
 The Academy established strong visual patterns (Plotly charts with dark theme, Mantine components, contextual explanations) that should carry over to the research & backtesting pages for consistency.
 
