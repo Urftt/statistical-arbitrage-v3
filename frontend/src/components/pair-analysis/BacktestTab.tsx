@@ -91,10 +91,10 @@ export default function BacktestTab() {
   // Pair-change clear (D-05, NAV-05)
   useEffect(() => {
     cancelRef.current = true;
-    setData(null); // eslint-disable-line react-hooks/set-state-in-effect
-    setCointData(null); // eslint-disable-line react-hooks/set-state-in-effect
-    setError(null); // eslint-disable-line react-hooks/set-state-in-effect
-    setParams({ ...DEFAULT_STRATEGY_PARAMETERS }); // eslint-disable-line react-hooks/set-state-in-effect
+    setData(null);
+    setCointData(null);
+    setError(null);
+    setParams({ ...DEFAULT_STRATEGY_PARAMETERS });
   }, [asset1, asset2, timeframe]);
 
   // Click-triggered fetch (D-05)
