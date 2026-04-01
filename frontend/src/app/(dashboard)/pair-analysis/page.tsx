@@ -11,6 +11,7 @@ import {
 } from '@tabler/icons-react';
 import { usePairContext } from '@/contexts/PairContext';
 import StatisticsTab from '@/components/pair-analysis/StatisticsTab';
+import BacktestTab from '@/components/pair-analysis/BacktestTab';
 
 // ---------------------------------------------------------------------------
 
@@ -101,7 +102,7 @@ function PairAnalysisContent() {
           <Text c="dimmed">Research — coming in Phase 4</Text>
         </Tabs.Panel>
         <Tabs.Panel value="backtest" pt="md">
-          <Text c="dimmed">Backtest — coming in Phase 3</Text>
+          <BacktestTab />
         </Tabs.Panel>
         <Tabs.Panel value="optimize" pt="md">
           <Text c="dimmed">Optimize — coming in Phase 5</Text>
