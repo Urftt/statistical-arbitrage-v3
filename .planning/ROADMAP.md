@@ -65,7 +65,7 @@ Plans:
 **Plans:** 2 plans
 Plans:
 - [x] 03-01-PLAN.md — BacktestTab component with parameter form, metrics, trade log, warnings, and accordion
-- [ ] 03-02-PLAN.md — Backtest tab charts (equity curve, drawdown, z-score, spread with trade markers)
+- [x] 03-02-PLAN.md — Backtest tab charts (equity curve, drawdown, z-score, spread with trade markers)
 **UI hint**: yes
 
 ### Phase 4: Research Tab

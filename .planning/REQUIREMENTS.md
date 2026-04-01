@@ -40,9 +40,9 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 - [ ] **BT-01**: User can configure all strategy parameters: entry threshold, exit threshold, lookback window, stop-loss, position size, transaction fee
 - [ ] **BT-02**: User can run a backtest with a "Run Backtest" button and see a loading state during computation
-- [ ] **BT-03**: User can view an equity curve chart showing portfolio value over time
-- [ ] **BT-04**: User can view trade entry/exit markers overlaid on the spread or z-score chart
-- [ ] **BT-05**: User can view a drawdown chart showing how deep underwater the strategy went over time
+- [x] **BT-03**: User can view an equity curve chart showing portfolio value over time
+- [x] **BT-04**: User can view trade entry/exit markers overlaid on the spread or z-score chart
+- [x] **BT-05**: User can view a drawdown chart showing how deep underwater the strategy went over time
 - [ ] **BT-06**: User can view key metric cards: Sharpe ratio, max drawdown, win rate, total P&L in EUR
 - [ ] **BT-07**: User can view a trade log table with entry/exit timestamps, direction, net P&L, and exit reason
 - [ ] **BT-08**: User sees data quality preflight warnings before results if the backtest engine detects issues
@@ -126,9 +126,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RSRCH-05 | Phase 4 | Pending |
 | BT-01 | Phase 3 | Pending |
 | BT-02 | Phase 3 | Pending |
-| BT-03 | Phase 3 | Pending |
-| BT-04 | Phase 3 | Pending |
-| BT-05 | Phase 3 | Pending |
+| BT-03 | Phase 3 | Complete |
+| BT-04 | Phase 3 | Complete |
+| BT-05 | Phase 3 | Complete |
 | BT-06 | Phase 3 | Pending |
 | BT-07 | Phase 3 | Pending |
 | BT-08 | Phase 3 | Pending |
