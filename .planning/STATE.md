@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-31T21:18:53.484Z"
+stopped_at: Phase 3 context gathered
+last_updated: "2026-04-01T21:20:02.607Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 6
@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - [ ] Add synced vertical crosshair line across spread and z-score charts (Plotly v3 spikes not rendering — needs custom SVG overlay or Plotly subplots approach)
+- [ ] Add dual-axis price chart to Statistics tab showing both assets' raw prices (asset1 on left y-axis, asset2 on right y-axis) — helps users relate price movements to the spread below
 
 ### Blockers/Concerns
 
@@ -81,6 +82,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-31T21:13:26Z
-Stopped at: Completed 02-01-PLAN.md
-Resume file: .planning/phases/02-statistics-tab/02-01-SUMMARY.md
+Last session: 2026-04-01T21:20:02.599Z
+Stopped at: Phase 3 context gathered
+Resume file: .planning/phases/03-backtest-tab/03-CONTEXT.md
