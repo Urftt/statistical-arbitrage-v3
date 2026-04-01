@@ -62,7 +62,10 @@ Plans:
   4. User can view a trade log table with entry/exit timestamps, direction, net P&L, and exit reason
   5. User can expand an Assumptions and Limitations section showing data quality preflight warnings and the honest reporting footer before acting on results
   6. User sees overfitting warning banners (e.g., Sharpe above 3.0) displayed inline when the backtest engine flags them
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [x] 03-01-PLAN.md — BacktestTab component with parameter form, metrics, trade log, warnings, and accordion
+- [ ] 03-02-PLAN.md — Backtest tab charts (equity curve, drawdown, z-score, spread with trade markers)
 **UI hint**: yes
 
 ### Phase 4: Research Tab
@@ -108,8 +111,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Routing & Navigation Scaffold | 2/2 | Complete | - |
-| 2. Statistics Tab | 0/1 | Planning complete | - |
-| 3. Backtest Tab | 0/? | Not started | - |
+| 2. Statistics Tab | 1/1 | Complete | 2026-03-31 |
+| 3. Backtest Tab | 1/2 | In progress | - |
 | 4. Research Tab | 0/? | Not started | - |
 | 5. Optimize Tab | 0/? | Not started | - |
 | 6. Scanner Enhancements | 0/? | Not started | - |
