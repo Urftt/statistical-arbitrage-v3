@@ -23,6 +23,7 @@ import {
   IconRefresh,
   IconAlertTriangle,
 } from '@tabler/icons-react';
+import PlotlyChart from '@/components/charts/PlotlyChart';
 import {
   postBacktest,
   postCointegration,
@@ -30,6 +31,8 @@ import {
   type BacktestResponse,
   type CointegrationResponse,
   type StrategyParametersPayload,
+  type EquityCurvePointPayload,
+  type SignalOverlayPointPayload,
 } from '@/lib/api';
 import { usePairContext } from '@/contexts/PairContext';
 
@@ -70,6 +73,170 @@ function tradeCountBadge(v: number): { color: string; label: string } {
 function equityBadge(v: number, initial: number): { color: string; label: string } {
   if (v > initial) return { color: 'green', label: 'Growth' };
   return { color: 'red', label: 'Decline' };
+}
+
+// ---------------------------------------------------------------------------
+// Chart helpers
+// ---------------------------------------------------------------------------
+
+const MARKER_MAP: Record<string, { symbol: string; color: string; name: string }> = {
+  long_entry:  { symbol: 'triangle-up',   color: '#51CF66', name: 'Long Entry' },
+  short_entry: { symbol: 'triangle-up',   color: '#FF6B6B', name: 'Short Entry' },
+  long_exit:   { symbol: 'triangle-down', color: '#51CF66', name: 'Long Exit' },
+  short_exit:  { symbol: 'triangle-down', color: '#FF6B6B', name: 'Short Exit' },
+  stop_loss:   { symbol: 'x',             color: '#FF922B', name: 'Stop Loss' },
+};
+
+function computeDrawdown(equityCurve: EquityCurvePointPayload[]): number[] {
+  let runningMax = equityCurve[0]?.equity ?? 0;
+  return equityCurve.map((point) => {
+    if (point.equity > runningMax) runningMax = point.equity;
+    return runningMax > 0 ? ((point.equity - runningMax) / runningMax) * 100 : 0;
+  });
+}
+
+function buildZScoreShapes(entry: number, exit: number) {
+  return [
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: entry, y1: entry, line: { color: '#FF6B6B', width: 1, dash: 'dash' as const } },
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: -entry, y1: -entry, line: { color: '#FF6B6B', width: 1, dash: 'dash' as const } },
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: exit, y1: exit, line: { color: '#FCC419', width: 1, dash: 'dot' as const } },
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: -exit, y1: -exit, line: { color: '#FCC419', width: 1, dash: 'dot' as const } },
+  ];
+}
+
+function buildPositionShapes(equityCurve: EquityCurvePointPayload[]) {
+  const shapes: Array<{
+    type: 'rect';
+    xref: 'x';
+    yref: 'paper';
+    x0: string;
+    x1: string;
+    y0: number;
+    y1: number;
+    fillcolor: string;
+    line: { width: number };
+    layer: 'below';
+  }> = [];
+
+  if (equityCurve.length === 0) return shapes;
+
+  let segStart = 0;
+  let segPos = equityCurve[0].position;
+
+  for (let i = 1; i <= equityCurve.length; i++) {
+    const curPos = i < equityCurve.length ? equityCurve[i].position : 'flat';
+    if (curPos !== segPos || i === equityCurve.length) {
+      if (segPos !== 'flat') {
+        shapes.push({
+          type: 'rect',
+          xref: 'x',
+          yref: 'paper',
+          x0: equityCurve[segStart].timestamp,
+          x1: equityCurve[i - 1].timestamp,
+          y0: 0,
+          y1: 1,
+          fillcolor:
+            segPos === 'long_spread'
+              ? 'rgba(81, 207, 102, 0.08)'
+              : 'rgba(255, 107, 107, 0.08)',
+          line: { width: 0 },
+          layer: 'below',
+        });
+      }
+      segStart = i;
+      segPos = curPos;
+    }
+  }
+
+  return shapes;
+}
+
+/** Build marker traces for signal overlays on z-score or spread charts. */
+function buildZScoreMarkerTraces(signals: SignalOverlayPointPayload[]) {
+  const traces: Array<{
+    type: 'scatter';
+    mode: 'markers';
+    x: number[];
+    y: number[];
+    marker: { symbol: string; color: string; size: number };
+    name: string;
+    showlegend: boolean;
+  }> = [];
+
+  for (const signalType of Object.keys(MARKER_MAP)) {
+    const matching = signals.filter((s) => s.signal_type === signalType);
+    if (matching.length === 0) continue;
+    const m = MARKER_MAP[signalType];
+    traces.push({
+      type: 'scatter' as const,
+      mode: 'markers' as const,
+      x: matching.map((s) => new Date(s.execution_timestamp).getTime()),
+      y: matching.map((s) => s.zscore_at_signal),
+      marker: { symbol: m.symbol, color: m.color, size: 10 },
+      name: m.name,
+      showlegend: true,
+    });
+  }
+
+  return traces;
+}
+
+/** Build marker traces for spread chart -- look up y from spread array by timestamp. */
+function buildSpreadMarkerTraces(
+  signals: SignalOverlayPointPayload[],
+  timestamps: number[],
+  spread: (number | null)[],
+) {
+  const traces: Array<{
+    type: 'scatter';
+    mode: 'markers';
+    x: number[];
+    y: number[];
+    marker: { symbol: string; color: string; size: number };
+    name: string;
+    showlegend: boolean;
+  }> = [];
+
+  for (const signalType of Object.keys(MARKER_MAP)) {
+    const matching = signals.filter((s) => s.signal_type === signalType);
+    if (matching.length === 0) continue;
+
+    const xs: number[] = [];
+    const ys: number[] = [];
+
+    for (const s of matching) {
+      const execMs = new Date(s.execution_timestamp).getTime();
+      // Find closest timestamp index
+      let bestIdx = 0;
+      let bestDist = Math.abs(timestamps[0] - execMs);
+      for (let j = 1; j < timestamps.length; j++) {
+        const dist = Math.abs(timestamps[j] - execMs);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = j;
+        }
+      }
+      const yVal = spread[bestIdx];
+      if (yVal !== null) {
+        xs.push(execMs);
+        ys.push(yVal);
+      }
+    }
+
+    if (xs.length === 0) continue;
+    const m = MARKER_MAP[signalType];
+    traces.push({
+      type: 'scatter' as const,
+      mode: 'markers' as const,
+      x: xs,
+      y: ys,
+      marker: { symbol: m.symbol, color: m.color, size: 10 },
+      name: m.name,
+      showlegend: true,
+    });
+  }
+
+  return traces;
 }
 
 // ---------------------------------------------------------------------------
@@ -149,9 +316,6 @@ export default function BacktestTab() {
   function updateParam(key: keyof StrategyParametersPayload, value: number) {
     setParams((prev) => ({ ...prev, [key]: value }));
   }
-
-  // Suppress unused variable warning — cointData is stored for Plan 02 charts
-  void cointData;
 
   return (
     <Stack gap="lg">
@@ -538,21 +702,126 @@ export default function BacktestTab() {
                 </Alert>
               )}
 
-              {/* 6. Chart placeholders */}
-              <Text size="sm" c="dimmed">
-                Equity curve chart will render here (Plan 02)
-              </Text>
-              <Text size="sm" c="dimmed">
-                Drawdown chart will render here (Plan 02)
-              </Text>
-              <Text size="sm" c="dimmed">
-                Z-score chart will render here (Plan 02)
-              </Text>
-              <Text size="sm" c="dimmed">
-                Spread chart will render here (Plan 02)
-              </Text>
+              {/* 6. Equity Curve chart */}
+              <div>
+                <Text size="sm" fw={600}>
+                  Equity Curve
+                </Text>
+                <PlotlyChart
+                  data={[
+                    {
+                      type: 'scatter' as const,
+                      mode: 'lines' as const,
+                      x: data.equity_curve.map((p) => p.timestamp),
+                      y: data.equity_curve.map((p) => p.equity),
+                      line: { color: '#339AF0', width: 1.5 },
+                      name: 'Equity',
+                    },
+                  ]}
+                  layout={{
+                    shapes: buildPositionShapes(data.equity_curve),
+                    yaxis: { title: { text: 'EUR' } },
+                  }}
+                  style={{ height: '280px' }}
+                />
+              </div>
 
-              {/* 7. No-trades check */}
+              {/* 7. Drawdown chart */}
+              <div>
+                <Text size="sm" fw={600}>
+                  Drawdown
+                </Text>
+                <PlotlyChart
+                  data={[
+                    {
+                      type: 'scatter' as const,
+                      mode: 'lines' as const,
+                      x: data.equity_curve.map((p) => p.timestamp),
+                      y: computeDrawdown(data.equity_curve),
+                      fill: 'tozeroy' as const,
+                      fillcolor: 'rgba(255, 107, 107, 0.3)',
+                      line: { color: '#FF6B6B', width: 1 },
+                      name: 'Drawdown %',
+                    },
+                  ]}
+                  layout={{
+                    yaxis: { title: { text: 'Drawdown %' } },
+                  }}
+                  style={{ height: '180px' }}
+                />
+              </div>
+
+              {/* 8. Z-Score chart with trade markers */}
+              {cointData ? (
+                <div>
+                  <Text size="sm" fw={600}>
+                    Z-Score
+                  </Text>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'scatter' as const,
+                        mode: 'lines' as const,
+                        x: cointData.timestamps,
+                        y: cointData.zscore,
+                        line: { color: '#339AF0', width: 1 },
+                        name: 'Z-Score',
+                      },
+                      ...buildZScoreMarkerTraces(data.signal_overlay),
+                    ]}
+                    layout={{
+                      shapes: buildZScoreShapes(
+                        params.entry_threshold,
+                        params.exit_threshold,
+                      ),
+                      yaxis: { title: { text: 'Z-Score' } },
+                    }}
+                    style={{ height: '300px' }}
+                  />
+                </div>
+              ) : (
+                <Text size="sm" c="dimmed">
+                  Z-score chart unavailable -- cointegration data could not be
+                  loaded.
+                </Text>
+              )}
+
+              {/* 9. Spread chart with trade markers */}
+              {cointData ? (
+                <div>
+                  <Text size="sm" fw={600}>
+                    Spread
+                  </Text>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'scatter' as const,
+                        mode: 'lines' as const,
+                        x: cointData.timestamps,
+                        y: cointData.spread,
+                        line: { color: '#339AF0', width: 1 },
+                        name: 'Spread',
+                      },
+                      ...buildSpreadMarkerTraces(
+                        data.signal_overlay,
+                        cointData.timestamps,
+                        cointData.spread,
+                      ),
+                    ]}
+                    layout={{
+                      yaxis: { title: { text: 'Spread' } },
+                    }}
+                    style={{ height: '260px' }}
+                  />
+                </div>
+              ) : (
+                <Text size="sm" c="dimmed">
+                  Spread chart unavailable -- cointegration data could not be
+                  loaded.
+                </Text>
+              )}
+
+              {/* 10. No-trades check */}
               {data.trade_log.length === 0 ? (
                 <Alert color="yellow">
                   No trades executed. Try widening the entry threshold or
@@ -560,7 +829,7 @@ export default function BacktestTab() {
                 </Alert>
               ) : (
                 <>
-                  {/* 8. Trade log table */}
+                  {/* 11. Trade log table */}
                   <Table striped highlightOnHover>
                     <Table.Thead>
                       <Table.Tr>
@@ -653,7 +922,7 @@ export default function BacktestTab() {
                 </>
               )}
 
-              {/* 9. Assumptions & Limitations accordion */}
+              {/* 12. Assumptions & Limitations accordion */}
               <Accordion variant="contained" radius="sm">
                 <Accordion.Item value="assumptions">
                   <Accordion.Control>
