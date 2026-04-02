@@ -30,11 +30,11 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Research Tab
 
-- [ ] **RSRCH-01**: User can run each of the 8 research modules independently for the selected pair
-- [ ] **RSRCH-02**: Each research module displays its chart results and a contextual takeaway callout (info/warning/error severity)
-- [ ] **RSRCH-03**: User can click "Apply to Backtest" on a research module to pre-fill the Backtest tab with recommended parameters
-- [ ] **RSRCH-04**: Research modules load lazily (not all at once) to prevent chart initialization performance issues
-- [ ] **RSRCH-05**: User can view rolling cointegration stability chart showing p-value over time with significance reference line
+- [x] **RSRCH-01**: User can run each of the 8 research modules independently for the selected pair
+- [x] **RSRCH-02**: Each research module displays its chart results and a contextual takeaway callout (info/warning/error severity)
+- [x] **RSRCH-03**: User can click "Apply to Backtest" on a research module to pre-fill the Backtest tab with recommended parameters
+- [x] **RSRCH-04**: Research modules load lazily (not all at once) to prevent chart initialization performance issues
+- [x] **RSRCH-05**: User can view rolling cointegration stability chart showing p-value over time with significance reference line
 
 ### Backtest Tab
 
@@ -119,11 +119,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-01 | Phase 2 | Complete |
 | STAT-02 | Phase 2 | Complete |
 | STAT-03 | Phase 2 | Complete |
-| RSRCH-01 | Phase 4 | Pending |
-| RSRCH-02 | Phase 4 | Pending |
-| RSRCH-03 | Phase 4 | Pending |
-| RSRCH-04 | Phase 4 | Pending |
-| RSRCH-05 | Phase 4 | Pending |
+| RSRCH-01 | Phase 4 | Complete |
+| RSRCH-02 | Phase 4 | Complete |
+| RSRCH-03 | Phase 4 | Complete |
+| RSRCH-04 | Phase 4 | Complete |
+| RSRCH-05 | Phase 4 | Complete |
 | BT-01 | Phase 3 | Pending |
 | BT-02 | Phase 3 | Pending |
 | BT-03 | Phase 3 | Complete |
