@@ -283,21 +283,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Rolling Stability */}
         <Accordion.Item value="rolling">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Rolling Stability</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={rollingLoading}
-                leftSection={rollingLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunRolling(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={rollingLoading}
+              leftSection={rollingLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunRolling}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {rollingLoading && (
@@ -385,21 +386,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* OOS Validation */}
         <Accordion.Item value="oos">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Out-of-Sample Validation</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={oosLoading}
-                leftSection={oosLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunOos(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={oosLoading}
+              leftSection={oosLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunOos}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {oosLoading && (
@@ -463,21 +465,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Cointegration Method */}
         <Accordion.Item value="coint">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Cointegration Method Comparison</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={cointLoading}
-                leftSection={cointLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunCoint(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={cointLoading}
+              leftSection={cointLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunCoint}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {cointLoading && (
@@ -542,21 +545,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Lookback Window Sweep */}
         <Accordion.Item value="lookback">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Lookback Window Sweep</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={lookbackLoading}
-                leftSection={lookbackLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunLookback(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={lookbackLoading}
+              leftSection={lookbackLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunLookback}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {lookbackLoading && (
@@ -617,21 +621,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Z-Score Threshold */}
         <Accordion.Item value="zscore">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Z-Score Threshold Sweep</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={zscoreLoading}
-                leftSection={zscoreLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunZscore(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={zscoreLoading}
+              leftSection={zscoreLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunZscore}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {zscoreLoading && (
@@ -700,21 +705,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Transaction Cost */}
         <Accordion.Item value="txcost">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Transaction Cost Impact</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={txcostLoading}
-                leftSection={txcostLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunTxcost(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={txcostLoading}
+              leftSection={txcostLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunTxcost}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {txcostLoading && (
@@ -778,21 +784,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Spread Method */}
         <Accordion.Item value="spread">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Spread Method Comparison</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={spreadLoading}
-                leftSection={spreadLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunSpread(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={spreadLoading}
+              leftSection={spreadLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunSpread}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {spreadLoading && (
@@ -851,21 +858,22 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
 
         {/* Timeframe Comparison */}
         <Accordion.Item value="timeframe">
-          <Accordion.Control>
-            <Group justify="space-between" pr="sm">
+          <Group wrap="nowrap" gap={0}>
+            <Accordion.Control>
               <Text size="sm" fw={500}>Timeframe Comparison</Text>
-              <Button
-                size="xs"
-                variant="filled"
-                color="blue"
-                disabled={timeframeLoading}
-                leftSection={timeframeLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleRunTimeframe(); }}
-              >
-                Run
-              </Button>
-            </Group>
-          </Accordion.Control>
+            </Accordion.Control>
+            <Button
+              size="xs"
+              variant="filled"
+              color="blue"
+              disabled={timeframeLoading}
+              leftSection={timeframeLoading ? <Loader size="xs" /> : <IconPlayerPlay size={14} />}
+              onClick={handleRunTimeframe}
+              mr="sm"
+            >
+              Run
+            </Button>
+          </Group>
           <Accordion.Panel>
             <Stack gap="md">
               {timeframeLoading && (
