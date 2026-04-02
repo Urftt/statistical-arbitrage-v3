@@ -95,7 +95,7 @@ Plans:
 **Plans:** 1/2 plans executed
 Plans:
 - [x] 05-01-PLAN.md — Page-level state wiring, OptimizeTab axis config, grid search heatmap, and best cell card
-- [ ] 05-02-PLAN.md — Walk-forward fold table, verdict badge, and conditional Apply to Backtest
+- [x] 05-02-PLAN.md — Walk-forward fold table, verdict badge, and conditional Apply to Backtest
 **UI hint**: yes
 
 ### Phase 6: Scanner Enhancements

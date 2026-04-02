@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 05-optimize-tab 05-01-PLAN.md
-last_updated: "2026-04-02T20:34:07.034Z"
+status: verifying
+stopped_at: Completed 05-optimize-tab 05-02-PLAN.md
+last_updated: "2026-04-02T20:37:59.003Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 33
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-31)
 
 Phase: 05 (optimize-tab) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 Progress: [███░░░░░░░] 33%
@@ -59,6 +59,7 @@ Progress: [███░░░░░░░] 33%
 | Phase 04-research-tab P01 | 4min | 2 tasks | 3 files |
 | Phase 04-research-tab P02 | 2min | 1 tasks | 1 files |
 | Phase 05-optimize-tab P01 | 3min | 2 tasks | 3 files |
+| Phase 05-optimize-tab P02 | 2min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,7 @@ Recent decisions affecting current work:
 - [Phase 04]: IIFE pattern used for Z-Score heatmap pivot computation inline in JSX to isolate derived variables from component scope
 - [Phase 05-optimize-tab]: Heatmap colorscale: RdYlGn for Sharpe/P&L, Blues for win rate, RdYlGn_r for max drawdown (reversed so lower drawdown maps to green)
 - [Phase 05-optimize-tab]: Walk-forward state managed in OptimizeTab from Plan 01, UI rendered in Plan 02 to prevent state loss
+- [Phase 05-optimize-tab]: Walk-forward controls rendered inside results section so user can tweak fold count and train% after seeing initial results
 
 ### Pending Todos
 
@@ -94,6 +96,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-02T20:34:07.032Z
-Stopped at: Completed 05-optimize-tab 05-01-PLAN.md
+Last session: 2026-04-02T20:37:59.001Z
+Stopped at: Completed 05-optimize-tab 05-02-PLAN.md
 Resume file: None

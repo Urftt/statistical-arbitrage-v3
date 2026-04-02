@@ -51,11 +51,11 @@ Requirements for this milestone. Each maps to roadmap phases.
 
 ### Optimize Tab
 
-- [ ] **OPT-01**: User can configure a 2-axis grid search by selecting which two parameters to sweep and their ranges
-- [ ] **OPT-02**: User can run grid search and view a parameter heatmap showing metric values across parameter combinations
-- [ ] **OPT-03**: User can view the best parameter combination with its metrics and robustness score
-- [ ] **OPT-04**: User can run walk-forward validation and view a fold table with train/test Sharpe per fold
-- [ ] **OPT-05**: User can see a stability verdict badge (stable/moderate/fragile) for walk-forward results
+- [x] **OPT-01**: User can configure a 2-axis grid search by selecting which two parameters to sweep and their ranges
+- [x] **OPT-02**: User can run grid search and view a parameter heatmap showing metric values across parameter combinations
+- [x] **OPT-03**: User can view the best parameter combination with its metrics and robustness score
+- [x] **OPT-04**: User can run walk-forward validation and view a fold table with train/test Sharpe per fold
+- [x] **OPT-05**: User can see a stability verdict badge (stable/moderate/fragile) for walk-forward results
 
 ### UX Quality
 
@@ -134,11 +134,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BT-08 | Phase 3 | Pending |
 | BT-09 | Phase 3 | Pending |
 | BT-10 | Phase 3 | Pending |
-| OPT-01 | Phase 5 | Pending |
-| OPT-02 | Phase 5 | Pending |
-| OPT-03 | Phase 5 | Pending |
-| OPT-04 | Phase 5 | Pending |
-| OPT-05 | Phase 5 | Pending |
+| OPT-01 | Phase 5 | Complete |
+| OPT-02 | Phase 5 | Complete |
+| OPT-03 | Phase 5 | Complete |
+| OPT-04 | Phase 5 | Complete |
+| OPT-05 | Phase 5 | Complete |
 | UX-01 | Phase 2 | Complete |
 | UX-02 | Phase 3 | Pending |
 | UX-03 | Phase 2 | Complete |
