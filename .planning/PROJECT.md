@@ -26,8 +26,8 @@ Users can visually explore pair relationships, tune strategy parameters, and see
 - [ ] Pair Scanner page — screen all available pairs, surface promising cointegrated candidates with scores
 - [x] Pair Analysis page with tabbed interface (Statistics, Research, Backtest, Optimize) — Validated in Phase 1: Routing & Navigation Scaffold
 - [x] Statistics tab — cointegration strength, spread charts, half-life, correlation, z-score dynamics — Validated in Phase 2: Statistics Tab
-- [ ] Research tab — all 8 research modules with visual results per selected pair
-- [ ] Backtest tab — run strategy with tunable parameters (z-score thresholds, lookback windows, stop-losses, position sizing), see equity curve, trade markers on spread, drawdown chart, P&L metrics (Sharpe, max drawdown, win rate)
+- [x] Research tab — all 8 research modules with visual results per selected pair — Validated in Phase 4: Research Tab
+- [x] Backtest tab — run strategy with tunable parameters (z-score thresholds, lookback windows, stop-losses, position sizing), see equity curve, trade markers on spread, drawdown chart, P&L metrics (Sharpe, max drawdown, win rate) — Validated in Phase 3: Backtest Tab
 - [ ] Optimize tab — grid search across parameter combinations, parameter heatmap, top results table
 - [ ] All parameters tunable (z-score entry/exit, lookback windows, stop-losses, position sizing)
 - [ ] Visual guidance reusing Academy chart patterns and dark Plotly template
