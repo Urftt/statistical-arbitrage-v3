@@ -11,10 +11,12 @@ import {
   Button,
   Select,
   NumberInput,
+  Slider,
   Alert,
   Accordion,
   Skeleton,
   List,
+  Table,
 } from '@mantine/core';
 import { IconPlayerPlay, IconAlertTriangle } from '@tabler/icons-react';
 import PlotlyChart from '@/components/charts/PlotlyChart';
@@ -100,6 +102,17 @@ function robustnessLabel(score: number | null): { label: string; color: string }
   return { label: 'Weak', color: 'red' };
 }
 
+function verdictColor(v: 'stable' | 'moderate' | 'fragile'): string {
+  return v === 'stable' ? 'green' : v === 'moderate' ? 'yellow' : 'red';
+}
+
+function foldStatusBadge(status: string): { label: string; color: string } {
+  if (status === 'ok') return { label: 'OK', color: 'green' };
+  if (status === 'no_train_trades' || status === 'no_test_trades') return { label: 'No Trades', color: 'yellow' };
+  if (status === 'blocked') return { label: 'Blocked', color: 'red' };
+  return { label: status, color: 'gray' };
+}
+
 // ---------------------------------------------------------------------------
 // Props
 // ---------------------------------------------------------------------------
@@ -134,12 +147,12 @@ export default function OptimizeTab({ baseStrategy, onApplyToBacktest }: Optimiz
   const [gridData, setGridData] = useState<GridSearchResponse | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string>('sharpe_ratio');
 
-  // Walk-forward state (data managed here, UI in Plan 02)
+  // Walk-forward state
   const [wfLoading, setWfLoading] = useState(false);
   const [wfError, setWfError] = useState<string | null>(null);
   const [wfData, setWfData] = useState<WalkForwardResponse | null>(null);
-  const [foldCount] = useState<number>(5);
-  const [trainPct] = useState<number>(60);
+  const [foldCount, setFoldCount] = useState<number>(5);
+  const [trainPct, setTrainPct] = useState<number>(60);
 
   const cancelRef = useRef<boolean>(false);
 
@@ -574,16 +587,156 @@ export default function OptimizeTab({ baseStrategy, onApplyToBacktest }: Optimiz
         </Stack>
       )}
 
-      {/* Walk-Forward Results placeholder (Plan 02 will fill this in) */}
+      {/* Walk-Forward Results (D-10, D-11) */}
       {wfData && !wfLoading && (
-        <Paper withBorder p="md">
+        <Stack gap="md">
+          {/* Section heading */}
           <Text size="md" fw={600}>
             Walk-Forward Validation
           </Text>
-          <Text size="sm" c="dimmed">
-            Walk-forward results will be rendered in Plan 02.
-          </Text>
-        </Paper>
+
+          {/* Walk-forward controls (D-10) — above the fold table */}
+          <Group gap="md">
+            <NumberInput
+              label="Folds"
+              value={foldCount}
+              onChange={(v) => setFoldCount(typeof v === 'number' ? v : parseInt(String(v), 10) || 5)}
+              min={2}
+              max={10}
+              step={1}
+              w={80}
+              disabled={wfLoading}
+            />
+            <div style={{ width: 200 }}>
+              <Text size="sm" mb={4}>
+                Train %
+              </Text>
+              <Slider
+                value={trainPct}
+                onChange={setTrainPct}
+                min={50}
+                max={80}
+                step={5}
+                marks={[
+                  { value: 50, label: '50%' },
+                  { value: 60, label: '60%' },
+                  { value: 70, label: '70%' },
+                  { value: 80, label: '80%' },
+                ]}
+                disabled={wfLoading}
+              />
+            </div>
+          </Group>
+
+          {/* Walk-forward warnings (D-16) */}
+          {wfData.warnings.map((w, i) => (
+            <Alert key={i} color={w.severity === 'blocking' ? 'red' : 'yellow'} icon={<IconAlertTriangle size={16} />}>
+              {w.message}
+            </Alert>
+          ))}
+
+          {/* Fold Table (D-11) */}
+          <Paper withBorder p="md">
+            <Table striped highlightOnHover>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th w={60}>Fold</Table.Th>
+                  <Table.Th w={100}>Train Sharpe</Table.Th>
+                  <Table.Th w={100}>Test Sharpe</Table.Th>
+                  <Table.Th w={80}>Train Trades</Table.Th>
+                  <Table.Th w={80}>Test Trades</Table.Th>
+                  <Table.Th w={100}>Status</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {wfData.folds.map((fold) => (
+                  <Table.Tr key={fold.fold_index}>
+                    <Table.Td>{fold.fold_index + 1}</Table.Td>
+                    <Table.Td>{fold.train_metrics.sharpe_ratio?.toFixed(2) ?? 'N/A'}</Table.Td>
+                    <Table.Td>{fold.test_metrics.sharpe_ratio?.toFixed(2) ?? 'N/A'}</Table.Td>
+                    <Table.Td>{fold.train_trade_count}</Table.Td>
+                    <Table.Td>{fold.test_trade_count}</Table.Td>
+                    <Table.Td>
+                      <Badge size="sm" variant="light" color={foldStatusBadge(fold.status).color}>
+                        {foldStatusBadge(fold.status).label}
+                      </Badge>
+                    </Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+
+            {/* Aggregate row + verdict (D-11) */}
+            <Group gap="xl" mt="md">
+              <div>
+                <Text size="xs" c="dimmed">
+                  Avg Train Sharpe
+                </Text>
+                <Text size="md" fw={600}>
+                  {wfData.aggregate_train_sharpe?.toFixed(2) ?? 'N/A'}
+                </Text>
+              </div>
+              <div>
+                <Text size="xs" c="dimmed">
+                  Avg Test Sharpe
+                </Text>
+                <Text size="md" fw={600}>
+                  {wfData.aggregate_test_sharpe?.toFixed(2) ?? 'N/A'}
+                </Text>
+              </div>
+              <Badge size="lg" variant="light" color={verdictColor(wfData.stability_verdict)}>
+                {wfData.stability_verdict.charAt(0).toUpperCase() + wfData.stability_verdict.slice(1)}
+              </Badge>
+            </Group>
+          </Paper>
+
+          {/* Fragile verdict warning (D-14, from UI-SPEC copywriting) */}
+          {wfData.stability_verdict === 'fragile' && (
+            <Alert color="red" icon={<IconAlertTriangle size={16} />}>
+              Results are fragile — parameters do not generalise out-of-sample. Do not apply these to
+              live trading.
+            </Alert>
+          )}
+
+          {/* Walk-forward Apply to Backtest (D-13, D-14) */}
+          {wfData.stability_verdict !== 'fragile' && wfData.recommended_backtest_params && (
+            <Group justify="flex-end">
+              <Button
+                variant="light"
+                color="blue"
+                size="sm"
+                onClick={() => onApplyToBacktest(wfData.recommended_backtest_params!)}
+              >
+                Apply to Backtest
+              </Button>
+            </Group>
+          )}
+
+          {/* Walk-forward Honest Reporting Accordion (D-17) */}
+          <Accordion variant="separated">
+            <Accordion.Item value="wf-assumptions">
+              <Accordion.Control>Assumptions &amp; Limitations</Accordion.Control>
+              <Accordion.Panel>
+                <List size="sm">
+                  {wfData.footer.assumptions.map((a, i) => (
+                    <List.Item key={`wa-${i}`}>
+                      <Text size="sm" c="dimmed">
+                        {a}
+                      </Text>
+                    </List.Item>
+                  ))}
+                  {wfData.footer.limitations.map((l, i) => (
+                    <List.Item key={`wl-${i}`}>
+                      <Text size="sm" c="dimmed">
+                        {l}
+                      </Text>
+                    </List.Item>
+                  ))}
+                </List>
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+        </Stack>
       )}
     </Stack>
   );
