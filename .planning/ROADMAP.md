@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Routing & Navigation Scaffold** - Working /pair-analysis route, updated sidebar, and scanner drill-down navigation
 - [ ] **Phase 2: Statistics Tab** - Cointegration stat cards, spread chart, and z-score chart with threshold lines
 - [ ] **Phase 3: Backtest Tab** - Full backtest loop: parameter form, run button, equity curve, trade log, metrics, and honest reporting
-- [ ] **Phase 4: Research Tab** - 8 research modules with per-module run buttons, takeaway callouts, and Apply-to-Backtest action
+- [x] **Phase 4: Research Tab** - 8 research modules with per-module run buttons, takeaway callouts, and Apply-to-Backtest action (completed 2026-04-02)
 - [ ] **Phase 5: Optimize Tab** - Grid search heatmap, best-cell display, walk-forward validation, and stability verdict
 - [ ] **Phase 6: Scanner Enhancements** - Sortable scanner table with cointegration badges and cointegrated/non-cointegrated visual split
 
@@ -77,10 +77,10 @@ Plans:
   2. Each completed module shows its chart results and a contextual takeaway callout (info, warning, or error severity) using the backend's own headline and body text verbatim
   3. User can view the rolling cointegration stability chart showing p-value over time with a significance reference line
   4. User can click Apply to Backtest on a module and see the Backtest tab's parameter form pre-filled with that module's recommended parameters
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 04-01-PLAN.md — Cross-tab state wiring and ResearchTab scaffold with Pair Stability modules
-- [ ] 04-02-PLAN.md — Remaining 5 module charts and end-to-end verification
+- [x] 04-02-PLAN.md — Remaining 5 module charts and end-to-end verification
 **UI hint**: yes
 
 ### Phase 5: Optimize Tab
@@ -116,6 +116,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Routing & Navigation Scaffold | 2/2 | Complete | - |
 | 2. Statistics Tab | 1/1 | Complete | 2026-03-31 |
 | 3. Backtest Tab | 1/2 | In progress | - |
-| 4. Research Tab | 1/2 | In Progress|  |
+| 4. Research Tab | 2/2 | Complete   | 2026-04-02 |
 | 5. Optimize Tab | 0/? | Not started | - |
 | 6. Scanner Enhancements | 0/? | Not started | - |
