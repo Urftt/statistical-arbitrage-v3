@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import {
   Accordion,
   Alert,
+  Badge,
   Button,
   Group,
   Loader,
@@ -571,7 +572,28 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
               )}
               {lookbackData && (
                 <>
-                  <Text c="dimmed" size="sm">Chart implementation in Plan 02</Text>
+                  <Badge size="sm" variant="dot" color="blue">Recommended: {lookbackData.recommended_result.window} bars</Badge>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'bar' as const,
+                        x: lookbackData.results.map(r => r.window),
+                        y: lookbackData.results.map(r => r.crossings_2),
+                        marker: {
+                          color: lookbackData.results.map(r =>
+                            r.window === lookbackData.recommended_result.window ? '#51CF66' : '#339AF0'
+                          ),
+                        },
+                        name: 'Zero Crossings',
+                      },
+                    ]}
+                    layout={{
+                      xaxis: { title: { text: 'Lookback Window (bars)' } },
+                      yaxis: { title: { text: 'Zero Crossings' } },
+                      margin: { t: 48, b: 40, l: 56, r: 24 },
+                    }}
+                    style={{ height: '240px' }}
+                  />
                   <Text size="xs" c="dimmed">Generated for {asset1}/{asset2}</Text>
                   <Alert color={lookbackData.takeaway.severity} icon={<IconAlertTriangle size={16} />}>
                     {lookbackData.takeaway.text}
@@ -625,7 +647,36 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
               )}
               {zscoreData && (
                 <>
-                  <Text c="dimmed" size="sm">Chart implementation in Plan 02</Text>
+                  {(() => {
+                    const entryValues = [...new Set(zscoreData.results.map(r => r.entry))].sort((a, b) => a - b);
+                    const exitValues = [...new Set(zscoreData.results.map(r => r.exit))].sort((a, b) => a - b);
+                    const zMatrix = entryValues.map(entry =>
+                      exitValues.map(exit => {
+                        const row = zscoreData.results.find(r => r.entry === entry && r.exit === exit);
+                        return row?.total_trades ?? 0;
+                      })
+                    );
+                    return (
+                      <PlotlyChart
+                        data={[
+                          {
+                            type: 'heatmap' as const,
+                            x: exitValues,
+                            y: entryValues,
+                            z: zMatrix,
+                            colorscale: 'Blues',
+                            colorbar: { title: { text: 'Trades' } },
+                          },
+                        ]}
+                        layout={{
+                          xaxis: { title: { text: 'Exit Threshold' } },
+                          yaxis: { title: { text: 'Entry Threshold' } },
+                          margin: { t: 48, b: 40, l: 56, r: 24 },
+                        }}
+                        style={{ height: '280px' }}
+                      />
+                    );
+                  })()}
                   <Text size="xs" c="dimmed">Generated for {asset1}/{asset2}</Text>
                   <Alert color={zscoreData.takeaway.severity} icon={<IconAlertTriangle size={16} />}>
                     {zscoreData.takeaway.text}
@@ -679,7 +730,25 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
               )}
               {txcostData && (
                 <>
-                  <Text c="dimmed" size="sm">Chart implementation in Plan 02</Text>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'bar' as const,
+                        x: txcostData.results.map(r => `${(r.fee_pct * 100).toFixed(2)}%`),
+                        y: txcostData.results.map(r => r.net_profitable_pct),
+                        marker: {
+                          color: txcostData.results.map(r => r.net_profitable_pct > 50 ? '#51CF66' : '#FF6B6B'),
+                        },
+                        name: 'Net Profitable %',
+                      },
+                    ]}
+                    layout={{
+                      xaxis: { title: { text: 'Fee Level' } },
+                      yaxis: { title: { text: 'Net Profitable (%)' } },
+                      margin: { t: 48, b: 40, l: 56, r: 24 },
+                    }}
+                    style={{ height: '220px' }}
+                  />
                   <Text size="xs" c="dimmed">Generated for {asset1}/{asset2}</Text>
                   <Alert color={txcostData.takeaway.severity} icon={<IconAlertTriangle size={16} />}>
                     {txcostData.takeaway.text}
@@ -739,7 +808,26 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
               )}
               {spreadData && (
                 <>
-                  <Text c="dimmed" size="sm">Chart implementation in Plan 02</Text>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'bar' as const,
+                        x: spreadData.results.map(r => r.method),
+                        y: spreadData.results.map(r => r.adf_p_value),
+                        marker: {
+                          color: spreadData.results.map(r => r.is_stationary ? '#51CF66' : '#FF6B6B'),
+                        },
+                        text: spreadData.results.map(r => r.is_stationary ? 'Stationary' : 'Non-stationary'),
+                        textposition: 'outside' as const,
+                      },
+                    ]}
+                    layout={{
+                      xaxis: { title: { text: 'Spread Method' } },
+                      yaxis: { title: { text: 'ADF p-value' } },
+                      margin: { t: 48, b: 40, l: 56, r: 24 },
+                    }}
+                    style={{ height: '220px' }}
+                  />
                   <Text size="xs" c="dimmed">Generated for {asset1}/{asset2}</Text>
                   <Alert color={spreadData.takeaway.severity} icon={<IconAlertTriangle size={16} />}>
                     {spreadData.takeaway.text}
@@ -793,7 +881,26 @@ export default function ResearchTab({ onApplyToBacktest }: ResearchTabProps) {
               )}
               {timeframeData && (
                 <>
-                  <Text c="dimmed" size="sm">Chart implementation in Plan 02</Text>
+                  <PlotlyChart
+                    data={[
+                      {
+                        type: 'bar' as const,
+                        x: timeframeData.results.map(r => r.timeframe),
+                        y: timeframeData.results.map(r => r.p_value ?? 1),
+                        marker: {
+                          color: timeframeData.results.map(r => r.is_cointegrated ? '#51CF66' : '#FF6B6B'),
+                        },
+                        text: timeframeData.results.map(r => r.is_cointegrated ? 'Coint.' : 'Not coint.'),
+                        textposition: 'outside' as const,
+                      },
+                    ]}
+                    layout={{
+                      xaxis: { title: { text: 'Timeframe' } },
+                      yaxis: { title: { text: 'p-value' }, range: [0, 1] },
+                      margin: { t: 48, b: 40, l: 56, r: 24 },
+                    }}
+                    style={{ height: '220px' }}
+                  />
                   <Text size="xs" c="dimmed">Generated for {asset1}/{asset2}</Text>
                   <Alert color={timeframeData.takeaway.severity} icon={<IconAlertTriangle size={16} />}>
                     {timeframeData.takeaway.text}
