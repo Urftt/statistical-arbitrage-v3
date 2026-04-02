@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Container, Stack, Tabs, Text, Title } from '@mantine/core';
 import {
@@ -12,6 +12,8 @@ import {
 import { usePairContext } from '@/contexts/PairContext';
 import StatisticsTab from '@/components/pair-analysis/StatisticsTab';
 import BacktestTab from '@/components/pair-analysis/BacktestTab';
+import ResearchTab from '@/components/pair-analysis/ResearchTab';
+import { type BacktestRequest } from '@/lib/api';
 
 // ---------------------------------------------------------------------------
 
@@ -33,6 +35,8 @@ function PairAnalysisContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [pendingBacktestParams, setPendingBacktestParams] = useState<BacktestRequest | null>(null);
+
   const tab = searchParams.get('tab') ?? 'statistics';
 
   function handleTabChange(value: string | null) {
@@ -40,6 +44,11 @@ function PairAnalysisContent() {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', value);
     router.replace(pathname + '?' + params.toString());
+  }
+
+  function handleApplyToBacktest(params: BacktestRequest) {
+    setPendingBacktestParams(params);
+    handleTabChange('backtest');
   }
 
   if (!asset1 && !asset2) {
@@ -99,10 +108,13 @@ function PairAnalysisContent() {
           <StatisticsTab />
         </Tabs.Panel>
         <Tabs.Panel value="research" pt="md">
-          <Text c="dimmed">Research — coming in Phase 4</Text>
+          <ResearchTab onApplyToBacktest={handleApplyToBacktest} />
         </Tabs.Panel>
         <Tabs.Panel value="backtest" pt="md">
-          <BacktestTab />
+          <BacktestTab
+            pendingParams={pendingBacktestParams}
+            onParamsConsumed={() => setPendingBacktestParams(null)}
+          />
         </Tabs.Panel>
         <Tabs.Panel value="optimize" pt="md">
           <Text c="dimmed">Optimize — coming in Phase 5</Text>

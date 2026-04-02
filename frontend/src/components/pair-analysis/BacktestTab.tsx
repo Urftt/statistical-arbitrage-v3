@@ -28,6 +28,7 @@ import {
   postBacktest,
   postCointegration,
   DEFAULT_STRATEGY_PARAMETERS,
+  type BacktestRequest,
   type BacktestResponse,
   type CointegrationResponse,
   type StrategyParametersPayload,
@@ -245,7 +246,12 @@ function buildSpreadMarkerTraces(
 // Component
 // ---------------------------------------------------------------------------
 
-export default function BacktestTab() {
+interface BacktestTabProps {
+  pendingParams?: BacktestRequest | null;
+  onParamsConsumed?: () => void;
+}
+
+export default function BacktestTab({ pendingParams, onParamsConsumed }: BacktestTabProps) {
   const { asset1, asset2, timeframe } = usePairContext();
 
   const [params, setParams] = useState<StrategyParametersPayload>({
@@ -265,6 +271,16 @@ export default function BacktestTab() {
     setError(null);
     setParams({ ...DEFAULT_STRATEGY_PARAMETERS });
   }, [asset1, asset2, timeframe]);
+
+  // Pre-fill form when pending params arrive from ResearchTab (D-06, D-08)
+  useEffect(() => {
+    if (pendingParams) {
+      setParams({ ...pendingParams.strategy });
+      onParamsConsumed?.();
+    }
+    // onParamsConsumed is intentionally excluded — it's a stable callback from page.tsx
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingParams]);
 
   // Click-triggered fetch (D-05)
   async function handleRun() {
