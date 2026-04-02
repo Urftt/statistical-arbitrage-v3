@@ -92,9 +92,9 @@ Plans:
   2. User can see the best parameter combination displayed with its metrics and robustness score, labelled in-sample
   3. User can run walk-forward validation and view a per-fold table showing train and test Sharpe for each fold
   4. User can see a stability verdict badge (Stable, Moderate, or Fragile) summarising walk-forward results
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
-- [ ] 05-01-PLAN.md — Page-level state wiring, OptimizeTab axis config, grid search heatmap, and best cell card
+- [x] 05-01-PLAN.md — Page-level state wiring, OptimizeTab axis config, grid search heatmap, and best cell card
 - [ ] 05-02-PLAN.md — Walk-forward fold table, verdict badge, and conditional Apply to Backtest
 **UI hint**: yes
 
@@ -120,5 +120,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. Statistics Tab | 1/1 | Complete | 2026-03-31 |
 | 3. Backtest Tab | 1/2 | In progress | - |
 | 4. Research Tab | 2/2 | Complete   | 2026-04-02 |
-| 5. Optimize Tab | 0/2 | Not started | - |
+| 5. Optimize Tab | 1/2 | In Progress|  |
 | 6. Scanner Enhancements | 0/? | Not started | - |
