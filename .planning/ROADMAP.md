@@ -77,7 +77,10 @@ Plans:
   2. Each completed module shows its chart results and a contextual takeaway callout (info, warning, or error severity) using the backend's own headline and body text verbatim
   3. User can view the rolling cointegration stability chart showing p-value over time with a significance reference line
   4. User can click Apply to Backtest on a module and see the Backtest tab's parameter form pre-filled with that module's recommended parameters
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 04-01-PLAN.md — Cross-tab state wiring and ResearchTab scaffold with Pair Stability modules
+- [ ] 04-02-PLAN.md — Remaining 5 module charts and end-to-end verification
 **UI hint**: yes
 
 ### Phase 5: Optimize Tab
@@ -113,6 +116,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Routing & Navigation Scaffold | 2/2 | Complete | - |
 | 2. Statistics Tab | 1/1 | Complete | 2026-03-31 |
 | 3. Backtest Tab | 1/2 | In progress | - |
-| 4. Research Tab | 0/? | Not started | - |
+| 4. Research Tab | 0/2 | Not started | - |
 | 5. Optimize Tab | 0/? | Not started | - |
 | 6. Scanner Enhancements | 0/? | Not started | - |
