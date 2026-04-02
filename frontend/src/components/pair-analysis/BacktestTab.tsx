@@ -95,12 +95,14 @@ function computeDrawdown(equityCurve: EquityCurvePointPayload[]): number[] {
   });
 }
 
-function buildZScoreShapes(entry: number, exit: number) {
+function buildZScoreShapes(entry: number, exit: number, stopLoss: number) {
   return [
     { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: entry, y1: entry, line: { color: '#FF6B6B', width: 1, dash: 'dash' as const } },
     { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: -entry, y1: -entry, line: { color: '#FF6B6B', width: 1, dash: 'dash' as const } },
     { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: exit, y1: exit, line: { color: '#FCC419', width: 1, dash: 'dot' as const } },
     { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: -exit, y1: -exit, line: { color: '#FCC419', width: 1, dash: 'dot' as const } },
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: stopLoss, y1: stopLoss, line: { color: '#FF922B', width: 1, dash: 'dashdot' as const } },
+    { type: 'line' as const, x0: 0, x1: 1, xref: 'paper' as const, y0: -stopLoss, y1: -stopLoss, line: { color: '#FF922B', width: 1, dash: 'dashdot' as const } },
   ];
 }
 
@@ -131,8 +133,8 @@ function buildPositionShapes(equityCurve: EquityCurvePointPayload[]) {
           type: 'rect',
           xref: 'x',
           yref: 'paper',
-          x0: equityCurve[segStart].timestamp,
-          x1: equityCurve[i - 1].timestamp,
+          x0: new Date(Number(equityCurve[segStart].timestamp)).toISOString(),
+          x1: new Date(Number(equityCurve[i - 1].timestamp)).toISOString(),
           y0: 0,
           y1: 1,
           fillcolor:
@@ -156,7 +158,7 @@ function buildZScoreMarkerTraces(signals: SignalOverlayPointPayload[]) {
   const traces: Array<{
     type: 'scatter';
     mode: 'markers';
-    x: number[];
+    x: string[];
     y: number[];
     marker: { symbol: string; color: string; size: number };
     name: string;
@@ -170,7 +172,7 @@ function buildZScoreMarkerTraces(signals: SignalOverlayPointPayload[]) {
     traces.push({
       type: 'scatter' as const,
       mode: 'markers' as const,
-      x: matching.map((s) => new Date(s.execution_timestamp).getTime()),
+      x: matching.map((s) => new Date(Number(s.execution_timestamp)).toISOString()),
       y: matching.map((s) => s.zscore_at_signal),
       marker: { symbol: m.symbol, color: m.color, size: 10 },
       name: m.name,
@@ -190,7 +192,7 @@ function buildSpreadMarkerTraces(
   const traces: Array<{
     type: 'scatter';
     mode: 'markers';
-    x: number[];
+    x: string[];
     y: number[];
     marker: { symbol: string; color: string; size: number };
     name: string;
@@ -201,11 +203,11 @@ function buildSpreadMarkerTraces(
     const matching = signals.filter((s) => s.signal_type === signalType);
     if (matching.length === 0) continue;
 
-    const xs: number[] = [];
+    const xs: string[] = [];
     const ys: number[] = [];
 
     for (const s of matching) {
-      const execMs = new Date(s.execution_timestamp).getTime();
+      const execMs = Number(s.execution_timestamp);
       // Find closest timestamp index
       let bestIdx = 0;
       let bestDist = Math.abs(timestamps[0] - execMs);
@@ -218,7 +220,7 @@ function buildSpreadMarkerTraces(
       }
       const yVal = spread[bestIdx];
       if (yVal !== null) {
-        xs.push(execMs);
+        xs.push(new Date(execMs).toISOString());
         ys.push(yVal);
       }
     }
@@ -712,7 +714,7 @@ export default function BacktestTab() {
                     {
                       type: 'scatter' as const,
                       mode: 'lines' as const,
-                      x: data.equity_curve.map((p) => p.timestamp),
+                      x: data.equity_curve.map((p) => new Date(Number(p.timestamp)).toISOString()),
                       y: data.equity_curve.map((p) => p.equity),
                       line: { color: '#339AF0', width: 1.5 },
                       name: 'Equity',
@@ -720,6 +722,7 @@ export default function BacktestTab() {
                   ]}
                   layout={{
                     shapes: buildPositionShapes(data.equity_curve),
+                    xaxis: { type: 'date' },
                     yaxis: { title: { text: 'EUR' } },
                   }}
                   style={{ height: '280px' }}
@@ -736,7 +739,7 @@ export default function BacktestTab() {
                     {
                       type: 'scatter' as const,
                       mode: 'lines' as const,
-                      x: data.equity_curve.map((p) => p.timestamp),
+                      x: data.equity_curve.map((p) => new Date(Number(p.timestamp)).toISOString()),
                       y: computeDrawdown(data.equity_curve),
                       fill: 'tozeroy' as const,
                       fillcolor: 'rgba(255, 107, 107, 0.3)',
@@ -745,6 +748,7 @@ export default function BacktestTab() {
                     },
                   ]}
                   layout={{
+                    xaxis: { type: 'date' },
                     yaxis: { title: { text: 'Drawdown %' } },
                   }}
                   style={{ height: '180px' }}
@@ -762,7 +766,7 @@ export default function BacktestTab() {
                       {
                         type: 'scatter' as const,
                         mode: 'lines' as const,
-                        x: cointData.timestamps,
+                        x: cointData.timestamps.map((t) => new Date(t).toISOString()),
                         y: cointData.zscore,
                         line: { color: '#339AF0', width: 1 },
                         name: 'Z-Score',
@@ -773,7 +777,9 @@ export default function BacktestTab() {
                       shapes: buildZScoreShapes(
                         params.entry_threshold,
                         params.exit_threshold,
+                        params.stop_loss,
                       ),
+                      xaxis: { type: 'date' },
                       yaxis: { title: { text: 'Z-Score' } },
                     }}
                     style={{ height: '300px' }}
@@ -797,7 +803,7 @@ export default function BacktestTab() {
                       {
                         type: 'scatter' as const,
                         mode: 'lines' as const,
-                        x: cointData.timestamps,
+                        x: cointData.timestamps.map((t) => new Date(t).toISOString()),
                         y: cointData.spread,
                         line: { color: '#339AF0', width: 1 },
                         name: 'Spread',
@@ -809,6 +815,7 @@ export default function BacktestTab() {
                       ),
                     ]}
                     layout={{
+                      xaxis: { type: 'date' },
                       yaxis: { title: { text: 'Spread' } },
                     }}
                     style={{ height: '260px' }}
