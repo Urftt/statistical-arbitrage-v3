@@ -28,8 +28,8 @@ Users can visually explore pair relationships, tune strategy parameters, and see
 - [x] Statistics tab — cointegration strength, spread charts, half-life, correlation, z-score dynamics — Validated in Phase 2: Statistics Tab
 - [x] Research tab — all 8 research modules with visual results per selected pair — Validated in Phase 4: Research Tab
 - [x] Backtest tab — run strategy with tunable parameters (z-score thresholds, lookback windows, stop-losses, position sizing), see equity curve, trade markers on spread, drawdown chart, P&L metrics (Sharpe, max drawdown, win rate) — Validated in Phase 3: Backtest Tab
-- [ ] Optimize tab — grid search across parameter combinations, parameter heatmap, top results table
-- [ ] All parameters tunable (z-score entry/exit, lookback windows, stop-losses, position sizing)
+- [x] Optimize tab — grid search heatmap, best cell card, walk-forward fold table, stability verdict — Validated in Phase 5: Optimize Tab
+- [x] All parameters tunable (z-score entry/exit, lookback windows, stop-losses, position sizing) — Validated in Phase 5: Optimize Tab
 - [ ] Visual guidance reusing Academy chart patterns and dark Plotly template
 - [ ] Fast feedback where possible (chart updates), explicit "run" button for heavier compute (backtests)
 - [ ] Clear profit/loss display in euros with key metrics (Sharpe ratio, max drawdown, win rate)
@@ -88,4 +88,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 after Phase 2 completion*
+*Last updated: 2026-04-02 after Phase 5 completion*
