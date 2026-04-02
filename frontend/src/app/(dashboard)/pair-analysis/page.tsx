@@ -13,7 +13,8 @@ import { usePairContext } from '@/contexts/PairContext';
 import StatisticsTab from '@/components/pair-analysis/StatisticsTab';
 import BacktestTab from '@/components/pair-analysis/BacktestTab';
 import ResearchTab from '@/components/pair-analysis/ResearchTab';
-import { type BacktestRequest } from '@/lib/api';
+import OptimizeTab from '@/components/pair-analysis/OptimizeTab';
+import { type BacktestRequest, DEFAULT_STRATEGY_PARAMETERS, type StrategyParametersPayload } from '@/lib/api';
 
 // ---------------------------------------------------------------------------
 
@@ -36,6 +37,9 @@ function PairAnalysisContent() {
   }, []);
 
   const [pendingBacktestParams, setPendingBacktestParams] = useState<BacktestRequest | null>(null);
+  const [currentBacktestParams, setCurrentBacktestParams] = useState<StrategyParametersPayload>(
+    DEFAULT_STRATEGY_PARAMETERS
+  );
 
   const tab = searchParams.get('tab') ?? 'statistics';
 
@@ -114,10 +118,14 @@ function PairAnalysisContent() {
           <BacktestTab
             pendingParams={pendingBacktestParams}
             onParamsConsumed={() => setPendingBacktestParams(null)}
+            onParamsChange={setCurrentBacktestParams}
           />
         </Tabs.Panel>
         <Tabs.Panel value="optimize" pt="md">
-          <Text c="dimmed">Optimize — coming in Phase 5</Text>
+          <OptimizeTab
+            baseStrategy={currentBacktestParams}
+            onApplyToBacktest={handleApplyToBacktest}
+          />
         </Tabs.Panel>
       </Tabs>
     </>

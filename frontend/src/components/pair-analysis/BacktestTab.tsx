@@ -249,9 +249,10 @@ function buildSpreadMarkerTraces(
 interface BacktestTabProps {
   pendingParams?: BacktestRequest | null;
   onParamsConsumed?: () => void;
+  onParamsChange?: (params: StrategyParametersPayload) => void;
 }
 
-export default function BacktestTab({ pendingParams, onParamsConsumed }: BacktestTabProps) {
+export default function BacktestTab({ pendingParams, onParamsConsumed, onParamsChange }: BacktestTabProps) {
   const { asset1, asset2, timeframe } = usePairContext();
 
   const [params, setParams] = useState<StrategyParametersPayload>({
@@ -275,10 +276,12 @@ export default function BacktestTab({ pendingParams, onParamsConsumed }: Backtes
   // Pre-fill form when pending params arrive from ResearchTab (D-06, D-08)
   useEffect(() => {
     if (pendingParams) {
-      setParams({ ...pendingParams.strategy });
+      const newParams = { ...pendingParams.strategy };
+      setParams(newParams);
+      onParamsChange?.(newParams);
       onParamsConsumed?.();
     }
-    // onParamsConsumed is intentionally excluded — it's a stable callback from page.tsx
+    // onParamsConsumed and onParamsChange are intentionally excluded — stable callbacks from page.tsx
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingParams]);
 
@@ -324,7 +327,9 @@ export default function BacktestTab({ pendingParams, onParamsConsumed }: Backtes
 
   // Reset all state (D-04)
   function handleReset() {
-    setParams({ ...DEFAULT_STRATEGY_PARAMETERS });
+    const defaults = { ...DEFAULT_STRATEGY_PARAMETERS };
+    setParams(defaults);
+    onParamsChange?.(defaults);
     setData(null);
     setCointData(null);
     setError(null);
@@ -332,7 +337,11 @@ export default function BacktestTab({ pendingParams, onParamsConsumed }: Backtes
 
   // Helper to update a single param
   function updateParam(key: keyof StrategyParametersPayload, value: number) {
-    setParams((prev) => ({ ...prev, [key]: value }));
+    setParams((prev) => {
+      const next = { ...prev, [key]: value };
+      onParamsChange?.(next);
+      return next;
+    });
   }
 
   return (
