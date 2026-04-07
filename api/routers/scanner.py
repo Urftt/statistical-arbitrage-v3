@@ -1,7 +1,7 @@
-"""Academy pair scan + live data fetch endpoints.
+"""Scanner endpoints — fetch fresh OHLCV from Bitvavo and scan cached pairs for cointegration.
 
-Scans cached pairs for cointegration and returns categorized results.
-Automatically fetches fresh data from Bitvavo when cache is stale.
+Renamed from academy_scan.py in Phase 06 (D-16). Returns honest results: dropped-for-completeness
+coins are surfaced to the caller instead of silently filtered.
 """
 
 import logging
@@ -11,32 +11,28 @@ from itertools import combinations
 import polars as pl
 from fastapi import APIRouter, Depends, Query
 
-from api.schemas import numpy_to_python
-from src.statistical_arbitrage.analysis.cointegration import PairAnalysis
-from src.statistical_arbitrage.data.cache_manager import (
+from api.schemas import ScanResponse, numpy_to_python
+from statistical_arbitrage.analysis.cointegration import PairAnalysis
+from statistical_arbitrage.data.cache_manager import (
     DataCacheManager,
     get_cache_manager,
 )
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/academy", tags=["academy"])
+router = APIRouter(prefix="/api/scanner", tags=["scanner"])
 
-# In-memory caches with TTL
+# In-memory caches with TTL — preserve from academy_scan.py (D-21)
 _scan_cache: dict[str, dict] = {}
 _scan_cache_ts: dict[str, float] = {}
-SCAN_CACHE_TTL = 300  # 5 minutes — scan results are cached briefly
+SCAN_CACHE_TTL = 300  # 5 minutes
 
 
 def _get_cache_mgr() -> DataCacheManager:
     return get_cache_manager()
 
 
-def _symbol_to_dash(symbol: str) -> str:
-    return symbol.replace("/", "-")
-
-
 # ---------------------------------------------------------------------------
-# POST /api/academy/fetch — Fetch fresh data from Bitvavo
+# POST /api/scanner/fetch — Fetch fresh data from Bitvavo
 # ---------------------------------------------------------------------------
 
 
@@ -51,9 +47,9 @@ def fetch_live_data(
 
     Downloads data for up to max_coins EUR trading pairs and caches it.
     Uses incremental fetching — only downloads the delta since last cache.
+    Clears the in-memory scan cache so the next scan reflects fresh data (D-21).
     """
     try:
-        # Get available EUR pairs from Bitvavo
         available = cache_mgr.get_available_pairs()
         symbols = available["symbol"].to_list()[:max_coins]
 
@@ -61,21 +57,25 @@ def fetch_live_data(
         for symbol in symbols:
             try:
                 df = cache_mgr.get_candles(symbol, timeframe, days_back=days_back)
-                fetched.append({
-                    "symbol": symbol,
-                    "candles": len(df),
-                    "timeframe": timeframe,
-                })
+                fetched.append(
+                    {
+                        "symbol": symbol,
+                        "candles": len(df),
+                        "timeframe": timeframe,
+                    }
+                )
             except Exception as e:
                 logger.warning("Failed to fetch %s: %s", symbol, e)
-                fetched.append({
-                    "symbol": symbol,
-                    "candles": 0,
-                    "timeframe": timeframe,
-                    "error": str(e),
-                })
+                fetched.append(
+                    {
+                        "symbol": symbol,
+                        "candles": 0,
+                        "timeframe": timeframe,
+                        "error": str(e),
+                    }
+                )
 
-        # Clear scan cache so next scan uses fresh data
+        # D-21: Clear scan cache so next scan uses fresh data
         _scan_cache.clear()
         _scan_cache_ts.clear()
 
@@ -95,54 +95,33 @@ def fetch_live_data(
 
 
 # ---------------------------------------------------------------------------
-# GET /api/academy/scan — Scan pairs for cointegration (auto-refreshes data)
+# GET /api/scanner/scan — Scan cached pairs for cointegration
 # ---------------------------------------------------------------------------
 
 
-@router.get("/scan")
+@router.get("/scan", response_model=ScanResponse)
 def scan_pairs(
     timeframe: str = Query(default="1h", description="Timeframe to test"),
     days_back: int = Query(default=90, ge=7, le=365, description="Days of history"),
     max_pairs: int = Query(default=20, ge=2, le=50, description="Max base assets to scan"),
-    fresh: bool = Query(default=True, description="Auto-fetch fresh data from Bitvavo"),
     cache_mgr: DataCacheManager = Depends(_get_cache_mgr),
-) -> dict:
-    """Scan pairs for cointegration with automatic data freshness.
+) -> ScanResponse:
+    """Scan cached pairs for cointegration.
 
-    When fresh=True (default), automatically fetches the latest data from
-    Bitvavo before scanning. This ensures the Academy always shows live,
-    up-to-date data.
+    D-17: This endpoint reads from the local cache only. To refresh data,
+    call POST /api/scanner/fetch first. The `fresh` and `coins[]` query params
+    that existed in academy_scan.py have been removed.
 
-    Returns pairs sorted by p-value, categorized into 'cointegrated'
-    (p < 0.05) and 'not_cointegrated' groups.
+    D-18: Response includes `cached_coin_count` (coins in cache before filtering)
+    and `dropped_for_completeness` (coins excluded by the 90% completeness check).
     """
-    cache_key = f"{timeframe}-{days_back}-{max_pairs}-{fresh}"
+    cache_key = f"{timeframe}-{days_back}-{max_pairs}"
     now = time.time()
 
-    # Return cached results if fresh enough
     if cache_key in _scan_cache and (now - _scan_cache_ts.get(cache_key, 0)) < SCAN_CACHE_TTL:
         return _scan_cache[cache_key]
 
-    # 1. Determine which symbols to scan
-    if fresh:
-        # Get all available EUR pairs from Bitvavo and fetch fresh data
-        try:
-            available = cache_mgr.get_available_pairs()
-            symbols = available["symbol"].to_list()[:max_pairs]
-            logger.info("Fetching fresh data for %d symbols...", len(symbols))
-        except Exception:
-            logger.warning("Could not get Bitvavo pairs, falling back to cache")
-            symbols = []
-            fresh = False
-
-        if fresh:
-            for symbol in symbols:
-                try:
-                    cache_mgr.get_candles(symbol, timeframe, days_back=days_back)
-                except Exception:
-                    logger.warning("Failed to refresh %s", symbol)
-
-    # 2. Find available base assets from cache
+    # 1. Find available base assets from cache for this timeframe
     cached = cache_mgr.list_cached()
     base_assets: set[str] = set()
     for info in cached:
@@ -153,40 +132,62 @@ def scan_pairs(
             base_assets.add(base)
 
     base_list = sorted(base_assets)[:max_pairs]
+    cached_coin_count = len(base_list)  # D-18
 
     if len(base_list) < 2:
-        return {"cointegrated": [], "not_cointegrated": [], "scanned": 0, "timeframe": timeframe}
+        empty = {
+            "cointegrated": [],
+            "not_cointegrated": [],
+            "scanned": 0,
+            "timeframe": timeframe,
+            "cached_coin_count": cached_coin_count,
+            "dropped_for_completeness": [],
+        }
+        _scan_cache[cache_key] = empty
+        _scan_cache_ts[cache_key] = now
+        return empty
 
-    # 3. Pre-load close price series, filtering for data quality
+    # 2. Pre-load close-price series with timeframe-aware completeness check
+    # FIX (Pitfall 3 / D-29): The previous formula divided len(df) by hourly candle
+    # count regardless of timeframe. For 1d data this gave ~4% completeness for
+    # ANY coin and silently dropped everything. We now compute the expected
+    # candle count based on the actual timeframe interval in milliseconds.
     series_map: dict[str, pl.DataFrame] = {}
-    min_completeness = 0.90  # Require 90%+ data completeness for clean charts
+    dropped_for_completeness: list[str] = []
+    min_completeness = 0.90  # 90% completeness threshold preserved (D-23)
+
+    timeframe_ms = DataCacheManager.TIMEFRAME_MS.get(timeframe, 3_600_000)
 
     for base in base_list:
         symbol = f"{base}/EUR"
         try:
             df = cache_mgr.get_candles(symbol, timeframe, days_back=days_back)
             if len(df) < 100:
+                # Below cointegration minimum — not a "completeness" drop, just too short.
                 continue
 
-            # Check data completeness — reject gappy altcoins
             ts = df["timestamp"].sort().to_list()
-            total_hours = (ts[-1] - ts[0]) / 3_600_000
-            expected = max(int(total_hours), 1)
-            completeness = len(df) / expected
+            span_ms = ts[-1] - ts[0]
+            expected_candles = max(int(span_ms / timeframe_ms), 1)
+            completeness = len(df) / expected_candles
 
             if completeness < min_completeness:
                 logger.info(
-                    "Skipping %s — %.1f%% complete (need %.0f%%)",
-                    symbol, completeness * 100, min_completeness * 100,
+                    "Dropping %s — %.1f%% complete (need %.0f%%) for tf=%s",
+                    symbol,
+                    completeness * 100,
+                    min_completeness * 100,
+                    timeframe,
                 )
+                dropped_for_completeness.append(symbol)
                 continue
 
             series_map[base] = df
         except Exception:
             logger.warning("Failed to load %s", symbol)
 
-    # 4. Test all combinations
-    results = []
+    # 3. Test all combinations
+    results: list[dict] = []
     available_bases = list(series_map.keys())
 
     for asset1, asset2 in combinations(available_bases, 2):
@@ -194,7 +195,6 @@ def scan_pairs(
             df1 = series_map[asset1]
             df2 = series_map[asset2]
 
-            # Align on timestamp
             joined = (
                 df1.select(pl.col("timestamp"), pl.col("close").alias("close_1"))
                 .join(
@@ -213,23 +213,24 @@ def scan_pairs(
             half_life = numpy_to_python(pa.calculate_half_life())
             correlation = numpy_to_python(pa.get_correlation())
 
-            results.append({
-                "asset1": f"{asset1}/EUR",
-                "asset2": f"{asset2}/EUR",
-                "p_value": coint["p_value"],
-                "is_cointegrated": coint["is_cointegrated"],
-                "hedge_ratio": coint["hedge_ratio"],
-                "half_life": half_life,
-                "correlation": correlation,
-                "cointegration_score": coint["cointegration_score"],
-                "observations": len(joined),
-            })
+            results.append(
+                {
+                    "asset1": f"{asset1}/EUR",
+                    "asset2": f"{asset2}/EUR",
+                    "p_value": coint["p_value"],
+                    "is_cointegrated": coint["is_cointegrated"],
+                    "hedge_ratio": coint["hedge_ratio"],
+                    "half_life": half_life,
+                    "correlation": correlation,
+                    "cointegration_score": coint["cointegration_score"],
+                    "observations": len(joined),
+                }
+            )
         except Exception:
             logger.warning("Scan failed for %s/%s", asset1, asset2, exc_info=True)
 
-    # 5. Sort and categorize
+    # 4. Sort by p-value and categorize
     results.sort(key=lambda r: r["p_value"])
-
     cointegrated = [r for r in results if r["is_cointegrated"]]
     not_cointegrated = [r for r in results if not r["is_cointegrated"]]
 
@@ -238,10 +239,10 @@ def scan_pairs(
         "not_cointegrated": not_cointegrated,
         "scanned": len(results),
         "timeframe": timeframe,
-        "base_assets": len(available_bases),
+        "cached_coin_count": cached_coin_count,
+        "dropped_for_completeness": dropped_for_completeness,
     }
 
-    # Cache the result
     _scan_cache[cache_key] = response
     _scan_cache_ts[cache_key] = now
     return response
