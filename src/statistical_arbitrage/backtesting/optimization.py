@@ -105,7 +105,9 @@ def run_grid_search(
         for axis, value in zip(axes, combo):
             overrides[axis.name] = value
 
-        cell_params = base_params.model_copy(update=overrides)
+        cell_params = StrategyParameters.model_validate(
+            {**base_params.model_dump(), **overrides}
+        )
 
         try:
             result = run_backtest(

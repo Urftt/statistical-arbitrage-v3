@@ -220,7 +220,9 @@ def run_walk_forward(
 
         if fold_status not in ("blocked",):
             # Apply best params to base params
-            test_params = base_params.model_copy(update=best_params)
+            test_params = StrategyParameters.model_validate(
+                {**base_params.model_dump(), **best_params}
+            )
 
             try:
                 test_result = run_backtest(
