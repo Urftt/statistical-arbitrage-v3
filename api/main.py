@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import academy_scan, analysis, backtest, health, optimization, pairs, research, trading
+from api.routers import analysis, backtest, health, optimization, pairs, research, scanner, trading
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ def create_app() -> FastAPI:
     application.include_router(backtest.router)
     application.include_router(optimization.router)
     application.include_router(trading.router)
-    application.include_router(academy_scan.router)
+    application.include_router(scanner.router)
 
     return application
 
