@@ -837,10 +837,10 @@ export async function postWalkForward(
 }
 
 // ---------------------------------------------------------------------------
-// Academy scan
+// Scanner (Phase 06, renamed from Academy scan)
 // ---------------------------------------------------------------------------
 
-export interface AcademyScanPair {
+export interface ScanPair {
   asset1: string;
   asset2: string;
   p_value: number;
@@ -852,36 +852,53 @@ export interface AcademyScanPair {
   observations: number;
 }
 
-export interface AcademyScanResponse {
-  cointegrated: AcademyScanPair[];
-  not_cointegrated: AcademyScanPair[];
+export interface ScanResponse {
+  cointegrated: ScanPair[];
+  not_cointegrated: ScanPair[];
   scanned: number;
   timeframe: string;
+  cached_coin_count: number;
+  dropped_for_completeness: string[];
 }
 
 /**
- * Scan pairs for cointegration with auto-refresh from Bitvavo.
+ * Scan cached pairs for cointegration. Reads from local cache only — call
+ * fetchLiveData() first if you need fresh data.
  *
- * When fresh=true (default), the backend fetches latest data from Bitvavo
- * before scanning. This ensures the Academy always shows live data.
+ * D-17: The legacy `fresh` query parameter has been removed. The endpoint
+ * was renamed from the academy scan to /api/scanner/scan in Phase 06.
  */
-export async function fetchAcademyScan(
+export async function fetchScan(
   timeframe = '1h',
   daysBack = 90,
-  fresh = true
-): Promise<AcademyScanResponse> {
+  maxPairs = 20
+): Promise<ScanResponse> {
   const params = new URLSearchParams({
     timeframe,
     days_back: String(daysBack),
-    fresh: String(fresh),
+    max_pairs: String(maxPairs),
   });
-  return apiFetch<AcademyScanResponse>(
-    `${API_BASE_URL}/api/academy/scan?${params.toString()}`
+  return apiFetch<ScanResponse>(
+    `${API_BASE_URL}/api/scanner/scan?${params.toString()}`
   );
 }
 
+// Backwards-compat alias so existing call sites in AcademyDataContext.tsx
+// keep working without a code change. Drops the unused `fresh` arg.
+// New code should call fetchScan() directly.
+export type AcademyScanPair = ScanPair;
+export type AcademyScanResponse = ScanResponse;
+
+export async function fetchAcademyScan(
+  timeframe = '1h',
+  daysBack = 90,
+  _fresh = true // accepted but ignored — backend no longer supports it
+): Promise<ScanResponse> {
+  return fetchScan(timeframe, daysBack);
+}
+
 // ---------------------------------------------------------------------------
-// Live data fetch
+// Live data fetch (Phase 06: renamed endpoint to /api/scanner/fetch)
 // ---------------------------------------------------------------------------
 
 export interface FetchLiveDataResponse {
@@ -893,7 +910,7 @@ export interface FetchLiveDataResponse {
   days_back: number;
 }
 
-/** Fetch fresh OHLCV data from Bitvavo for top EUR pairs. */
+/** Fetch fresh OHLCV data from Bitvavo for top EUR pairs (POST /api/scanner/fetch). */
 export async function fetchLiveData(
   timeframe = '1h',
   daysBack = 90,
@@ -905,7 +922,7 @@ export async function fetchLiveData(
     max_coins: String(maxCoins),
   });
   return apiFetch<FetchLiveDataResponse>(
-    `${API_BASE_URL}/api/academy/fetch?${params.toString()}`,
+    `${API_BASE_URL}/api/scanner/fetch?${params.toString()}`,
     { method: 'POST' }
   );
 }
