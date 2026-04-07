@@ -19,7 +19,7 @@ created: 2026-04-07
 |----------|-------|
 | **Framework** | pytest 7.x (backend) + manual UAT (frontend) |
 | **Config file** | `pyproject.toml` `[tool.pytest.ini_options]` |
-| **Quick run command** | `uv run pytest tests/test_scanner.py -x` |
+| **Quick run command** | `uv run pytest tests/test_scanner_api.py -x` |
 | **Full suite command** | `uv run pytest tests/ --ignore=tests/test_api.py --ignore=tests/test_backtest_api.py --ignore=tests/test_optimization_api.py --ignore=tests/test_research_api.py --ignore=tests/test_trading_api.py` |
 | **Estimated runtime** | ~30 seconds (unit suite) |
 
@@ -27,7 +27,7 @@ created: 2026-04-07
 
 ## Sampling Rate
 
-- **After every task commit:** Run `uv run pytest tests/test_scanner.py -x`
+- **After every task commit:** Run `uv run pytest tests/test_scanner_api.py -x`
 - **After every plan wave:** Run full unit suite
 - **Before `/gsd-verify-work`:** Full suite green + manual UAT for frontend changes
 - **Max feedback latency:** 30 seconds
@@ -48,7 +48,7 @@ To be filled by planner — placeholder structure:
 
 ## Wave 0 Requirements
 
-- [ ] `tests/test_scanner.py` — new test file with stubs for SCAN-01..04 backend behavior (rename, response shape, completeness fix, dropped-coins exposure)
+- [ ] `tests/test_scanner_api.py` — new test file with stubs for SCAN-01..04 backend behavior (rename, response shape, completeness fix, dropped-coins exposure)
 - [ ] No new framework install needed — pytest is already in pyproject.toml dev dependencies
 
 *Frontend changes are validated manually — see Manual-Only Verifications below.*
@@ -76,7 +76,7 @@ To be filled by planner — placeholder structure:
 - [ ] All backend tasks have automated `pytest` verification or Wave 0 test stubs
 - [ ] All frontend tasks have manual UAT instructions in this document
 - [ ] Sampling continuity: no 3 consecutive backend tasks without automated verify
-- [ ] Wave 0 covers all MISSING references (test_scanner.py)
+- [ ] Wave 0 covers all MISSING references (test_scanner_api.py)
 - [ ] No watch-mode flags
 - [ ] Feedback latency < 30s for unit suite
 - [ ] `nyquist_compliant: true` set in frontmatter after planning completes
