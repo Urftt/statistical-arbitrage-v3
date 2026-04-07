@@ -108,8 +108,8 @@ Plans:
   3. User sees a loading indicator while the scan is running and an actionable error message if the scan fails
 **Plans:** 2 plans
 Plans:
-- [ ] 06-01-PLAN.md — Backend rename, completeness fix, schema, atomic AcademyDataContext bridge, and Wave 0 tests
-- [ ] 06-02-PLAN.md — Scanner page rewrite: Suspense + URL state, controls + auto-fetch, sortable two-section split, dropped-coins Alert
+- [x] 06-01-PLAN.md — Backend rename, completeness fix, schema, atomic AcademyDataContext bridge, and Wave 0 tests
+- [x] 06-02-PLAN.md — Scanner page rewrite: Suspense + URL state, controls + auto-fetch, sortable two-section split, dropped-coins Alert
 **UI hint**: yes
 
 ## Progress
