@@ -23,7 +23,7 @@ Users can visually explore pair relationships, tune strategy parameters, and see
 
 ### Active
 
-- [ ] Pair Scanner page — screen all available pairs, surface promising cointegrated candidates with scores
+- [x] Pair Scanner page — screen all available pairs, surface promising cointegrated candidates with scores — Validated in Phase 6: Scanner Enhancements
 - [x] Pair Analysis page with tabbed interface (Statistics, Research, Backtest, Optimize) — Validated in Phase 1: Routing & Navigation Scaffold
 - [x] Statistics tab — cointegration strength, spread charts, half-life, correlation, z-score dynamics — Validated in Phase 2: Statistics Tab
 - [x] Research tab — all 8 research modules with visual results per selected pair — Validated in Phase 4: Research Tab
@@ -88,4 +88,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after Phase 5 completion*
+*Last updated: 2026-04-07 after Phase 6 completion (milestone complete — all 6 phases delivered)*
