@@ -299,3 +299,79 @@ class TestGridSearchExecutionTime:
         )
 
         assert result.execution_time_ms > 0
+
+
+# ---------------------------------------------------------------------------
+# Regression tests: lookback_window as an int-typed optimization axis
+# ---------------------------------------------------------------------------
+
+
+def test_grid_search_with_lookback_window_axis():
+    """Grid search with lookback_window axis must produce non-blocked cells.
+
+    Regression test for the model_copy(update=...) bug where float values
+    (e.g. 20.0) are assigned to the int-typed lookback_window field without
+    re-validation, causing TypeError: 'float' object cannot be interpreted
+    as an integer inside range() in build_rolling_strategy_data().
+
+    On the buggy code: all 3 cells are "blocked" and best_cell is None.
+    On the fixed code: at least one cell is "ok" and best_cell is not None.
+    """
+    timestamps, prices1, prices2 = _make_correlated_prices(n=600)
+    axis = ParameterAxis(name="lookback_window", min_value=20, max_value=40, step=10)
+
+    result = run_grid_search(
+        timestamps=timestamps,
+        prices1=prices1,
+        prices2=prices2,
+        axes=[axis],
+        base_params=BASE_PARAMS,
+    )
+
+    # 3 values: 20, 30, 40
+    assert len(result.cells) == 3
+
+    # At least one cell must be "ok" — not every cell is blocked
+    ok_cells = [c for c in result.cells if c.status == "ok"]
+    assert len(ok_cells) >= 1, (
+        f"Expected at least one 'ok' cell but all cells are blocked: "
+        f"{[c.status for c in result.cells]}. "
+        f"This indicates the lookback_window float→int coercion bug."
+    )
+
+    # best_cell must be found
+    assert result.best_cell is not None, (
+        "best_cell is None — grid search found no valid cell with lookback_window axis."
+    )
+
+    # best_cell.params preserves float representation (out of scope to change)
+    lw_value = result.best_cell.params["lookback_window"]
+    assert isinstance(lw_value, (int, float))
+    assert lw_value in {20.0, 30.0, 40.0}
+
+
+def test_grid_search_cell_params_assigned_to_int_field_without_typeerror():
+    """Tighter sanity check: lookback_window axis with 2 values, no cell blocked due to TypeError.
+
+    On the buggy code: both cells are "blocked" because the float 25.0 / 30.0
+    is passed directly to range(lookback_window - 1, n) which raises TypeError.
+    On the fixed code: cells should be "ok" or "no_trades" — not "blocked".
+    """
+    timestamps, prices1, prices2 = _make_correlated_prices(n=600)
+    axis = ParameterAxis(name="lookback_window", min_value=25, max_value=30, step=5)
+
+    result = run_grid_search(
+        timestamps=timestamps,
+        prices1=prices1,
+        prices2=prices2,
+        axes=[axis],
+        base_params=BASE_PARAMS,
+    )
+
+    # No cell should be "blocked" due to a TypeError from the float int coercion bug
+    for cell in result.cells:
+        assert cell.status in {"ok", "no_trades"}, (
+            f"Cell with lookback_window={cell.params.get('lookback_window')} has "
+            f"status='blocked', indicating a TypeError from float→int coercion. "
+            f"Expected 'ok' or 'no_trades'."
+        )
