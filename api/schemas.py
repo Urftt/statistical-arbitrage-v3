@@ -9,15 +9,28 @@ from pydantic import BaseModel, Field
 from statistical_arbitrage.backtesting.engine import default_strategy_parameters
 from statistical_arbitrage.backtesting.models import (
     DataQualityReport as EngineDataQualityReport,
+)
+from statistical_arbitrage.backtesting.models import (
     EngineWarning as EngineWarningModel,
+)
+from statistical_arbitrage.backtesting.models import (
     EquityPoint as EquityPointModel,
+)
+from statistical_arbitrage.backtesting.models import (
     HonestReportingFooter as HonestReportingFooterModel,
+)
+from statistical_arbitrage.backtesting.models import (
     MetricSummary as MetricSummaryModel,
+)
+from statistical_arbitrage.backtesting.models import (
     SignalEvent as SignalEventModel,
+)
+from statistical_arbitrage.backtesting.models import (
     StrategyParameters as StrategyParametersModel,
+)
+from statistical_arbitrage.backtesting.models import (
     TradeLedgerRow as TradeLedgerRowModel,
 )
-
 
 # ---------------------------------------------------------------------------
 # Numpy → Python type converter
@@ -79,6 +92,47 @@ class PairsListResponse(BaseModel):
     """Response listing all cached pairs."""
 
     pairs: list[PairInfo]
+
+
+# ---------------------------------------------------------------------------
+# Scanner request/response models (Phase 06)
+# ---------------------------------------------------------------------------
+
+
+class ScanPair(BaseModel):
+    """Single pair result from the scanner."""
+
+    asset1: str = Field(description="First asset symbol (e.g. ETH/EUR)")
+    asset2: str = Field(description="Second asset symbol (e.g. BTC/EUR)")
+    p_value: float = Field(description="Engle-Granger cointegration p-value")
+    is_cointegrated: bool = Field(description="True if p_value < 0.05")
+    hedge_ratio: float = Field(description="OLS hedge ratio")
+    half_life: float | None = Field(
+        default=None, description="Mean-reversion half-life in bars, or null"
+    )
+    correlation: float = Field(description="Pearson correlation coefficient")
+    cointegration_score: float = Field(description="Cointegration test statistic")
+    observations: int = Field(description="Number of aligned candles used")
+
+
+class ScanResponse(BaseModel):
+    """Response from GET /api/scanner/scan (Phase 06, D-18)."""
+
+    cointegrated: list[ScanPair] = Field(
+        description="Pairs with p_value < 0.05, sorted ascending by p_value"
+    )
+    not_cointegrated: list[ScanPair] = Field(
+        description="Pairs with p_value >= 0.05, sorted ascending by p_value"
+    )
+    scanned: int = Field(description="Total pairs tested after completeness filter")
+    timeframe: str = Field(description="Timeframe used for the scan")
+    cached_coin_count: int = Field(
+        description="Coins in cache for this timeframe before completeness filter"
+    )
+    dropped_for_completeness: list[str] = Field(
+        default_factory=list,
+        description="Coin symbols (e.g. 'XRP/EUR') dropped by the 90% completeness filter",
+    )
 
 
 class OHLCVResponse(BaseModel):
