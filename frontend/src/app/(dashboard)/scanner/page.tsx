@@ -387,7 +387,7 @@ function ScannerContent() {
     setScanResponse(null);
     setDroppedDismissed(false);
     try {
-      const res = await fetchScan(timeframe, daysBackForTimeframe(timeframe), 20);
+      const res = await fetchScan(timeframe, daysBackForTimeframe(timeframe));
       setScanResponse(res);
       // Refresh cache status (last_updated may have changed if scan triggered any fetches)
       await refreshCacheState();

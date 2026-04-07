@@ -103,19 +103,19 @@ def fetch_live_data(
 def scan_pairs(
     timeframe: str = Query(default="1h", description="Timeframe to test"),
     days_back: int = Query(default=90, ge=7, le=365, description="Days of history"),
-    max_pairs: int = Query(default=20, ge=2, le=50, description="Max base assets to scan"),
     cache_mgr: DataCacheManager = Depends(_get_cache_mgr),
 ) -> ScanResponse:
     """Scan cached pairs for cointegration.
 
     D-17: This endpoint reads from the local cache only. To refresh data,
-    call POST /api/scanner/fetch first. The `fresh` and `coins[]` query params
-    that existed in academy_scan.py have been removed.
+    call POST /api/scanner/fetch first. The `fresh`, `coins[]`, and `max_pairs`
+    query params that existed in academy_scan.py have been removed — the scan
+    considers every cached coin for the requested timeframe.
 
     D-18: Response includes `cached_coin_count` (coins in cache before filtering)
     and `dropped_for_completeness` (coins excluded by the 90% completeness check).
     """
-    cache_key = f"{timeframe}-{days_back}-{max_pairs}"
+    cache_key = f"{timeframe}-{days_back}"
     now = time.time()
 
     if cache_key in _scan_cache and (now - _scan_cache_ts.get(cache_key, 0)) < SCAN_CACHE_TTL:
@@ -131,8 +131,8 @@ def scan_pairs(
             base = symbol.split("/")[0]
             base_assets.add(base)
 
-    base_list = sorted(base_assets)[:max_pairs]
-    cached_coin_count = len(base_list)  # D-18
+    base_list = sorted(base_assets)
+    cached_coin_count = len(base_list)  # D-18: actual cache count, not scan-scope
 
     if len(base_list) < 2:
         empty = {

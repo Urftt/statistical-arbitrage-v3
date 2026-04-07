@@ -26,7 +26,7 @@ client = TestClient(app)
 
 class TestScannerEndpoints:
     def test_new_scanner_scan_endpoint_exists(self):
-        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90&max_pairs=5")
+        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90")
         assert resp.status_code == 200, resp.text
 
     def test_new_scanner_fetch_endpoint_exists(self):
@@ -36,7 +36,7 @@ class TestScannerEndpoints:
         assert resp.status_code in (200, 502, 503), resp.text
 
     def test_old_academy_scan_endpoint_gone(self):
-        resp = client.get("/api/academy/scan?timeframe=1h&days_back=90&max_pairs=5")
+        resp = client.get("/api/academy/scan?timeframe=1h&days_back=90")
         assert resp.status_code in (404, 405)
 
     def test_old_academy_fetch_endpoint_gone(self):
@@ -51,7 +51,7 @@ class TestScannerEndpoints:
 
 class TestScannerScanResponse:
     def test_response_has_required_fields(self):
-        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90&max_pairs=5")
+        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90")
         assert resp.status_code == 200
         data = resp.json()
         # Existing fields (SCAN-01, SCAN-02)
@@ -68,7 +68,7 @@ class TestScannerScanResponse:
         assert isinstance(data["dropped_for_completeness"], list)
 
     def test_response_categorizes_pairs(self):
-        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90&max_pairs=10")
+        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90")
         data = resp.json()
         # Every cointegrated pair has p_value < 0.05; every not_cointegrated >= 0.05
         for pair in data["cointegrated"]:
@@ -79,7 +79,7 @@ class TestScannerScanResponse:
             assert pair["is_cointegrated"] is False
 
     def test_pair_row_has_all_columns(self):
-        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90&max_pairs=5")
+        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90")
         data = resp.json()
         all_pairs = data["cointegrated"] + data["not_cointegrated"]
         if not all_pairs:
@@ -130,7 +130,7 @@ class TestCompletenessFormula:
         pytest.skip() if the cache is cold for 1d so CI doesn't false-fail on
         a clean checkout.
         """
-        resp = client.get("/api/scanner/scan?timeframe=1d&days_back=365&max_pairs=10")
+        resp = client.get("/api/scanner/scan?timeframe=1d&days_back=365")
         assert resp.status_code == 200
         data = resp.json()
         if data["cached_coin_count"] < 2:
@@ -149,7 +149,7 @@ class TestCompletenessFormula:
         dropped_for_completeness lists those that failed the 90% completeness check.
         scanned counts pairs C(remaining, 2) tested.
         """
-        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90&max_pairs=10")
+        resp = client.get("/api/scanner/scan?timeframe=1h&days_back=90")
         data = resp.json()
         assert data["cached_coin_count"] >= 0
         # dropped count cannot exceed cached count

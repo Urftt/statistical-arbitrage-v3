@@ -870,13 +870,11 @@ export interface ScanResponse {
  */
 export async function fetchScan(
   timeframe = '1h',
-  daysBack = 90,
-  maxPairs = 20
+  daysBack = 90
 ): Promise<ScanResponse> {
   const params = new URLSearchParams({
     timeframe,
     days_back: String(daysBack),
-    max_pairs: String(maxPairs),
   });
   return apiFetch<ScanResponse>(
     `${API_BASE_URL}/api/scanner/scan?${params.toString()}`
