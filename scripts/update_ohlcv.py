@@ -44,10 +44,17 @@ from _ohlcv_common import (  # noqa: E402
 
 logger = logging.getLogger("update_ohlcv")
 
-# Fetch the last 24 candles per pair -- generous cushion vs. the once-per-hour
-# cadence, so a missed run (reboot, network blip, ...) still heals on the next
-# invocation. Already-present candles hit ON CONFLICT and are skipped silently.
-UPDATE_LIMIT = 24
+# Fetch the last 168 candles (1 week of hourly data) per pair. Generous
+# cushion for downtime: reboots, NAS maintenance, network outages, or a
+# cron that silently misfires will all self-heal on the next run -- up to
+# a full week of gap is recoverable without any manual intervention.
+# Already-present candles hit ON CONFLICT and are skipped silently, so
+# the steady-state cost is: first run fills the gap, subsequent runs
+# insert only the new rows since the previous run.
+#
+# 168 is also well below Bitvavo's max-per-page (1440), so every market
+# completes in a single API call -- no pagination required.
+UPDATE_LIMIT = 168
 
 
 def update_market(conn, market: str) -> int:
