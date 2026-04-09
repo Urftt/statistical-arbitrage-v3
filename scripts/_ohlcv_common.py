@@ -25,11 +25,21 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 import psycopg2
 import psycopg2.extras
 import requests
+from dotenv import load_dotenv
+
+# Load .env files before any env var lookups.
+# Search order (first hit wins; real shell env always beats both):
+#   1. <repo>/.env         -- user's personal/local overrides
+#   2. <repo>/config/.env  -- project-standard location for shared secrets
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(_REPO_ROOT / ".env")
+load_dotenv(_REPO_ROOT / "config" / ".env")
 
 logger = logging.getLogger(__name__)
 
