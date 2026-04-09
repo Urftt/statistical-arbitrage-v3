@@ -238,7 +238,10 @@ def insert_candles(
         return 0
     rows = [_candle_to_row(market, c) for c in candles]
     with conn.cursor() as cur:
-        psycopg2.extras.execute_values(cur, INSERT_SQL, rows, page_size=1000)
+        # page_size MUST be >= len(rows) so execute_values sends a single
+        # internal batch; otherwise cur.rowcount only reflects the LAST
+        # batch, under-counting inserts. Bitvavo's max candles/page is 1440.
+        psycopg2.extras.execute_values(cur, INSERT_SQL, rows, page_size=max(len(rows), 2000))
         inserted = cur.rowcount
     conn.commit()
     return inserted
