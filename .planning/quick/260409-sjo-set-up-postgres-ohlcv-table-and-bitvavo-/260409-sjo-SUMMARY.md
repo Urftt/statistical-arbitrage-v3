@@ -2,7 +2,7 @@
 phase: 260409-sjo
 plan: 01
 type: summary
-status: checkpoint-reached
+status: complete
 quick: true
 description: Set up Postgres OHLCV table and Bitvavo backfill script
 ---
@@ -13,7 +13,7 @@ description: Set up Postgres OHLCV table and Bitvavo backfill script
 
 ## Status
 
-**3 of 4 tasks complete.** Auto tasks done, committed, and merged into `main`. Task 4 is a `checkpoint:human-verify` — the user must run the scripts against their real Postgres server and confirm row counts / idempotency before the plan can be closed.
+**All 4 tasks complete.** Backfill verified against the real Unraid Postgres instance, full historical data loaded, and a daily update cron is running on Unraid via the User Scripts plugin. See the "Resolution" section at the bottom for details.
 
 ## Completed Tasks
 
@@ -96,3 +96,42 @@ Heads up: the full backfill will take a while (several hundred markets × thousa
 - **Created:** `scripts/_ohlcv_common.py`, `scripts/backfill_ohlcv.py`, `scripts/update_ohlcv.py`
 - **Modified:** `pyproject.toml` (new `postgres` optional-deps group), `uv.lock`
 - **Untouched:** `src/statistical_arbitrage/data/` — existing CCXT + parquet cache left fully alone per user instruction
+
+---
+
+## Resolution (2026-04-10)
+
+### Verification and backfill
+
+- Smoke test (`--pair BTC-EUR`) succeeded. Identified and fixed an `execute_values` counter bug: `cur.rowcount` under-counted inserts when Bitvavo's 1440-row page got split across multiple internal batches of `page_size=1000`. Fixed by sizing `page_size = max(len(rows), 2000)` so every call fits in a single batch. Data path was always correct; only the counter was wrong.
+- Follow-on enhancements during verification:
+  - Auto-load `.env` via python-dotenv so users don't have to export env vars.
+  - Extended dotenv search path to include the scripts directory itself (for standalone deployments where scripts live outside a repo).
+  - Bumped `UPDATE_LIMIT` from 24 to 168 (one week of hourly candles) — safety cushion for missed runs when the update runs daily.
+- **Full historical backfill complete:** 1,898,402 rows across 441 Bitvavo trading markets, history back to 2019-03-08 for BTC-EUR, shorter for newer listings.
+
+### Unraid daily cron (Task 4 follow-through)
+
+- Files copied to `/mnt/user/appdata/ohlcv-updater/` on the Unraid host: `_ohlcv_common.py`, `update_ohlcv.py`.
+- Scheduled via the User Scripts plugin, cron `0 0 * * *` (daily at midnight). Script body:
+  ```bash
+  docker run --rm \
+    -v /mnt/user/appdata/ohlcv-updater:/scripts \
+    -e POSTGRES_PASSWORD="<password>" \
+    --network=host \
+    python:3.12-slim \
+    bash -lc "pip install --quiet psycopg2-binary requests python-dotenv && python /scripts/update_ohlcv.py"
+  ```
+  Each run: throwaway `python:3.12-slim` container, installs the three deps, runs `update_ohlcv.py`, upserts the last 168 hourly candles per market, exits. No Python runtime installed on the Unraid host itself.
+
+### Debugging story (worth remembering)
+
+The cron setup got stuck for a long session on `password authentication failed for user "luc"` — despite the same password authenticating successfully from the Mac with the same psycopg2 version. Root cause turned out to be **character fidelity**: the rotated password contained special characters (a single quote among them), and pasting it through the Unraid web terminal into nano (and into `pgpass` via shell expansion) was producing subtly wrong bytes. `wc -c` reported the expected length, but the actual bytes differed from what the user thought they were typing.
+
+The fix was not to debug the transcription path but to **change the value at the authoritative source**: reset the password from inside the Postgres docker container on Unraid using `docker exec -e PGPASSWORD=... postgresql18 psql ... -c "ALTER USER luc WITH PASSWORD 'TempLucCrypto2026'"`. Once the password was a simple, paste-safe string, every layer of the pipeline started working.
+
+**Lesson:** when a character-fidelity issue across paste/terminal/file/shell boundaries is suspected, don't debug the transcription chain — reset the value at its authoritative source to something unambiguous (pure alphanumeric). Passwords containing shell-meta characters (`'`, `$`, `#`, `!`, `"`) cost large amounts of time across layered pipelines and provide no security benefit over length.
+
+### Remaining improvement (not blocking)
+
+Password is currently hardcoded in the User Scripts body on Unraid. Follow-up: read it from `/mnt/user/appdata/ohlcv-updater/pgpass` (strip trailing newline safely) so the secret is out of the User Scripts UI. Safe to do now that the pipeline is proven working end-to-end.

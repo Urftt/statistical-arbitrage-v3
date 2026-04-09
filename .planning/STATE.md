@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-31)
 Phase: 06
 Plan: Not started
 Status: Executing Phase 06
-Last activity: 2026-04-09 - Completed quick task 260409-sjo: Set up Postgres OHLCV table and Bitvavo backfill script
+Last activity: 2026-04-10 - Closed out quick task 260409-sjo: verification complete, full historical backfill loaded (1.9M rows / 441 markets), daily update cron live on Unraid
 
 Progress: [███░░░░░░░] 33%
 
