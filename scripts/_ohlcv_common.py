@@ -34,10 +34,13 @@ import requests
 from dotenv import load_dotenv
 
 # Load .env files before any env var lookups.
-# Search order (first hit wins; real shell env always beats both):
-#   1. <repo>/.env         -- user's personal/local overrides
-#   2. <repo>/config/.env  -- project-standard location for shared secrets
-_REPO_ROOT = Path(__file__).resolve().parent.parent
+# Search order (first hit wins; real shell env always beats all of them):
+#   1. <scripts_dir>/.env   -- standalone deployments (e.g. Unraid appdata)
+#   2. <repo>/.env          -- dev setup, user's personal/local overrides
+#   3. <repo>/config/.env   -- dev setup, project-standard shared secrets
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _SCRIPTS_DIR.parent
+load_dotenv(_SCRIPTS_DIR / ".env")
 load_dotenv(_REPO_ROOT / ".env")
 load_dotenv(_REPO_ROOT / "config" / ".env")
 
