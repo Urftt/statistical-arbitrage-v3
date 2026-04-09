@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-31)
 Phase: 06
 Plan: Not started
 Status: Executing Phase 06
-Last activity: 2026-04-07
+Last activity: 2026-04-09 - Completed quick task 260409-sjo: Set up Postgres OHLCV table and Bitvavo backfill script
 
 Progress: [███░░░░░░░] 33%
 
@@ -99,6 +99,7 @@ Recent decisions affecting current work:
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260407-f10 | fix optimize lookback_window grid search bug | 2026-04-07 | 8e34bb6 | [260407-f10-fix-optimize-lookback-window-grid-search](./quick/260407-f10-fix-optimize-lookback-window-grid-search/) |
+| 260409-sjo | Set up Postgres OHLCV table and Bitvavo backfill script | 2026-04-09 | 3de2947 | [260409-sjo-set-up-postgres-ohlcv-table-and-bitvavo-](./quick/260409-sjo-set-up-postgres-ohlcv-table-and-bitvavo-/) |
 
 ## Session Continuity
 
