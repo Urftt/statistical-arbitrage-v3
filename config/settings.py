@@ -17,7 +17,7 @@ class BitvavoSettings(BaseSettings):
     """Bitvavo API configuration settings."""
 
     model_config = SettingsConfigDict(
-        env_file=PROJECT_ROOT / "config" / ".env",
+        env_file=PROJECT_ROOT / ".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -155,7 +155,7 @@ class TelegramSettings(BaseSettings):
     """
 
     model_config = SettingsConfigDict(
-        env_file=PROJECT_ROOT / "config" / ".env",
+        env_file=PROJECT_ROOT / ".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
